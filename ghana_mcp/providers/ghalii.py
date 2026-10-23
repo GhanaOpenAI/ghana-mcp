@@ -84,6 +84,7 @@ class GhaLIIProvider(BaseProvider):
                         snippet=snippet,
                         source="GhaLII (Ghana Legal Information Institute)",
                         category=self.category,
+                        content=snippet,
                         published_date=date_str,
                         metadata={
                             "document_url": doc_url,

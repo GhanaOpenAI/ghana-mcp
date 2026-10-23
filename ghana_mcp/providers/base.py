@@ -12,6 +12,7 @@ class SearchResult:
     snippet: str
     source: str
     category: str  # "news", "wikipedia", "academic", "public_services"
+    content: Optional[str] = None  # Full body / article / thesis abstract text
     published_date: Optional[str] = None
     score: Optional[float] = None
     metadata: Dict[str, Any] = field(default_factory=dict)

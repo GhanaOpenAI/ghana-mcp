@@ -58,13 +58,15 @@ class NewsProvider(BaseProvider):
             for doc in data.get("docs", [])[:limit]:
                 slug = doc.get("slug", "")
                 link = f"https://thebftonline.com/{slug}" if slug else "https://thebftonline.com"
+                excerpt = doc.get("excerpt", "").strip()
                 results.append(
                     SearchResult(
                         title=doc.get("title", "").strip(),
                         url=link,
-                        snippet=doc.get("excerpt", "").strip(),
+                        snippet=excerpt,
                         source="B&FT Online",
                         category=self.category,
+                        content=excerpt,
                         published_date=doc.get("publishedAt"),
                         metadata={"read_time": doc.get("readTime"), "category": doc.get("category", {}).get("name")},
                     )
@@ -81,13 +83,15 @@ class NewsProvider(BaseProvider):
             for item in data.get("results", [])[:limit]:
                 raw_url = item.get("url", "")
                 link = f"https://3news.com{raw_url}" if raw_url.startswith("/") else raw_url
+                snippet = f"3News breaking report on {item.get('title', '').strip()}"
                 results.append(
                     SearchResult(
                         title=item.get("title", "").strip(),
                         url=link,
-                        snippet=f"3News breaking report on {item.get('title', '').strip()}",
+                        snippet=snippet,
                         source="3News (TV3)",
                         category=self.category,
+                        content=snippet,
                         metadata={"item_id": item.get("id"), "type": item.get("type")},
                     )
                 )
@@ -125,16 +129,17 @@ class NewsProvider(BaseProvider):
                         snippet=snippet,
                         source="Yen.com.gh",
                         category=self.category,
+                        content=snippet,
                         published_date=date_str,
                     )
                 )
             return results
 
     def _fetch_wp_endpoint(self, source_name: str, base_url: str, query: str, limit: int) -> List[SearchResult]:
-        """Generic fetcher for WordPress REST APIs."""
+        """Generic fetcher for WordPress REST APIs with full content extraction."""
         url = (
             f"{base_url}/wp-json/wp/v2/posts?search={urllib.parse.quote(query)}"
-            f"&per_page={limit}&_fields=id,date,link,title,excerpt"
+            f"&per_page={limit}&_fields=id,date,link,title,excerpt,content"
         )
         req = urllib.request.Request(url, headers=self.headers)
         with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as resp:
@@ -146,6 +151,8 @@ class NewsProvider(BaseProvider):
             for post in posts[:limit]:
                 title = _clean_html(post.get("title", {}).get("rendered", ""))
                 excerpt = _clean_html(post.get("excerpt", {}).get("rendered", ""))
+                full_content = _clean_html(post.get("content", {}).get("rendered", ""))
+                body_text = full_content if len(full_content) > 50 else excerpt
                 link = post.get("link", "")
                 date_str = post.get("date", "")
                 results.append(
@@ -155,6 +162,7 @@ class NewsProvider(BaseProvider):
                         snippet=excerpt,
                         source=source_name,
                         category=self.category,
+                        content=body_text,
                         published_date=date_str,
                         metadata={"post_id": post.get("id")},
                     )

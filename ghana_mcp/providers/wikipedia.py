@@ -80,6 +80,7 @@ class WikipediaGhanaProvider(BaseProvider):
                     snippet=extract,
                     source="Wikipedia (Ghana)",
                     category=self.category,
+                    content=extract,
                     metadata={"pageid": item.get("pageid")},
                 )
             )

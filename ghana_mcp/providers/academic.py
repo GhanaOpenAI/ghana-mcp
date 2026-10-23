@@ -65,7 +65,7 @@ class AcademicProvider(BaseProvider):
         url = f"{api_root}/core/items/{item_id}?embed=bundles/bitstreams"
         req = urllib.request.Request(url, headers=self.headers)
         try:
-            with urllib.request.urlopen(req, timeout=3.5, context=SSL_CTX) as resp:
+            with urllib.request.urlopen(req, timeout=1.8, context=SSL_CTX) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 bundles = data.get("_embedded", {}).get("bundles", {}).get("_embedded", {}).get("bundles", [])
                 for b in bundles:
@@ -131,13 +131,14 @@ class AcademicProvider(BaseProvider):
                 "date_str": date_str,
             })
 
-        # Concurrently resolve direct PDF download links for the items
+        # Fast concurrent resolution of direct PDF download links for top candidates
         results = []
         pdf_urls = {}
-        with ThreadPoolExecutor(max_workers=min(len(candidates_raw), 5) or 1) as executor:
+        top_to_resolve = candidates_raw[:4]
+        with ThreadPoolExecutor(max_workers=8) as executor:
             future_to_item = {
                 executor.submit(self._resolve_pdf, c["item_id"], repo["base_url"]): c["item_id"]
-                for c in candidates_raw if c.get("item_id")
+                for c in top_to_resolve if c.get("item_id")
             }
             for future in future_to_item:
                 i_id = future_to_item[future]
@@ -158,6 +159,7 @@ class AcademicProvider(BaseProvider):
                     snippet=c["abstract"],
                     source=repo["name"],
                     category=self.category,
+                    content=c["abstract"],
                     published_date=c["date_str"],
                     metadata={
                         "authors": c["authors"],

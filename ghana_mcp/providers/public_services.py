@@ -154,6 +154,7 @@ class PublicServicesProvider(BaseProvider):
                                 snippet=f"Official local government report from GhanaDistricts: {title}",
                                 source="GhanaDistricts Repository (261 MMDAs)",
                                 category=self.category,
+                                content=f"Official local government report from GhanaDistricts: {title}",
                                 published_date=date_str,
                                 metadata={"type": "district assembly news / local governance"},
                             )
@@ -170,7 +171,7 @@ class PublicServicesProvider(BaseProvider):
         """Query a government website's REST API for specific articles/services/policies."""
         url = (
             f"{api_url}?search={urllib.parse.quote(query)}"
-            f"&per_page={limit}&_fields=id,date,link,title,excerpt"
+            f"&per_page={limit}&_fields=id,date,link,title,excerpt,content"
         )
         req = urllib.request.Request(url, headers=self.headers)
         with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as resp:
@@ -183,6 +184,8 @@ class PublicServicesProvider(BaseProvider):
                 title = _clean_html(item.get("title", {}).get("rendered", ""))
                 link = item.get("link", "")
                 excerpt = _clean_html(item.get("excerpt", {}).get("rendered", ""))
+                full_content = _clean_html(item.get("content", {}).get("rendered", ""))
+                body_text = full_content if len(full_content) > 50 else (excerpt or title)
                 date_str = item.get("date", "")
 
                 # Exclude empty titles or non-content links
@@ -203,6 +206,7 @@ class PublicServicesProvider(BaseProvider):
                         snippet=snippet,
                         source=f"Ghana Public Services ({portal_name})",
                         category=self.category,
+                        content=body_text,
                         published_date=date_str[:10] if date_str else None,
                         metadata={
                             "portal": portal_name,

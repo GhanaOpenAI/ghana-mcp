@@ -95,18 +95,30 @@ def _execute_search(
         search_keywords = [t for t in text.split() if len(t) > 1]
 
     candidates: List[SearchResult] = []
-    per_provider_limit = max(int(top_k * 0.4), 10)
+    per_provider_limit = min(max(int(top_k * 0.15), 6), 10)
 
-    # 3. Gather candidates from verified live sources
+    # 3. Parallel asynchronous dispatch across all selected providers
+    tasks = []
     if "news" in cats:
-        candidates.extend(news_provider.search(search_keywords, limit=per_provider_limit))
+        tasks.append(("news", lambda: news_provider.search(search_keywords, limit=per_provider_limit)))
     if "wikipedia" in cats:
-        candidates.extend(wiki_provider.search(search_keywords, limit=min(per_provider_limit, 10)))
+        tasks.append(("wiki", lambda: wiki_provider.search(search_keywords, limit=min(per_provider_limit, 6))))
     if "academic" in cats:
-        candidates.extend(academic_provider.search(search_keywords, limit=per_provider_limit))
+        tasks.append(("academic", lambda: academic_provider.search(search_keywords, limit=per_provider_limit)))
     if "public_services" in cats:
-        candidates.extend(public_provider.search(search_keywords, limit=per_provider_limit))
-        candidates.extend(ghalii_provider.search(search_keywords, limit=min(per_provider_limit, 8)))
+        tasks.append(("public_services", lambda: public_provider.search(search_keywords, limit=per_provider_limit)))
+        tasks.append(("ghalii", lambda: ghalii_provider.search(search_keywords, limit=min(per_provider_limit, 6))))
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    with ThreadPoolExecutor(max_workers=len(tasks) or 1) as executor:
+        future_to_task = {executor.submit(fn): name for name, fn in tasks}
+        for future in as_completed(future_to_task):
+            try:
+                res = future.result()
+                if res:
+                    candidates.extend(res)
+            except Exception:
+                pass
 
     # Deduplicate candidates by canonical URL
     seen_urls = set()
