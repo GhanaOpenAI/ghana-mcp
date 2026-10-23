@@ -34,6 +34,11 @@ DSPACE_ENDPOINTS = [
         "base_url": "https://erl.ucc.edu.gh/server/api/discover/search/objects",
         "handle_prefix": "https://erl.ucc.edu.gh/handle/",
     },
+    {
+        "name": "Parliament of Ghana Repository",
+        "base_url": "https://repository.parliament.gh/server/api/discover/search/objects",
+        "handle_prefix": "https://repository.parliament.gh/handle/",
+    },
 ]
 
 # Local corpus path if available on server
@@ -51,8 +56,31 @@ class AcademicProvider(BaseProvider):
             "Accept": "application/json",
         }
 
+    def _resolve_pdf(self, item_id: str, base_url: str) -> Optional[str]:
+        """Resolve the direct downloadable PDF URL from the DSpace item's ORIGINAL bundle."""
+        if not item_id:
+            return None
+        # Extract server API root (e.g. https://ir.knust.edu.gh/server/api)
+        api_root = base_url.split("/discover/search")[0]
+        url = f"{api_root}/core/items/{item_id}?embed=bundles/bitstreams"
+        req = urllib.request.Request(url, headers=self.headers)
+        try:
+            with urllib.request.urlopen(req, timeout=3.5, context=SSL_CTX) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                bundles = data.get("_embedded", {}).get("bundles", {}).get("_embedded", {}).get("bundles", [])
+                for b in bundles:
+                    if b.get("name") == "ORIGINAL":
+                        bits = b.get("_embedded", {}).get("bitstreams", {}).get("_embedded", {}).get("bitstreams", [])
+                        for bit in bits:
+                            name = bit.get("name", "")
+                            if name.lower().endswith(".pdf"):
+                                return bit.get("_links", {}).get("content", {}).get("href")
+        except Exception:
+            pass
+        return None
+
     def _query_dspace(self, repo: Dict[str, str], query: str, limit: int) -> List[SearchResult]:
-        """Query a DSpace 7 REST API discover/search/objects endpoint."""
+        """Query a DSpace 7 REST API discover/search/objects endpoint with direct PDF extraction."""
         params = {"query": query, "page": 0, "size": limit}
         url = f"{repo['base_url']}?{urllib.parse.urlencode(params)}"
         req = urllib.request.Request(url, headers=self.headers)
@@ -61,11 +89,12 @@ class AcademicProvider(BaseProvider):
             data = json.loads(resp.read().decode("utf-8"))
 
         objects = data.get("_embedded", {}).get("searchResult", {}).get("_embedded", {}).get("objects", [])
-        results = []
+        candidates_raw = []
 
         for obj in objects[:limit]:
             item = obj.get("_embedded", {}).get("indexableObject", {})
             metadata = item.get("metadata", {})
+            item_id = item.get("id")
 
             # Extract Title
             title_entries = metadata.get("dc.title", [])
@@ -93,18 +122,49 @@ class AcademicProvider(BaseProvider):
             date_entries = metadata.get("dc.date.issued", []) or metadata.get("dc.date.accessioned", [])
             date_str = date_entries[0].get("value", "")[:10] if date_entries else None
 
+            candidates_raw.append({
+                "item_id": item_id,
+                "title": title,
+                "handle_url": item_url,
+                "abstract": abstract,
+                "authors": authors,
+                "date_str": date_str,
+            })
+
+        # Concurrently resolve direct PDF download links for the items
+        results = []
+        pdf_urls = {}
+        with ThreadPoolExecutor(max_workers=min(len(candidates_raw), 5) or 1) as executor:
+            future_to_item = {
+                executor.submit(self._resolve_pdf, c["item_id"], repo["base_url"]): c["item_id"]
+                for c in candidates_raw if c.get("item_id")
+            }
+            for future in future_to_item:
+                i_id = future_to_item[future]
+                try:
+                    pdf_urls[i_id] = future.result()
+                except Exception:
+                    pdf_urls[i_id] = None
+
+        for c in candidates_raw:
+            i_id = c["item_id"]
+            direct_pdf = pdf_urls.get(i_id)
+            final_url = direct_pdf if direct_pdf else c["handle_url"]
+
             results.append(
                 SearchResult(
-                    title=title,
-                    url=item_url,
-                    snippet=abstract,
+                    title=c["title"],
+                    url=final_url,  # Direct PDF download URL when available, otherwise handle
+                    snippet=c["abstract"],
                     source=repo["name"],
                     category=self.category,
-                    published_date=date_str,
+                    published_date=c["date_str"],
                     metadata={
-                        "authors": authors,
+                        "authors": c["authors"],
                         "type": "thesis / academic research",
                         "institution": repo["name"],
+                        "pdf_url": direct_pdf,
+                        "handle_url": c["handle_url"],
                     },
                 )
             )

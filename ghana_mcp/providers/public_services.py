@@ -116,6 +116,54 @@ class PublicServicesProvider(BaseProvider):
             except Exception:
                 self.verified_apis = []
 
+    def _search_ghanadistricts(self, query: str, limit: int = 5) -> List[SearchResult]:
+        """Search https://www.ghanadistricts.com for district assembly news and reports."""
+        url = "https://www.ghanadistricts.com/Home/SearchData"
+        headers = dict(self.headers)
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        headers["Referer"] = "https://www.ghanadistricts.com/Home/News"
+
+        data = urllib.parse.urlencode({"SearchInput": query}).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as resp:
+                from bs4 import BeautifulSoup
+                html = resp.read().decode("utf-8", errors="ignore")
+                soup = BeautifulSoup(html, "html.parser")
+
+            results = []
+            rows = soup.find_all("tr")
+            for row in rows:
+                tds = row.find_all("td")
+                if len(tds) >= 2:
+                    a_tag = row.find("a", href=True)
+                    if a_tag and "Reader" in a_tag["href"]:
+                        href = a_tag["href"]
+                        link = f"https://www.ghanadistricts.com{href if href.startswith('/') else '/' + href}"
+                        texts = [td.get_text(strip=True) for td in tds if td.get_text(strip=True) and td.get_text(strip=True) != "Read News"]
+                        title = texts[0] if texts else "District Assembly Report"
+                        # Skip header rows
+                        if "Page 1 of" in title or "Loading" in title:
+                            continue
+                        date_str = texts[1][:10] if len(texts) > 1 else None
+
+                        results.append(
+                            SearchResult(
+                                title=title,
+                                url=link,  # Direct Reader Content URL
+                                snippet=f"Official local government report from GhanaDistricts: {title}",
+                                source="GhanaDistricts Repository (261 MMDAs)",
+                                category=self.category,
+                                published_date=date_str,
+                                metadata={"type": "district assembly news / local governance"},
+                            )
+                        )
+                        if len(results) >= limit:
+                            break
+            return results
+        except Exception:
+            return []
+
     def _fetch_portal_content(
         self, portal_name: str, api_url: str, query: str, limit: int
     ) -> List[SearchResult]:
@@ -211,11 +259,14 @@ class PublicServicesProvider(BaseProvider):
         portals_to_query = portals_to_query[:10]
 
         all_results = []
-        with ThreadPoolExecutor(max_workers=len(portals_to_query)) as executor:
+        with ThreadPoolExecutor(max_workers=len(portals_to_query) + 1) as executor:
             future_to_portal = {
                 executor.submit(self._fetch_portal_content, p["name"], p["api_url"], query, limit=3): p["name"]
                 for p in portals_to_query
             }
+            # Add GhanaDistricts repository search
+            future_to_portal[executor.submit(self._search_ghanadistricts, query, limit=3)] = "GhanaDistricts"
+
             for future in as_completed(future_to_portal):
                 portal_name = future_to_portal[future]
                 try:

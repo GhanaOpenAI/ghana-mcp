@@ -494,9 +494,19 @@
           <div class="stat-label">Queries Today</div>
         </div>
         <div class="stat-card">
+          <div id="stat-cache-rate" class="stat-number">0%</div>
+          <div class="stat-label">24h Cache Hit Rate</div>
+        </div>
+        <div class="stat-card">
           <div id="stat-avg-latency" class="stat-number">0ms</div>
           <div class="stat-label">Avg Latency</div>
         </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+        <a id="download-dataset-btn" href="#" target="_blank" class="search-btn" style="text-decoration: none; padding: 10px 18px; font-size: 13px; display: inline-flex;">
+          📥 Download Query Evaluation Dataset (.jsonl)
+        </a>
       </div>
 
       <div class="search-card">
@@ -636,6 +646,7 @@ Transport: Server-Sent Events (SSE)
         resultsList.innerHTML = data.results.map(r => {
           const badgeClass = `badge-${r.category}`;
           const dateHtml = r.published_date ? `<span class="date-label">📅 ${r.published_date.slice(0, 10)}</span>` : '';
+          const cacheBadge = r.metadata && r.metadata.cached ? `<span class="badge" style="background: #059669; color: #fff;">⚡ 24h Cache</span>` : '';
           const engine = r.metadata && r.metadata.ranking_engine ? ` (${r.metadata.ranking_engine})` : '';
           const scoreHtml = r.score ? `<div class="rerank-note">🎯 Relevance Score: ${(r.score).toFixed(3)}${engine}</div>` : '';
 
@@ -643,6 +654,7 @@ Transport: Server-Sent Events (SSE)
             <div class="result-card">
               <div class="result-header">
                 <span class="badge ${badgeClass}">${r.category.replace('_', ' ')}</span>
+                ${cacheBadge}
                 <span class="source-label">${r.source}</span>
                 ${dateHtml}
               </div>
@@ -667,7 +679,9 @@ Transport: Server-Sent Events (SSE)
 
         document.getElementById('stat-total-queries').innerText = stats.total_queries || 0;
         document.getElementById('stat-today-queries').innerText = stats.queries_today || 0;
+        document.getElementById('stat-cache-rate').innerText = `${stats.cache_hit_rate_pct || 0}%`;
         document.getElementById('stat-avg-latency').innerText = `${stats.avg_latency_ms || 0}ms`;
+        document.getElementById('download-dataset-btn').href = `${BACKEND_URL}/api/analytics/dataset?format=jsonl`;
 
         // Render trending
         const trendingContainer = document.getElementById('trending-topics');

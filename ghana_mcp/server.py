@@ -5,23 +5,26 @@ import os
 import sys
 import json
 import asyncio
-from typing import List, Optional
+from typing import List, Optional, Dict
+from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
 import uvicorn
-from fastapi import FastAPI, Query, Body
+from fastapi import FastAPI, Query, Body, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from mcp.server.mcpserver import MCPServer
 
 from ghana_mcp.providers.news import NewsProvider
 from ghana_mcp.providers.wikipedia import WikipediaGhanaProvider
 from ghana_mcp.providers.academic import AcademicProvider
 from ghana_mcp.providers.public_services import PublicServicesProvider
+from ghana_mcp.providers.ghalii import GhaLIIProvider
 from ghana_mcp.providers.base import SearchResult
 from ghana_mcp.reranker import reranker
 from ghana_mcp.nlp import extract_search_terms
 from ghana_mcp.analytics import analytics
+from ghana_mcp.cache import search_cache
 from ghana_mcp.config import SERVER_HOST, SERVER_PORT
 
 # Initialize providers
@@ -29,12 +32,13 @@ news_provider = NewsProvider()
 wiki_provider = WikipediaGhanaProvider()
 academic_provider = AcademicProvider()
 public_provider = PublicServicesProvider()
+ghalii_provider = GhaLIIProvider()
 
 # Initialize MCP Server
 mcp = MCPServer(
     name="ghana-mcp",
     title="Ghana Local Knowledge & Web Search MCP",
-    description="Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia using spaCy noun extraction and high-throughput reranking.",
+    description="Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia with 24-hour caching and hybrid reranking.",
     version="1.0.0",
 )
 
@@ -47,11 +51,10 @@ def _execute_search(
     client_type: str = "mcp_tool",
     user_agent: str = "",
 ) -> List[SearchResult]:
-    """Execute search across verified Ghanaian websites using spaCy noun extraction."""
+    """Execute search across verified Ghanaian websites with 24-hour caching and evaluation logging."""
     if not text or not text.strip():
         return []
 
-    t0 = asyncio.get_event_loop().time() if asyncio.get_event_loop().is_running() else 0.0
     import time
     start_time = time.perf_counter()
 
@@ -62,18 +65,38 @@ def _execute_search(
     lemma_chunks = nlp_data.get("lemma_chunks", [])
     nouns = nlp_data.get("nouns", [])
 
+    cats = categories or ["news", "wikipedia", "academic", "public_services"]
+
+    # 2. Check 24-hour cache first (instant response for repeated queries)
+    cached_results = search_cache.get(text, cats, top_k)
+    if cached_results is not None:
+        latency_ms = (time.perf_counter() - start_time) * 1000.0
+        analytics.record_query_sync(
+            query_text=text,
+            clean_chunks=clean_chunks,
+            num_results=len(cached_results),
+            latency_ms=latency_ms,
+            cached=True,
+            client_type=client_type,
+            user_agent=user_agent,
+            categories=cats,
+            sources={r.source: 1 for r in cached_results},
+            top_results_summary=[
+                {"title": r.title, "url": r.url, "source": r.source}
+                for r in cached_results[:5]
+            ],
+        )
+        return cached_results
+
     # Priority search terms: clean noun chunks first, followed by lemma chunks and individual nouns
     search_keywords = clean_chunks if clean_chunks else nouns
     if not search_keywords:
         search_keywords = [t for t in text.split() if len(t) > 1]
 
-    cats = categories or ["news", "wikipedia", "academic", "public_services"]
     candidates: List[SearchResult] = []
-
-    # Calculate provider limits to ensure we gather enough candidates for top_k (default 50)
     per_provider_limit = max(int(top_k * 0.4), 10)
 
-    # 2. Gather candidates from verified sources
+    # 3. Gather candidates from verified live sources
     if "news" in cats:
         candidates.extend(news_provider.search(search_keywords, limit=per_provider_limit))
     if "wikipedia" in cats:
@@ -82,6 +105,7 @@ def _execute_search(
         candidates.extend(academic_provider.search(search_keywords, limit=per_provider_limit))
     if "public_services" in cats:
         candidates.extend(public_provider.search(search_keywords, limit=per_provider_limit))
+        candidates.extend(ghalii_provider.search(search_keywords, limit=min(per_provider_limit, 8)))
 
     # Deduplicate candidates by canonical URL
     seen_urls = set()
@@ -98,10 +122,9 @@ def _execute_search(
             unique_candidates.append(c)
             sources_count[c.source] = sources_count.get(c.source, 0) + 1
 
-    # The maximum returned is all retrieved candidates
     effective_k = min(top_k, len(unique_candidates)) if len(unique_candidates) > 0 else top_k
 
-    # 3. High-throughput reranking (vLLM / BM25 fallback)
+    # 4. Neural hybrid reranking
     if rerank and unique_candidates:
         ranked = reranker.rerank(
             query=text,
@@ -112,17 +135,25 @@ def _execute_search(
     else:
         ranked = unique_candidates[:effective_k]
 
-    # Record non-blocking analytics
+    # Store in 24-hour cache for future queries
+    search_cache.set(text, cats, top_k, ranked)
+
+    # Record evaluation dataset & analytics non-blockingly
     latency_ms = (time.perf_counter() - start_time) * 1000.0
     analytics.record_query_sync(
         query_text=text,
         clean_chunks=clean_chunks,
         num_results=len(ranked),
         latency_ms=latency_ms,
+        cached=False,
         client_type=client_type,
         user_agent=user_agent,
         categories=cats,
         sources=sources_count,
+        top_results_summary=[
+            {"title": r.title, "url": r.url, "source": r.source}
+            for r in ranked[:5]
+        ],
     )
 
     return ranked
@@ -213,12 +244,21 @@ def ghana_wikipedia_search(
     return json.dumps([r.to_dict() for r in results], indent=2)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application startup and shutdown lifecycle cleanly."""
+    await analytics.start()
+    yield
+    await analytics.stop()
+
+
 # --- FastAPI REST App & Web Interface ---
 
 app = FastAPI(
     title="Ghana-MCP API",
     description="Ghanaian Local Search & Knowledge MCP Server. Joint partnership between Ghana Open AI and Ghana NLP.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -298,22 +338,31 @@ async def api_search_get(
     }
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Start background analytics worker."""
-    await analytics.start()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Stop background analytics worker."""
-    await analytics.stop()
-
-
 @app.get("/api/analytics/stats")
 async def api_analytics_stats():
-    """Return live usage statistics, query latency, and trending Ghanaian topics."""
+    """Return live usage statistics, query latency, cache hit rate, and trending topics."""
     return analytics.get_stats()
+
+
+@app.get("/api/analytics/dataset")
+async def api_analytics_dataset(
+    format: str = Query("json", description="Export format: 'json' or 'jsonl'"),
+    limit: int = Query(500, ge=1, le=5000),
+):
+    """Export logged evaluation dataset for offline testing and model improvement."""
+    records = analytics.export_dataset(limit=limit)
+    if format == "jsonl":
+        lines = [json.dumps(r, ensure_ascii=False) for r in records]
+        return PlainTextResponse(
+            "\n".join(lines),
+            media_type="application/x-ndjson",
+            headers={"Content-Disposition": "attachment; filename=query_evaluation_dataset.jsonl"},
+        )
+    return {
+        "status": "success",
+        "count": len(records),
+        "records": records,
+    }
 
 
 @app.get("/api/health")
@@ -324,12 +373,15 @@ async def api_health():
         "service": "ghana-mcp",
         "version": "1.0.0",
         "nlp_engine": "spaCy (en_core_web_sm)",
-        "reranker": "EmbeddingGemma (vLLM / BM25 fallback)",
+        "reranker": "Hybrid (EmbeddingGemma-2 + BGE-Reranker-v2-M3)",
+        "caching": "24-Hour Persistent SQLite WAL",
+        "evaluation_dataset": "Enabled (JSONL export)",
         "partnership": "Ghana Open AI x Ghana NLP",
         "endpoints": {
             "mcp_sse": "/mcp/sse",
             "rest_search": "/api/search",
             "analytics_stats": "/api/analytics/stats",
+            "analytics_dataset": "/api/analytics/dataset",
             "web_ui": "/",
         },
     }
