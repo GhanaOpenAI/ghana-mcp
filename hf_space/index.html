@@ -727,12 +727,10 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
   </footer>
 
   <script>
-    // Robust Backend URL resolution:
-    // 1. If running on Hugging Face or self, use relative URL (zero cross-origin issues)
-    // 2. Fallback to direct H200 Cloudflare endpoint
-    const BACKEND_URL = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes('ghanaopenai.org') || window.location.origin.includes('.hf.space') || window.location.origin.includes(':8800'))
+    // Always use same-origin relative endpoints when served by the MCP server
+    const BACKEND_URL = (window.location.protocol.startsWith('http'))
       ? window.location.origin
-      : 'https://mcp-demo.ghanaopenai.org';
+      : 'http://localhost:8800';
 
     let records = [];
     let activeCategory = 'all';
