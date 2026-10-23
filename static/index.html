@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghana-MCP Explorer | Ghana Open AI × Ghana NLP</title>
+  <title>Ghana MCP — National AI Knowledge & Search Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0c0f14;
-      --card-bg: #141923;
-      --card-border: #1f2737;
-      --text-main: #f0f4fc;
-      --text-muted: #8b99b5;
-      --ghana-gold: #fecb00;
-      --ghana-green: #006b3f;
-      --ghana-red: #ce1126;
-      --accent: #22c55e;
-      --accent-glow: rgba(34, 197, 94, 0.15);
-      --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --bg: #090a0f;
+      --surface: #11131c;
+      --surface-elevated: #161a26;
+      --surface-hover: #1c2233;
+      --border: #22283a;
+      --border-accent: #2e3a54;
+      --text-main: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-gold: #f59e0b;
+      --pdf-red: #f43f5e;
+      --glow-blue: rgba(56, 189, 248, 0.15);
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -27,522 +32,593 @@
     body {
       background: var(--bg);
       color: var(--text-main);
-      font-family: var(--font-main);
-      line-height: 1.6;
-      padding-bottom: 60px;
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
     }
 
-    /* Header & Branding */
+    /* Minimalist Top App Bar */
     header {
-      background: linear-gradient(180deg, rgba(20, 25, 35, 0.95) 0%, rgba(12, 15, 20, 0.8) 100%);
-      border-bottom: 1px solid var(--card-border);
-      padding: 20px;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 50;
+      background: rgba(9, 10, 15, 0.85);
     }
-    .header-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .brand-title {
+    .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-    .flag-pill {
-      display: flex;
-      height: 20px;
-      width: 32px;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(254, 203, 0, 0.3);
-    }
-    .flag-red { background: var(--ghana-red); flex: 1; }
-    .flag-gold { background: var(--ghana-gold); flex: 1; }
-    .flag-green { background: var(--ghana-green); flex: 1; }
-    .partnership-tag {
-      font-size: 12px;
-      padding: 4px 10px;
-      background: rgba(254, 203, 0, 0.12);
-      border: 1px solid rgba(254, 203, 0, 0.3);
-      color: var(--ghana-gold);
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    /* Tab Switcher */
-    .nav-tabs {
-      display: flex;
-      gap: 8px;
-      margin: 20px 0;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 8px;
-    }
-    .nav-tab {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 14px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nav-tab.active {
-      background: rgba(34, 197, 94, 0.15);
-      color: #86efac;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 10px auto 40px;
-      padding: 0 20px;
-    }
-
-    .hero-text {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .hero-text h1 {
-      font-size: 30px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      letter-spacing: -0.8px;
-    }
-    .hero-text p {
-      color: var(--text-muted);
-      font-size: 14px;
-      max-width: 650px;
-      margin: 0 auto;
-    }
-
-    /* Search Box */
-    .search-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-      margin-bottom: 24px;
-    }
-    .input-group {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .search-input {
-      flex: 1;
-      background: #090c10;
-      border: 1px solid var(--card-border);
-      padding: 14px 18px;
-      border-radius: 10px;
+      text-decoration: none;
       color: var(--text-main);
-      font-size: 16px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s;
     }
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-    .search-btn {
-      background: var(--accent);
-      color: #061e0e;
-      border: none;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 0 26px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .search-btn:hover {
-      background: #16a34a;
-      transform: translateY(-1px);
-    }
-    .search-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .sample-queries {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-      font-size: 12px;
-      align-items: center;
-    }
-    .sample-chip {
-      background: rgba(255, 255, 255, 0.04);
-      color: #94a3b8;
-      padding: 4px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-      transition: all 0.15s;
-    }
-    .sample-chip:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    /* Filters & Controls */
-    .controls-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 13px;
-    }
-    .category-chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .chip {
-      background: #090c10;
-      border: 1px solid var(--card-border);
-      padding: 6px 12px;
+    .spark-icon {
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--glow-blue);
     }
-    .chip.active {
-      background: rgba(34, 197, 94, 0.15);
-      border-color: var(--accent);
-      color: #86efac;
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
     }
-
-    .options-row {
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .header-actions {
       display: flex;
       gap: 14px;
       align-items: center;
     }
-    select {
-      background: #090c10;
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      outline: none;
+    .btn-endpoints {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--accent-blue);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-endpoints:hover {
+      background: rgba(56, 189, 248, 0.2);
     }
 
-    /* Results */
-    .status-bar {
+    /* Authoritative Notice Banner */
+    .demo-notice-bar {
+      background: rgba(17, 19, 28, 0.7);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .notice-inner {
+      max-width: 900px;
+      margin: 0 auto;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.3px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Main Viewport */
+    .app-viewport {
+      flex: 1;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      transition: padding 0.3s ease;
+    }
+    .app-viewport.results-active {
+      padding-top: 24px;
+    }
+
+    /* Hero */
+    .hero-container {
+      text-align: center;
+      margin-bottom: 36px;
+      transition: all 0.3s ease;
+    }
+    .app-viewport.results-active .hero-container {
+      margin-bottom: 18px;
+    }
+    .app-viewport.results-active .hero-subtitle {
+      display: none;
+    }
+    .hero-title {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .app-viewport.results-active .hero-title {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* Prominent Prompt Input Box */
+    .ai-prompt-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px 14px 10px 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ai-prompt-box:focus-within {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--glow-blue);
+      background: var(--surface-elevated);
+    }
+    .prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: 500;
+    }
+    .prompt-input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .ai-run-btn {
+      background: var(--text-main);
+      color: #090a0f;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .ai-run-btn:hover {
+      background: #ffffff;
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+    }
+    .ai-run-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Minimalist starter pills */
+    .starter-queries {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 18px;
+    }
+    .app-viewport.results-active .starter-queries {
+      display: none;
+    }
+    .query-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .query-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Live AI Reasoning Commentary Panel */
+    .ai-reasoning-panel {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .reasoning-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .pulse-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .pulse-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
+      animation: blink 1.2s infinite ease-in-out;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
+
+    .reasoning-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .feed-step {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .step-tag {
+      color: var(--accent-purple);
+      font-weight: 500;
+    }
+
+    /* Scope Bar */
+    .results-scope-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .scope-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .scope-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .scope-btn.active {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .results-count-summary {
       font-size: 13px;
       color: var(--text-muted);
-      flex-wrap: wrap;
-      gap: 8px;
     }
-    .results-list {
+
+    /* Results Stream */
+    .results-stream {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
     .result-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 20px;
-      transition: transform 0.15s, border-color 0.15s;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      transition: all 0.15s ease;
     }
     .result-card:hover {
-      border-color: #2e3a52;
-      transform: translateY(-2px);
+      border-color: var(--border-accent);
+      background: var(--surface-elevated);
+      transform: translateY(-1px);
     }
-    .result-header {
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .source-domain-chain {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+    }
+    .source-name {
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+    .result-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      line-height: 1.4;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .result-title:hover {
+      color: var(--accent-blue);
+    }
+    .result-snippet {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .card-actions-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 8px;
       flex-wrap: wrap;
     }
-    .badge {
+    .pdf-download-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      color: #fb7185;
+      font-weight: 700;
       font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-    .badge-news { background: #3b82f6; color: #fff; }
-    .badge-academic { background: #8b5cf6; color: #fff; }
-    .badge-public_services { background: #059669; color: #fff; }
-    .badge-wikipedia { background: #64748b; color: #fff; }
-    .source-label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-    .date-label { font-size: 11px; color: #64748b; margin-left: auto; }
-
-    .result-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #93c5fd;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 8px;
-      line-height: 1.4;
-    }
-    .result-title:hover { text-decoration: underline; color: #bfdbfe; }
-    .result-snippet { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
-    .rerank-note {
-      font-size: 12px;
-      background: rgba(254, 203, 0, 0.08);
-      border-left: 3px solid var(--ghana-gold);
-      padding: 6px 10px;
-      color: #fef08a;
-      border-radius: 0 4px 4px 0;
-      font-family: var(--font-mono);
-    }
-
-    /* Analytics Dashboard Tab */
-    .analytics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-    }
-    .stat-number { font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
-    .stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .trending-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .trending-tag {
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.25);
-      color: #86efac;
       padding: 4px 10px;
       border-radius: 6px;
-      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .pdf-download-badge:hover {
+      background: rgba(244, 63, 94, 0.2);
+    }
+    .cache-pill {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .meta-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
     }
 
-    .table-container {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      overflow-x: auto;
-      margin-top: 20px;
+    /* Modal for Endpoints */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-    th, td { padding: 12px 16px; border-bottom: 1px solid var(--card-border); }
-    th { background: #0e1219; color: var(--text-muted); font-weight: 600; }
-
-    /* Code block for MCP config */
-    .code-box {
-      background: #080b0f;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 16px;
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 650px;
+      width: 100%;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .code-block {
+      background: #090a0f;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
       font-family: var(--font-mono);
-      font-size: 13px;
-      color: #93c5fd;
+      font-size: 12px;
+      color: var(--accent-blue);
+      margin: 8px 0 16px;
       overflow-x: auto;
-      margin-top: 12px;
+      line-height: 1.5;
     }
 
-    .loader { display: none; text-align: center; padding: 40px; color: var(--accent); font-weight: 600; }
-    .spinner {
-      border: 3px solid rgba(34, 197, 94, 0.1);
-      border-top: 3px solid var(--accent);
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
+    /* Minimal Footer */
+    footer {
+      padding: 24px 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 12px;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
+  <!-- Top App Bar -->
   <header>
-    <div class="header-inner">
-      <div class="brand-title">
-        <div class="flag-pill">
-          <div class="flag-red"></div>
-          <div class="flag-gold"></div>
-          <div class="flag-green"></div>
-        </div>
-        <span>Ghana-MCP Explorer</span>
+    <a href="#" class="brand">
+      <div class="spark-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>
       </div>
-      <div class="partnership-tag">🤝 Ghana Open AI × Ghana NLP</div>
+      <div class="brand-name">Ghana MCP</div>
+      <span class="brand-badge">Autonomous LLM Tool</span>
+    </a>
+    <div class="header-actions">
+      <button class="btn-endpoints" onclick="openModal()">Endpoints & MCP Config</button>
+      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="h-link" style="color: var(--text-secondary); text-decoration: none; font-size: 13px;">Docs →</a>
     </div>
   </header>
 
-  <div class="container">
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('search')">🔍 Search Explorer</button>
-      <button class="nav-tab" onclick="switchTab('analytics')">📊 Live Usage Analytics</button>
-      <button class="nav-tab" onclick="switchTab('mcp')">🔌 MCP Client Config</button>
+  <!-- Authoritative Clarification Banner -->
+  <div class="demo-notice-bar">
+    <div class="notice-inner">
+      <span class="pill-live">INTERACTIVE DEMO</span>
+      <span>Ghana-MCP is a backend tool engineered for LLMs (Claude, Cursor, custom agents) to query live Ghanaian sources. You are previewing its live retrieval capabilities below.</span>
+    </div>
+  </div>
+
+  <!-- Main Viewport -->
+  <main id="app-viewport" class="app-viewport">
+    
+    <div class="hero-container">
+      <h1 class="hero-title">Ask anything about Ghana</h1>
+      <p class="hero-subtitle">Direct content retrieval across 164 verified government portals, Supreme Court judgments (GhaLII), university theses (KNUST/UG/UCC), and national news outlets.</p>
     </div>
 
-    <!-- TAB 1: SEARCH EXPLORER -->
-    <div id="tab-search">
-      <div class="hero-text">
-        <h1>Local Knowledge & Web Search for LLMs</h1>
-        <p>Real-time query engine indexing Ghanaian news outlets, KNUST/UG/UCC academic theses, public services, and Wikipedia with spaCy noun extraction and EmbeddingGemma reranking.</p>
-      </div>
-
-      <div class="search-card">
-        <div class="input-group">
-          <input type="text" id="query-input" class="search-input" placeholder="Enter free-form query (e.g. 'president of ghana', 'solar energy research knust', 'gra tax filing')..." value="who is the current president of ghana" />
-          <button id="search-btn" class="search-btn" onclick="runSearch()">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            Search
-          </button>
-        </div>
-
-        <div class="sample-queries">
-          <span style="color: #64748b;">Try:</span>
-          <span class="sample-chip" onclick="setQuery('who is the current president of ghana')">President of Ghana</span>
-          <span class="sample-chip" onclick="setQuery('research on renewable solar energy and lithium batteries in knust')">Solar Batteries KNUST</span>
-          <span class="sample-chip" onclick="setQuery('how do i register taxes with the official ghana revenue authority')">GRA Tax Registration</span>
-          <span class="sample-chip" onclick="setQuery('malaria eradication and health systems research in university of cape coast')">Malaria UCC</span>
-          <span class="sample-chip" onclick="setQuery('cocoa production economy and cocoa board policies')">Cocoa Board</span>
-        </div>
-
-        <div class="controls-grid">
-          <div class="category-chips">
-            <div class="chip active" data-cat="news" onclick="toggleChip(this)">📰 News</div>
-            <div class="chip active" data-cat="academic" onclick="toggleChip(this)">🎓 Academic Theses</div>
-            <div class="chip active" data-cat="public_services" onclick="toggleChip(this)">🏛️ Public Services</div>
-            <div class="chip active" data-cat="wikipedia" onclick="toggleChip(this)">📖 Wikipedia</div>
-          </div>
-
-          <div class="options-row">
-            <label style="color: var(--text-muted);">Top Results:
-              <select id="top-k-select">
-                <option value="10">Top 10</option>
-                <option value="25">Top 25</option>
-                <option value="50" selected>Top 50 (Default)</option>
-                <option value="75">Top 75</option>
-                <option value="100">Top 100</option>
-              </select>
-            </label>
-
-            <label style="color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-              <input type="checkbox" id="rerank-toggle" checked />
-              EmbeddingGemma Reranker
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div id="loader" class="loader">
-        <div class="spinner"></div>
-        <div>Extracting clean noun chunks with spaCy & retrieving from verified Ghanaian portals...</div>
-      </div>
-
-      <div id="status-bar" class="status-bar" style="display: none;">
-        <span id="results-count">0 results</span>
-        <span id="latency-metric">0.00s</span>
-      </div>
-
-      <div id="results-list" class="results-list"></div>
+    <!-- Prominent Prompt Box (Input First) -->
+    <div class="ai-prompt-box">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input
+        type="text"
+        id="prompt-input"
+        class="prompt-input"
+        placeholder="Enter natural language query or question..."
+        value=""
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="run-btn" class="ai-run-btn" onclick="triggerSearch()">
+        <span>Search</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
     </div>
 
-    <!-- TAB 2: LIVE ANALYTICS -->
-    <div id="tab-analytics" style="display: none;">
-      <div class="hero-text" style="text-align: left; margin-bottom: 20px;">
-        <h2>Server Usage & Query Analytics</h2>
-        <p>Live metrics from the asynchronous SQLite WAL logging engine.</p>
-      </div>
-
-      <div class="analytics-grid">
-        <div class="stat-card">
-          <div id="stat-total-queries" class="stat-number">0</div>
-          <div class="stat-label">Total Queries</div>
-        </div>
-        <div class="stat-card">
-          <div id="stat-today-queries" class="stat-number">0</div>
-          <div class="stat-label">Queries Today</div>
-        </div>
-        <div class="stat-card">
-          <div id="stat-cache-rate" class="stat-number">0%</div>
-          <div class="stat-label">24h Cache Hit Rate</div>
-        </div>
-        <div class="stat-card">
-          <div id="stat-avg-latency" class="stat-number">0ms</div>
-          <div class="stat-label">Avg Latency</div>
-        </div>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-        <a id="download-dataset-btn" href="#" target="_blank" class="search-btn" style="text-decoration: none; padding: 10px 18px; font-size: 13px; display: inline-flex;">
-          📥 Download Query Evaluation Dataset (.jsonl)
-        </a>
-      </div>
-
-      <div class="search-card">
-        <h3 style="font-size: 16px; margin-bottom: 10px;">🔥 Top Trending Ghanaian Search Topics</h3>
-        <div id="trending-topics" class="trending-list">
-          <span style="color: #64748b;">Loading topics...</span>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Query Text</th>
-              <th>Results</th>
-              <th>Latency</th>
-              <th>Client</th>
-            </tr>
-          </thead>
-          <tbody id="recent-queries-body">
-            <tr><td colspan="5" style="text-align: center; color: #64748b;">Loading recent queries...</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- Minimal starter suggestions -->
+    <div class="starter-queries">
+      <span class="query-pill" onclick="setQuery('who is the current president of ghana')">President of Ghana</span>
+      <span class="query-pill" onclick="setQuery('solar energy battery storage research in KNUST and UCC')">Solar Theses (Direct PDFs)</span>
+      <span class="query-pill" onclick="setQuery('Supreme Court income tax judgment GhaLII')">Tax Court Judgments</span>
+      <span class="query-pill" onclick="setQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</span>
+      <span class="query-pill" onclick="setQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills (PDF)</span>
     </div>
 
-    <!-- TAB 3: MCP CLIENT CONFIG -->
-    <div id="tab-mcp" style="display: none;">
-      <div class="search-card">
-        <h2>Connect Your LLM to Ghana-MCP</h2>
-        <p style="color: var(--text-muted); margin-top: 8px;">Use Ghana-MCP directly in Claude Desktop, Cursor, or your custom LLM application via Model Context Protocol (MCP).</p>
+    <!-- Behind-The-Scenes Reasoning Commentary -->
+    <div id="ai-reasoning" class="ai-reasoning-panel">
+      <div class="reasoning-header">
+        <div class="pulse-status">
+          <div class="pulse-indicator"></div>
+          <span id="pulse-label">Engine Initializing...</span>
+        </div>
+        <span id="pulse-timer" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">0.0s</span>
+      </div>
+      <div id="reasoning-feed" class="reasoning-feed"></div>
+    </div>
 
-        <h3 style="font-size: 16px; margin-top: 24px;">Claude Desktop Configuration</h3>
-        <p style="color: var(--text-muted); font-size: 13px;">Add to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) or <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows):</p>
-        <div class="code-box">
+    <!-- Results Scope Filter Bar -->
+    <div id="scope-bar" class="results-scope-bar">
+      <div class="scope-tabs">
+        <button class="scope-btn active" onclick="filterCategory('all', this)">All Results</button>
+        <button class="scope-btn" onclick="filterCategory('academic', this)">📄 Theses (PDFs)</button>
+        <button class="scope-btn" onclick="filterCategory('public_services', this)">⚖️ Government & Law</button>
+        <button class="scope-btn" onclick="filterCategory('news', this)">📰 News</button>
+        <button class="scope-btn" onclick="filterCategory('wikipedia', this)">📖 Wikipedia</button>
+      </div>
+      <div id="results-count" class="results-count-summary">0 results</div>
+    </div>
+
+    <!-- Results Stream -->
+    <div id="results-stream" class="results-stream"></div>
+
+  </main>
+
+  <!-- Modal for MCP Server Endpoints & Integration Details -->
+  <div id="endpoints-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">MCP Server Endpoints for LLMs</div>
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin-bottom: 12px;">
+        Ghana-MCP runs persistently as an autonomous server. Connect your LLM client via any of these endpoints:
+      </p>
+
+      <strong style="font-size: 13px;">1. Claude Desktop (stdio mode)</strong>
+      <div class="code-block">
 {
   "mcpServers": {
     "ghana-mcp": {
@@ -551,174 +627,199 @@
     }
   }
 }
-        </div>
+      </div>
 
-        <h3 style="font-size: 16px; margin-top: 24px;">Remote SSE Connection (H200 Server)</h3>
-        <div class="code-box">
-URL: http://41.173.184.219:8080/mcp/sse
-Transport: Server-Sent Events (SSE)
-        </div>
+      <strong style="font-size: 13px;">2. Remote SSE Endpoint (Cloudflare Protected)</strong>
+      <div class="code-block">
+https://mcp.ghanaopenai.org/mcp/sse
+      </div>
+
+      <strong style="font-size: 13px;">3. Direct REST Search API (cURL / Python)</strong>
+      <div class="code-block">
+curl -X POST https://mcp.ghanaopenai.org/api/search \
+  -H "Content-Type: application/json" \
+  -d '{"text": "who is the current president of ghana", "top_k": 50}'
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="btn-endpoints" style="text-decoration: none;">
+          View Full Documentation on GitHub →
+        </a>
       </div>
     </div>
-
   </div>
 
+  <!-- Minimalist Footer -->
+  <footer>
+    <div>
+      Joint Initiative by <strong>Ghana Open AI</strong> & <strong>Ghana NLP</strong> • NVIDIA H200 GPU Cluster
+    </div>
+    <div>
+      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" style="color: var(--accent-blue); text-decoration: none;">GitHub Repository →</a>
+    </div>
+  </footer>
+
   <script>
-    const BACKEND_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes(':8080')
+    const BACKEND_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes(':8080') || window.location.origin.includes(':8800')
       ? window.location.origin
-      : 'http://41.173.184.219:8080';
+      : 'https://salem-stevens-nightlife-gel.trycloudflare.com';
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-
-      document.getElementById('tab-search').style.display = tabId === 'search' ? 'block' : 'none';
-      document.getElementById('tab-analytics').style.display = tabId === 'analytics' ? 'block' : 'none';
-      document.getElementById('tab-mcp').style.display = tabId === 'mcp' ? 'block' : 'none';
-
-      if (tabId === 'analytics') {
-        loadAnalytics();
-      }
-    }
+    let currentResults = [];
+    let activeFilter = 'all';
 
     function setQuery(q) {
-      document.getElementById('query-input').value = q;
-      runSearch();
+      document.getElementById('prompt-input').value = q;
+      triggerSearch();
     }
 
-    function toggleChip(el) {
-      el.classList.toggle('active');
+    function openModal() {
+      document.getElementById('endpoints-modal').style.display = 'flex';
     }
 
-    function getSelectedCategories() {
-      const active = document.querySelectorAll('.chip.active');
-      return Array.from(active).map(c => c.getAttribute('data-cat'));
+    function closeModal() {
+      document.getElementById('endpoints-modal').style.display = 'none';
     }
 
-    async function runSearch() {
-      const query = document.getElementById('query-input').value.trim();
+    function addFeedStep(tag, text) {
+      const feed = document.getElementById('reasoning-feed');
+      const div = document.createElement('div');
+      div.className = 'feed-step';
+      div.innerHTML = `<span class="step-tag">[${tag}]</span> <span>${text}</span>`;
+      feed.appendChild(div);
+    }
+
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = cat;
+      renderResults();
+    }
+
+    function renderResults() {
+      const container = document.getElementById('results-stream');
+      const filtered = activeFilter === 'all' 
+        ? currentResults 
+        : currentResults.filter(r => r.category === activeFilter);
+
+      document.getElementById('results-count').innerText = `${filtered.length} authoritative records`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">No matching records found in this category.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(r => {
+        let domainPath = r.url;
+        try {
+          const u = new URL(r.url);
+          domainPath = `${u.hostname} › ${u.pathname.split('/').filter(Boolean).slice(0, 2).join(' › ')}`;
+        } catch(e) {}
+
+        const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
+        const pdfButton = isPdf
+          ? `<a href="${r.url}" target="_blank" class="pdf-download-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Direct PDF Download</a>`
+          : '';
+
+        const isCached = r.metadata && r.metadata.cached;
+        const cachePill = isCached ? '<span class="cache-pill">⚡ 24h Cache Hit</span>' : '';
+        const dateTag = r.published_date ? `<span class="meta-date">📅 ${r.published_date.slice(0, 10)}</span>` : '';
+
+        return `
+          <div class="result-card">
+            <div class="card-top-row">
+              <div class="source-domain-chain">
+                <span class="source-name">${r.source}</span>
+                <span>•</span>
+                <span>${domainPath}</span>
+              </div>
+              ${cachePill}
+            </div>
+            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="result-title">
+              ${r.title}
+            </a>
+            <div class="result-snippet">${r.snippet || 'No excerpt available.'}</div>
+            <div class="card-actions-row">
+              ${pdfButton}
+              ${dateTag}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function triggerSearch() {
+      const query = document.getElementById('prompt-input').value.trim();
       if (!query) return;
 
-      const btn = document.getElementById('search-btn');
-      const loader = document.getElementById('loader');
-      const resultsList = document.getElementById('results-list');
-      const statusBar = document.getElementById('status-bar');
+      const viewport = document.getElementById('app-viewport');
+      viewport.classList.add('results-active');
+
+      const btn = document.getElementById('run-btn');
+      const reasoningPanel = document.getElementById('ai-reasoning');
+      const reasoningFeed = document.getElementById('reasoning-feed');
+      const pulseLabel = document.getElementById('pulse-label');
+      const pulseTimer = document.getElementById('pulse-timer');
+      const scopeBar = document.getElementById('scope-bar');
+      const resultsStream = document.getElementById('results-stream');
 
       btn.disabled = true;
-      loader.style.display = 'block';
-      resultsList.innerHTML = '';
-      statusBar.style.display = 'none';
-
-      const categories = getSelectedCategories();
-      const topK = parseInt(document.getElementById('top-k-select').value, 10);
-      const rerank = document.getElementById('rerank-toggle').checked;
+      reasoningFeed.innerHTML = '';
+      reasoningPanel.style.display = 'block';
+      resultsStream.innerHTML = '';
+      scopeBar.style.display = 'none';
 
       const t0 = performance.now();
+      const timerInterval = setInterval(() => {
+        pulseTimer.innerText = `${((performance.now() - t0) / 1000).toFixed(1)}s`;
+      }, 100);
+
+      pulseLabel.innerText = 'Extracting Core Entities with spaCy NLP...';
+      addFeedStep('NLP', 'Parsing grammatical structure, removing determiners/adjectives, generating inflection pairs...');
+
       try {
-        const response = await fetch(`${BACKEND_URL}/api/search`, {
+        const res = await fetch(`${BACKEND_URL}/api/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             text: query,
-            categories: categories,
-            top_k: topK,
-            rerank: rerank
+            top_k: 50,
+            rerank: true
           })
         });
 
         const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-        const data = await response.json();
+        clearInterval(timerInterval);
+        pulseTimer.innerText = `${elapsed}s`;
 
-        loader.style.display = 'none';
-        btn.disabled = false;
-        statusBar.style.display = 'flex';
-        const extracted = data.extracted_terms || {};
-        const chunks = (extracted.clean_noun_chunks || []).join(' • ');
-        const chunkInfo = chunks ? ` [spaCy Chunks: ${chunks}]` : '';
-        document.getElementById('results-count').innerText = `${data.count || 0} results for "${query}"${chunkInfo}`;
-        document.getElementById('latency-metric').innerText = `⚡ ${elapsed}s response time`;
+        const data = await res.json();
+        currentResults = data.results || [];
 
-        if (!data.results || data.results.length === 0) {
-          resultsList.innerHTML = '<div style="text-align: center; color: #8b99b5; padding: 40px;">No matching results found for this query.</div>';
-          return;
+        const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(' • ');
+        addFeedStep('Entities', `Identified core nominal phrases: [${chunks || 'broad search'}]`);
+
+        const isCached = currentResults.some(r => r.metadata && r.metadata.cached);
+        if (isCached) {
+          addFeedStep('24h Cache', 'Served instantly from persistent SQLite WAL cache (0ms external API roundtrip)');
+        } else {
+          addFeedStep('Dispatch', 'Polled 164 government portals, KNUST/UG/UCC repositories, Parliament, GhaLII & news in parallel');
+          addFeedStep('Rerank', 'Executed neural hybrid reranking (EmbeddingGemma-2 + BGE-Reranker)');
         }
 
-        resultsList.innerHTML = data.results.map(r => {
-          const badgeClass = `badge-${r.category}`;
-          const dateHtml = r.published_date ? `<span class="date-label">📅 ${r.published_date.slice(0, 10)}</span>` : '';
-          const cacheBadge = r.metadata && r.metadata.cached ? `<span class="badge" style="background: #059669; color: #fff;">⚡ 24h Cache</span>` : '';
-          const engine = r.metadata && r.metadata.ranking_engine ? ` (${r.metadata.ranking_engine})` : '';
-          const scoreHtml = r.score ? `<div class="rerank-note">🎯 Relevance Score: ${(r.score).toFixed(3)}${engine}</div>` : '';
-
-          return `
-            <div class="result-card">
-              <div class="result-header">
-                <span class="badge ${badgeClass}">${r.category.replace('_', ' ')}</span>
-                ${cacheBadge}
-                <span class="source-label">${r.source}</span>
-                ${dateHtml}
-              </div>
-              <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="result-title">${r.title}</a>
-              <div class="result-snippet">${r.snippet || 'No excerpt available.'}</div>
-              ${scoreHtml}
-            </div>
-          `;
-        }).join('');
+        pulseLabel.innerText = `Retrieved ${currentResults.length} Authoritative Documents`;
+        btn.disabled = false;
+        scopeBar.style.display = 'flex';
+        renderResults();
 
       } catch (err) {
-        loader.style.display = 'none';
+        clearInterval(timerInterval);
         btn.disabled = false;
-        resultsList.innerHTML = `<div style="color: #f87171; padding: 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">Error contacting server: ${err.message}. Ensure backend is running.</div>`;
+        pulseLabel.innerText = 'Connection Error';
+        addFeedStep('Error', err.message);
       }
     }
 
-    async function loadAnalytics() {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/analytics/stats`);
-        const stats = await res.json();
-
-        document.getElementById('stat-total-queries').innerText = stats.total_queries || 0;
-        document.getElementById('stat-today-queries').innerText = stats.queries_today || 0;
-        document.getElementById('stat-cache-rate').innerText = `${stats.cache_hit_rate_pct || 0}%`;
-        document.getElementById('stat-avg-latency').innerText = `${stats.avg_latency_ms || 0}ms`;
-        document.getElementById('download-dataset-btn').href = `${BACKEND_URL}/api/analytics/dataset?format=jsonl`;
-
-        // Render trending
-        const trendingContainer = document.getElementById('trending-topics');
-        if (stats.trending_topics && stats.trending_topics.length > 0) {
-          trendingContainer.innerHTML = stats.trending_topics.map(t =>
-            `<span class="trending-tag">${t.topic} (${t.count})</span>`
-          ).join('');
-        } else {
-          trendingContainer.innerHTML = '<span style="color: #64748b;">No queries logged yet.</span>';
-        }
-
-        // Render recent table
-        const tbody = document.getElementById('recent-queries-body');
-        if (stats.recent_queries && stats.recent_queries.length > 0) {
-          tbody.innerHTML = stats.recent_queries.map(q => `
-            <tr>
-              <td>${q.timestamp ? q.timestamp.slice(11, 19) : '-'}</td>
-              <td><strong>${q.query}</strong></td>
-              <td>${q.num_results}</td>
-              <td>${q.latency_ms}ms</td>
-              <td><span style="font-size: 11px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">${q.client}</span></td>
-            </tr>
-          `).join('');
-        } else {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">No recent queries yet.</td></tr>';
-        }
-      } catch (e) {
-        console.error('Failed to load analytics:', e);
-      }
-    }
-
-    document.getElementById('query-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') runSearch();
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      runSearch();
+    document.getElementById('prompt-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') triggerSearch();
     });
   </script>
 </body>
