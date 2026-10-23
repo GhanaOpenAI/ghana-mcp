@@ -1,5 +1,7 @@
-"""Public services and government entity provider for Ghana.
-Searches 1,862 official MDAs, ministries, assemblies, and live government portals.
+"""Public services and government entity content search provider for Ghana.
+Directly queries the live search APIs of 164 verified Ghanaian government portals,
+ministries, departments, and agencies, returning direct URLs to specific content,
+reports, policies, and public services (NOT generic homepages).
 """
 import os
 import json
@@ -8,28 +10,71 @@ import urllib.request
 import urllib.parse
 import ssl
 from typing import List, Dict, Any
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from ghana_mcp.providers.base import BaseProvider, SearchResult
 from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
 from ghana_mcp.nlp import get_singular_plural_variants
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "ghana_agencies.json")
-
 SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
-LIVE_GOV_APIS = [
+VERIFIED_APIS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "verified_gov_apis.json"
+)
+
+# Core national government portals with verified live search APIs
+CORE_NATIONAL_GOV_APIS = [
     {
         "name": "Ghana Revenue Authority (GRA)",
-        "base_url": "https://gra.gov.gh",
-        "api_url": "https://gra.gov.gh/wp-json/wp/v2/posts?search={q}&per_page={limit}&_fields=id,date,link,title,excerpt",
+        "posts_api": "https://gra.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["tax", "taxes", "vat", "customs", "revenue", "income", "tin", "duties"],
+    },
+    {
+        "name": "Ministry of Lands and Natural Resources",
+        "posts_api": "https://mlnr.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["mining", "galamsey", "forestry", "timber", "lands", "natural resources", "minerals"],
+    },
+    {
+        "name": "Minerals Income Investment Fund (MIIF)",
+        "posts_api": "https://miif.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["mining", "gold", "minerals", "lithium", "royalties", "investment"],
+    },
+    {
+        "name": "Food and Drugs Authority (FDA)",
+        "posts_api": "https://fdaghana.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["food", "drugs", "cosmetics", "medical", "counterfeit", "health", "safety"],
     },
     {
         "name": "Ghana Standards Authority (GSA)",
-        "base_url": "https://www.gsa.gov.gh",
-        "api_url": "https://www.gsa.gov.gh/wp-json/wp/v2/posts?search={q}&per_page={limit}&_fields=id,date,link,title,excerpt",
+        "posts_api": "https://gsa.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["standards", "certification", "inspection", "quality", "metrology"],
+    },
+    {
+        "name": "Lands Commission",
+        "posts_api": "https://www.lc.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["land", "title", "deed", "registration", "survey", "lease"],
+    },
+    {
+        "name": "Ghana Investment Promotion Centre (GIPC)",
+        "posts_api": "https://gipa.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["investment", "invest", "business", "foreign", "investors", "economy"],
+    },
+    {
+        "name": "Ghana Free Zones Authority (GFZA)",
+        "posts_api": "https://gfza.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["free zones", "export", "manufacturing", "trade", "enterprise"],
+    },
+    {
+        "name": "Ghana Grid Company Limited (GRIDCo)",
+        "posts_api": "https://gridcogh.com/wp-json/wp/v2/posts",
+        "keywords": ["power", "electricity", "grid", "energy", "transmission"],
+    },
+    {
+        "name": "Ministry of Gender, Children & Social Protection",
+        "posts_api": "https://www.mogcsp.gov.gh/wp-json/wp/v2/posts",
+        "keywords": ["gender", "children", "social", "protection", "women", "welfare", "leap"],
     },
 ]
 
@@ -38,7 +83,15 @@ def _clean_html(text: str) -> str:
     if not text:
         return ""
     text = re.sub(r"<[^>]+>", " ", text)
-    text = text.replace("&#8217;", "'").replace("&#8220;", '"').replace("&#8221;", '"').replace("&amp;", "&")
+    text = (
+        text.replace("&#8217;", "'")
+        .replace("&#8216;", "'")
+        .replace("&#8220;", '"')
+        .replace("&#8221;", '"')
+        .replace("&#8211;", "–")
+        .replace("&amp;", "&")
+        .replace("&nbsp;", " ")
+    )
     return " ".join(text.split())
 
 
@@ -48,118 +101,128 @@ class PublicServicesProvider(BaseProvider):
 
     def __init__(self, timeout: float = DEFAULT_TIMEOUT):
         self.timeout = timeout
-        self.headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
-        self.agencies: List[Dict[str, Any]] = []
-        self._load_agencies()
+        self.headers = {
+            "User-Agent": USER_AGENT,
+            "Accept": "application/json",
+        }
+        self.verified_apis: List[Dict[str, Any]] = []
+        self._load_apis()
 
-    def _load_agencies(self):
-        if os.path.exists(DATA_FILE):
+    def _load_apis(self):
+        if os.path.exists(VERIFIED_APIS_FILE):
             try:
-                with open(DATA_FILE, "r", encoding="utf-8") as f:
-                    self.agencies = json.load(f)
+                with open(VERIFIED_APIS_FILE, "r", encoding="utf-8") as f:
+                    self.verified_apis = json.load(f)
             except Exception:
-                self.agencies = []
+                self.verified_apis = []
 
-    def _search_directory(self, tokens: List[str], limit: int) -> List[SearchResult]:
-        """Search the 1,862 verified Ghana government agencies and ministries, supporting singular/plural variants."""
-        # Expand each token into its singular and plural forms
-        expanded_token_groups = [get_singular_plural_variants(t.lower()) for t in tokens if len(t) > 1]
-        if not expanded_token_groups:
-            return []
-
-        matches = []
-        for ag in self.agencies:
-            name = ag.get("name", "")
-            alias = ag.get("alias", "")
-            category = ag.get("category", "")
-            parent = ag.get("parent_ministry", "")
-            text = f"{name} {alias} {category} {parent}".lower()
-
-            # Check how many token groups match (via singular or plural)
-            match_count = sum(1 for group in expanded_token_groups if any(variant in text for variant in group))
-            if match_count > 0:
-                score = match_count / len(expanded_token_groups)
-                url = ag.get("website_url") or "https://www.ghana.gov.gh"
-                snippet_parts = []
-                if category:
-                    snippet_parts.append(f"Category: {category}")
-                if parent:
-                    snippet_parts.append(f"Parent: {parent}")
-                if ag.get("digital_address"):
-                    snippet_parts.append(f"Digital Address: {ag['digital_address']}")
-                if ag.get("address"):
-                    snippet_parts.append(f"Address: {ag['address']}")
-
-                snippet = ". ".join(snippet_parts) or f"Official government entity: {name}"
-
-                matches.append(
-                    (
-                        score,
-                        SearchResult(
-                            title=name,
-                            url=url,
-                            snippet=snippet,
-                            source="Ghana Government Directory",
-                            category=self.category,
-                            score=score,
-                            metadata={
-                                "alias": alias,
-                                "category": category,
-                                "parent_ministry": parent,
-                                "digital_address": ag.get("digital_address"),
-                            },
-                        ),
-                    )
-                )
-
-        matches.sort(key=lambda x: x[0], reverse=True)
-        return [m[1] for m in matches[:limit]]
-
-    def _search_live_portal(self, portal: Dict[str, str], query: str, limit: int) -> List[SearchResult]:
-        """Search live government portals with open REST APIs (e.g. GRA, GSA)."""
-        url = portal["api_url"].format(q=urllib.parse.quote(query), limit=limit)
+    def _fetch_portal_content(
+        self, portal_name: str, api_url: str, query: str, limit: int
+    ) -> List[SearchResult]:
+        """Query a government website's REST API for specific articles/services/policies."""
+        url = (
+            f"{api_url}?search={urllib.parse.quote(query)}"
+            f"&per_page={limit}&_fields=id,date,link,title,excerpt"
+        )
         req = urllib.request.Request(url, headers=self.headers)
         with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as resp:
             data = json.loads(resp.read().decode("utf-8-sig", errors="ignore"))
             if not isinstance(data, list):
                 return []
+
             results = []
-            for post in data[:limit]:
-                title = _clean_html(post.get("title", {}).get("rendered", ""))
-                excerpt = _clean_html(post.get("excerpt", {}).get("rendered", ""))
-                link = post.get("link", "")
+            for item in data[:limit]:
+                title = _clean_html(item.get("title", {}).get("rendered", ""))
+                link = item.get("link", "")
+                excerpt = _clean_html(item.get("excerpt", {}).get("rendered", ""))
+                date_str = item.get("date", "")
+
+                # Exclude empty titles or non-content links
+                if not title or not link or link == api_url:
+                    continue
+
+                # Filter out obvious spam injected on unattended assemblies
+                spam_markers = ["casino", "betting", "poker", "spins", "slot", "viagra"]
+                if any(m in title.lower() for m in spam_markers):
+                    continue
+
+                snippet = excerpt if excerpt else f"Official publication from {portal_name}: {title}"
+
                 results.append(
                     SearchResult(
                         title=title,
-                        url=link,
-                        snippet=excerpt,
-                        source=portal["name"],
+                        url=link,  # DIRECT CONTENT URL
+                        snippet=snippet,
+                        source=f"Ghana Public Services ({portal_name})",
                         category=self.category,
-                        published_date=post.get("date"),
+                        published_date=date_str[:10] if date_str else None,
+                        metadata={
+                            "portal": portal_name,
+                            "type": "government content / policy / report",
+                        },
                     )
                 )
             return results
 
     def search(self, keywords: List[str], limit: int = 5) -> List[SearchResult]:
-        tokens = [t.lower() for t in keywords if len(t) > 1]
-        if not tokens:
+        """Search live Ghanaian public service portals for content matching keywords."""
+        if not keywords:
             return []
 
-        query = " ".join(tokens)
-        results = self._search_directory(tokens, limit)
+        query = " ".join(keywords).strip()
+        lower_query = query.lower()
 
-        # Check live government portal APIs concurrently
-        with ThreadPoolExecutor(max_workers=len(LIVE_GOV_APIS)) as executor:
+        # 1. Expand query tokens with singular/plural variants
+        expanded_tokens = set()
+        for kw in keywords:
+            for w in kw.split():
+                expanded_tokens.update(get_singular_plural_variants(w.lower()))
+
+        # 2. Select the most relevant government portals to query
+        portals_to_query: List[Dict[str, str]] = []
+
+        # Check core national agencies
+        for national in CORE_NATIONAL_GOV_APIS:
+            name = national["name"]
+            api_url = national["posts_api"]
+            tags = national.get("keywords", [])
+            if any(t in lower_query or t in expanded_tokens for t in tags):
+                portals_to_query.append({"name": name, "api_url": api_url})
+
+        # Also search verified government APIs from the 164 discovered portals
+        for api in self.verified_apis:
+            name = api.get("name", "")
+            base = api.get("base_url", "")
+            posts_api = api.get("posts_api")
+            name_lower = name.lower()
+
+            # Match on name or domain
+            if any(t in name_lower for t in expanded_tokens):
+                if posts_api and not any(p["api_url"] == posts_api for p in portals_to_query):
+                    portals_to_query.append({"name": name, "api_url": posts_api})
+
+        # If few portals matched specifically, include top national departments (GRA, MLNR, FDA, GSA)
+        if len(portals_to_query) < 4:
+            for national in CORE_NATIONAL_GOV_APIS[:4]:
+                if not any(p["api_url"] == national["posts_api"] for p in portals_to_query):
+                    portals_to_query.append({"name": national["name"], "api_url": national["posts_api"]})
+
+        # Limit concurrent portal queries to avoid latency spikes
+        portals_to_query = portals_to_query[:10]
+
+        all_results = []
+        with ThreadPoolExecutor(max_workers=len(portals_to_query)) as executor:
             future_to_portal = {
-                executor.submit(self._search_live_portal, p, query, 3): p["name"]
-                for p in LIVE_GOV_APIS
+                executor.submit(self._fetch_portal_content, p["name"], p["api_url"], query, limit=3): p["name"]
+                for p in portals_to_query
             }
-            for future in future_to_portal:
+            for future in as_completed(future_to_portal):
+                portal_name = future_to_portal[future]
                 try:
-                    live_res = future.result()
-                    if live_res:
-                        results.extend(live_res)
+                    res = future.result()
+                    if res:
+                        all_results.extend(res)
                 except Exception:
                     pass
 
-        return results[: limit * 2]
+        return all_results

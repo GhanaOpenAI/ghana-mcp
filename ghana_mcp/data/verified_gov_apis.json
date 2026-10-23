@@ -1,0 +1,1150 @@
+[
+  {
+    "name": "Asante Akim North Municipal Assembly",
+    "base_url": "https://aanda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://aanda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://aanda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Abuakwa North District Assembly",
+    "base_url": "https://abuakwanma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://abuakwanma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://abuakwanma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Adentan Municipal Assembly",
+    "base_url": "http://adma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://adma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://adma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Afadzato South District Assembly",
+    "base_url": "http://www.afsda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://www.afsda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.afsda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ahanta West Municipal Assembly",
+    "base_url": "https://ahantawest.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://ahantawest.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ahantawest.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Allied Health Professions Council of Ghana",
+    "base_url": "https://www.ahpc.gov.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.ahpc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ahpc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Akatsi North District Assembly",
+    "base_url": "http://akatsinorth.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://akatsinorth.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://akatsinorth.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Afigya Kwabre South District Assembly",
+    "base_url": "http://aksda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://aksda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://aksda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Amansie Central District Assembly",
+    "base_url": "https://amansiecentral.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://amansiecentral.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://amansiecentral.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ashaiman Municipal Assembly",
+    "base_url": "http://www.ashma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://www.ashma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.ashma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Abuakwa South Municipal Assembly",
+    "base_url": "http://asma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://asma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://asma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Asutifi South District Assembly",
+    "base_url": "http://asutifisouth.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://asutifisouth.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://asutifisouth.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Atiwa East District Assembly",
+    "base_url": "https://atiwaeast.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://atiwaeast.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://atiwaeast.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Atwima Mponua District Assembly",
+    "base_url": "https://atmda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://atmda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://atmda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ayensuano District Assembly",
+    "base_url": "http://ayensuanoda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://ayensuanoda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://ayensuanoda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Bibiani-anhwiaso-bekwai Municipal Assembly",
+    "base_url": "https://babma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://babma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://babma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Banda District Assembly",
+    "base_url": "http://www.banda-da.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://www.banda-da.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.banda-da.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Bole District Assembly",
+    "base_url": "https://bda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://bda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://bda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Biakoye District Assembly",
+    "base_url": "http://biakoye.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://biakoye.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://biakoye.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Commission for Technical and Vocational Education and Training (CTVET)",
+    "base_url": "https://ctvet.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://ctvet.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ctvet.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Daffiama Bussie Issa District Assembly",
+    "base_url": "https://dbida.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://dbida.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://dbida.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Dormaa Central Municipal Assembly",
+    "base_url": "http://dcma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://dcma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://dcma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Department of Factories Inspectorate",
+    "base_url": "https://dfi.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://dfi.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://dfi.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Akyemansa District Assembly",
+    "base_url": "http://www.easternregion.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://www.easternregion.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.easternregion.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Lower Manya Krobo Municipal Assembly",
+    "base_url": "https://www.easternregion.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://www.easternregion.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.easternregion.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ellembelle District Assembly",
+    "base_url": "https://eda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://eda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://eda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Energy",
+    "base_url": "http://www.energymin.gov.gh",
+    "category": "Energy, Petroleum & Utilities",
+    "posts_api": "http://www.energymin.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.energymin.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Electrical and Electronic Waste Management Fund",
+    "base_url": "https://www.ewastefund.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://www.ewastefund.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ewastefund.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Food and Drugs Authority",
+    "base_url": "https://fdaghana.gov.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://fdaghana.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://fdaghana.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Gaming Commission of Ghana",
+    "base_url": "http://gamingcommission.gov.gh",
+    "category": "Security, Defence & Emergency",
+    "posts_api": "http://gamingcommission.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://gamingcommission.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ridge Regional Hospital",
+    "base_url": "https://garh.gov.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://garh.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://garh.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Enterprises Agency",
+    "base_url": "https://gea.gov.gh",
+    "category": "Trade, Commerce & Enterprise",
+    "posts_api": "https://gea.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gea.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Free Zones Authority",
+    "base_url": "https://gfza.gov.gh",
+    "category": "Trade, Commerce & Enterprise",
+    "posts_api": "https://gfza.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gfza.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Geological Survey Authority",
+    "base_url": "https://www.ggsa.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://www.ggsa.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ggsa.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Commission on Culture",
+    "base_url": "https://ghanaculture.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://ghanaculture.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ghanaculture.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Science Association",
+    "base_url": "https://www.ghanascience.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.ghanascience.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ghanascience.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Immigration Service",
+    "base_url": "http://www.gis.gov.gh",
+    "category": "Security, Defence & Emergency",
+    "posts_api": "http://www.gis.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.gis.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana National Museums",
+    "base_url": "https://gmmb.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://gmmb.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gmmb.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana National Fire Service (GNFS)",
+    "base_url": "https://gnfs.gov.gh",
+    "category": "Security, Defence & Emergency",
+    "posts_api": "https://gnfs.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gnfs.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Gomoa West District Assembly",
+    "base_url": "http://gomoawda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://gomoawda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://gomoawda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Revenue Authority",
+    "base_url": "http://www.gra.gov.gh",
+    "category": "Finance, Revenue & Economy",
+    "posts_api": "http://www.gra.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.gra.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Standards Authority (GSA)",
+    "base_url": "https://www.gsa.gov.gh",
+    "category": "Trade, Commerce & Enterprise",
+    "posts_api": "https://www.gsa.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.gsa.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Technical and Vocational Education and Training Service (gtvets)",
+    "base_url": "https://www.gtvets.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.gtvets.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.gtvets.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Gushegu Municipal Assembly",
+    "base_url": "https://gusheguma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://gusheguma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gusheguma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Health Facilities Regulatory Agency (HeFRA)",
+    "base_url": "http://hefra.gov.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "http://hefra.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://hefra.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Hohoe Municipal Assembly",
+    "base_url": "http://hhma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://hhma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://hhma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Hydrological Authority",
+    "base_url": "https://hydro.gov.gh",
+    "category": "Transport & Infrastructure",
+    "posts_api": "https://hydro.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://hydro.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Information Services Department",
+    "base_url": "https://isd.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://isd.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://isd.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Jomoro Municipal Assembly",
+    "base_url": "http://jma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://jma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://jma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Juaboso District Assembly",
+    "base_url": "https://www.juada.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://www.juada.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.juada.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Juaben Municipal Assembly",
+    "base_url": "http://juma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://juma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://juma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kadjebi District Assembly",
+    "base_url": "http://kada.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://kada.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://kada.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Komenda-edina-eguafo-abirem Municipal Assembly",
+    "base_url": "https://keeama.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://keeama.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://keeama.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kwabre East District Assembly",
+    "base_url": "https://kema.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://kema.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://kema.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Keta  Municipal Assembly",
+    "base_url": "https://ketama.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://ketama.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ketama.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ketu South Municipal Assembly",
+    "base_url": "http://ketusouth.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://ketusouth.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://ketusouth.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kpone Katamanso Municipal Assembly",
+    "base_url": "http://kkma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://kkma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://kkma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kassena Nankana West District Assembly",
+    "base_url": "http://knwda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://knwda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://knwda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kpando Municipal Assembly",
+    "base_url": "http://kpma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://kpma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://kpma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kintampo South District Assembly",
+    "base_url": "https://ksda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://ksda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ksda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Legal Aid Commission",
+    "base_url": "https://www.lac.gov.gh",
+    "category": "Judiciary & Legal Services",
+    "posts_api": "https://www.lac.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.lac.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "La Nkwantanan Municipal Assembly",
+    "base_url": "https://lanmma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://lanmma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://lanmma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Lands Commission",
+    "base_url": "http://www.lc.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "http://www.lc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.lc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ledzokuku Municipal Assembly",
+    "base_url": "http://lekma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://lekma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://lekma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Land Use And Spatial Planning Authority (luspa)",
+    "base_url": "https://luspa.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://luspa.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://luspa.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Foreign Affairs and Regional Integration",
+    "base_url": "https://mfa.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://mfa.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://mfa.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Mfantseman Municipal Assembly",
+    "base_url": "https://www.mfantsemanma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://www.mfantsemanma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.mfantsemanma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Minerals Income Investment Fund",
+    "base_url": "http://www.miif.gov.gh",
+    "category": "Finance, Revenue & Economy",
+    "posts_api": "http://www.miif.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.miif.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Minerals Commission Ghana",
+    "base_url": "http://www.mincom.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "http://www.mincom.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.mincom.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Lands and Natural Resources",
+    "base_url": "http://mlnr.gov.gh",
+    "category": "Ministry (Central Government Portfolio)",
+    "posts_api": "http://mlnr.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://mlnr.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Boundary Commission",
+    "base_url": "https://mlnr.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://mlnr.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://mlnr.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Defense",
+    "base_url": "http://mod.gov.gh",
+    "category": "Ministry (Central Government Portfolio)",
+    "posts_api": "http://mod.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://mod.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Navy",
+    "base_url": "https://mod.gov.gh",
+    "category": "Security, Defence & Emergency",
+    "posts_api": "https://mod.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://mod.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Education",
+    "base_url": "http://moe.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "http://moe.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://moe.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Akrokerri College of Education",
+    "base_url": "https://moe.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://moe.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://moe.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Mortuaries and Funeral Facilities Agency",
+    "base_url": "https://moffa.gov.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://moffa.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://moffa.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Gender, Children and Social Protection",
+    "base_url": "https://www.mogcsp.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.mogcsp.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.mogcsp.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Hotel, Catering And Tourism Training Institute",
+    "base_url": "http://www.motac.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "http://www.motac.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.motac.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Roads and Highways",
+    "base_url": "http://www.mrh.gov.gh",
+    "category": "Transport & Infrastructure",
+    "posts_api": "http://www.mrh.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.mrh.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Department of Urban Roads",
+    "base_url": "https://mrh.gov.gh",
+    "category": "Transport & Infrastructure",
+    "posts_api": "https://mrh.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://mrh.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ministry of Roads and Highways",
+    "base_url": "https://www.mrh.gov.gh",
+    "category": "Ministry (Central Government Portfolio)",
+    "posts_api": "https://www.mrh.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.mrh.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Theatre of Ghana",
+    "base_url": "https://www.nationaltheatre.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://www.nationaltheatre.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.nationaltheatre.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Narcotics Control Commission",
+    "base_url": "https://www.ncc.gov.gh",
+    "category": "Security, Defence & Emergency",
+    "posts_api": "https://www.ncc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ncc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Nzema East Municipal Assembly",
+    "base_url": "https://nema.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://nema.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://nema.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "East Mamprusi Municipal Assembly",
+    "base_url": "https://nercc.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://nercc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://nercc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Identification Authority, Head Office",
+    "base_url": "https://nia.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://nia.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://nia.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "New Juaben North Municipal Municipal Assembly",
+    "base_url": "http://njnma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://njnma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://njnma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "New Juaben North Municipal Assembly",
+    "base_url": "https://njnma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://njnma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://njnma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Nkoranza South District Assembly",
+    "base_url": "https://nksma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://nksma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://nksma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Teaching Council",
+    "base_url": "https://ntc.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://ntc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ntc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Office of Administrator of Stool Lands Weija",
+    "base_url": "https://oasl.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://oasl.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://oasl.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Office of the Administrator of Stool Lands",
+    "base_url": "https://www.oasl.gov.gh",
+    "category": "Lands, Agriculture & Natural Resources",
+    "posts_api": "https://www.oasl.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.oasl.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Obuasi Municipal Assembly",
+    "base_url": "http://oeda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://oeda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://oeda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Offinso Municipal Assembly",
+    "base_url": "https://ofma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://ofma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ofma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Government Secretarial School, OHCS",
+    "base_url": "https://www.ohcs.gov.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.ohcs.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ohcs.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Okere District Assembly",
+    "base_url": "https://okda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://okda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://okda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Office of the Registrar of Companies (orc)",
+    "base_url": "https://orc.gov.gh",
+    "category": "Judiciary & Legal Services",
+    "posts_api": "https://orc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://orc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Postal and Courier Services Regulatory Commission (pcsrc)",
+    "base_url": "https://www.pcsrc.gov.gh",
+    "category": "Communications, Media & Digital Services",
+    "posts_api": "https://www.pcsrc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.pcsrc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Office of the Chief of Staff",
+    "base_url": "https://presidency.gov.gh",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://presidency.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://presidency.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Public Services Commission",
+    "base_url": "https://psc.gov.gh",
+    "category": "Finance, Revenue & Economy",
+    "posts_api": "https://psc.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://psc.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Public Servants Housing Loans Scheme Board",
+    "base_url": "https://pshlsb.gov.gh",
+    "category": "Transport & Infrastructure",
+    "posts_api": "https://pshlsb.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://pshlsb.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Public Works Department",
+    "base_url": "https://www.pwd.gov.gh",
+    "category": "Transport & Infrastructure",
+    "posts_api": "https://www.pwd.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.pwd.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "South Dayi District Assembly",
+    "base_url": "http://www.sdda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://www.sdda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.sdda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Sekyere East District Assembly",
+    "base_url": "http://seda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://seda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://seda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Grains and Legumes Development Board",
+    "base_url": "https://siga.gov.gh",
+    "category": "Finance, Revenue & Economy",
+    "posts_api": "https://siga.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://siga.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "South Tongu District Assembly",
+    "base_url": "http://stda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://stda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://stda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Talensi District Assembly",
+    "base_url": "http://talda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://talda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://talda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Tamale  Metropolitan Assembly",
+    "base_url": "https://tamalemetro.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://tamalemetro.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://tamalemetro.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Techiman Municipal Assembly",
+    "base_url": "https://tecma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://tecma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://tecma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Techiman North District Assembly",
+    "base_url": "https://tenda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://tenda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://tenda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Twifo Hemang Lower Denkyira District Assembly",
+    "base_url": "https://thldda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://thldda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://thldda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Tema Metropolitan Assembly",
+    "base_url": "http://tma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://tma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://tma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Upper West Akim District Assembly",
+    "base_url": "http://uwada.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://uwada.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://uwada.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "VALCO TRUST FUND",
+    "base_url": "https://valcotrustfund.gov.gh",
+    "category": "Energy, Petroleum & Utilities",
+    "posts_api": "https://valcotrustfund.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://valcotrustfund.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Wassa East District Assembly",
+    "base_url": "https://weda.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://weda.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://weda.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "West Mamprusi Municipal Assembly",
+    "base_url": "https://wmma.gov.gh",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://wmma.gov.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://wmma.gov.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Accra Psychiatric Hospital",
+    "base_url": "https://accrapsychiatrichospital.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://accrapsychiatrichospital.org/wp-json/wp/v2/posts",
+    "pages_api": "https://accrapsychiatrichospital.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ada College of Education",
+    "base_url": "https://adacoe.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://adacoe.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://adacoe.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Presbyterian PHC , Agogo, Ashanti-Akim",
+    "base_url": "https://agogopresbyhospital.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://agogopresbyhospital.org/wp-json/wp/v2/posts",
+    "pages_api": "https://agogopresbyhospital.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Accra Technical University",
+    "base_url": "https://www.atu.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.atu.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.atu.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Bodi District Assembly",
+    "base_url": "https://bodidistrictassembly.com",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://bodidistrictassembly.com/wp-json/wp/v2/posts",
+    "pages_api": "https://bodidistrictassembly.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Bolgatanga Technical University",
+    "base_url": "https://www.bolgatu.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.bolgatu.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.bolgatu.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Cape Coast Teaching Hospital",
+    "base_url": "http://www.ccthghana.org",
+    "category": "Health & Medical Services",
+    "posts_api": "http://www.ccthghana.org/wp-json/wp/v2/posts",
+    "pages_api": "http://www.ccthghana.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Dambai College of Education",
+    "base_url": "https://www.dace.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.dace.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.dace.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Data Protection Commission (DPC)",
+    "base_url": "https://www.dataprotection.org.gh",
+    "category": "Communications, Media & Digital Services",
+    "posts_api": "https://www.dataprotection.org.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.dataprotection.org.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ent School Kumasi",
+    "base_url": "http://entnursingsch.edu.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "http://entnursingsch.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://entnursingsch.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Eastern Regional Hospital",
+    "base_url": "https://erhk.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://erhk.org/wp-json/wp/v2/posts",
+    "pages_api": "https://erhk.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Fanteakwa North District Assembly",
+    "base_url": "https://fanteakwanorthdistrictassembly.com",
+    "category": "Local Government (MMDA)",
+    "posts_api": "https://fanteakwanorthdistrictassembly.com/wp-json/wp/v2/posts",
+    "pages_api": "https://fanteakwanorthdistrictassembly.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "St Francis College of Education",
+    "base_url": "https://franco.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://franco.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://franco.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana College of Nurses and Midwives",
+    "base_url": "https://www.gcnm.edu.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.gcnm.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.gcnm.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana College of Pharmacists",
+    "base_url": "https://www.gcpharm.edu.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.gcpharm.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.gcpharm.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Export Promotion Authority (gepa)",
+    "base_url": "https://www.gepaghana.org",
+    "category": "Transport & Infrastructure",
+    "posts_api": "https://www.gepaghana.org/wp-json/wp/v2/posts",
+    "pages_api": "https://www.gepaghana.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "O.l.A. College of Education",
+    "base_url": "https://ghanadmission.com",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://ghanadmission.com/wp-json/wp/v2/posts",
+    "pages_api": "https://ghanadmission.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Heavy Equipment Limited",
+    "base_url": "https://ghelghana.com",
+    "category": "Trade, Commerce & Enterprise",
+    "posts_api": "https://ghelghana.com/wp-json/wp/v2/posts",
+    "pages_api": "https://ghelghana.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Interbank Payment and Settlement Systems Ghipss",
+    "base_url": "https://www.ghipss.net",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://www.ghipss.net/wp-json/wp/v2/posts",
+    "pages_api": "https://www.ghipss.net/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana News Agency",
+    "base_url": "http://gna.org.gh",
+    "category": "Communications, Media & Digital Services",
+    "posts_api": "http://gna.org.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://gna.org.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Grid Company Limited",
+    "base_url": "https://gridcogh.com",
+    "category": "Energy, Petroleum & Utilities",
+    "posts_api": "https://gridcogh.com/wp-json/wp/v2/posts",
+    "pages_api": "https://gridcogh.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Ghana Tertiary Education Commission",
+    "base_url": "https://gtec.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://gtec.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://gtec.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Holy Family Hospital, Berekum",
+    "base_url": "https://hfhberekum.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://hfhberekum.org/wp-json/wp/v2/posts",
+    "pages_api": "https://hfhberekum.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Holy Family Nursing Training College, Techiman",
+    "base_url": "https://hfnmtc-techiman.edu.gh",
+    "category": "Health & Medical Services",
+    "posts_api": "https://hfnmtc-techiman.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://hfnmtc-techiman.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Institute of Accountancy Training",
+    "base_url": "http://www.iat.edu.gh",
+    "category": "Finance, Revenue & Economy",
+    "posts_api": "http://www.iat.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://www.iat.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kwadaso Agric College",
+    "base_url": "http://kca.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "http://kca.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://kca.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Kibi Presby College of Education",
+    "base_url": "https://kpce.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://kpce.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://kpce.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Seventh Day Adventist Hospital, Kwadaso-kumasi",
+    "base_url": "https://kwadasosdahospital.com",
+    "category": "Health & Medical Services",
+    "posts_api": "https://kwadasosdahospital.com/wp-json/wp/v2/posts",
+    "pages_api": "https://kwadasosdahospital.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Emmanuel Eye Medical Centre, East Legon",
+    "base_url": "https://www.lukemissions.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.lukemissions.org/wp-json/wp/v2/posts",
+    "pages_api": "https://www.lukemissions.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Mt merry College of Education",
+    "base_url": "http://mmce.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "http://mmce.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "http://mmce.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Holy Rosary Health Centre, Amankwakrom",
+    "base_url": "https://www.mshr.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.mshr.org/wp-json/wp/v2/posts",
+    "pages_api": "https://www.mshr.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Mercy Womens Hospital, Mankessim",
+    "base_url": "https://www.mwchospital.com",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.mwchospital.com/wp-json/wp/v2/posts",
+    "pages_api": "https://www.mwchospital.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Film And Television Institute",
+    "base_url": "https://www.nafti.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.nafti.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.nafti.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "National Symphony Orchestra",
+    "base_url": "https://www.nso.co.uk",
+    "category": "Governance, Commissions & Central Administration",
+    "posts_api": "https://www.nso.co.uk/wp-json/wp/v2/posts",
+    "pages_api": "https://www.nso.co.uk/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Our Lady of Grace Hospital, Breman-asikuma",
+    "base_url": "https://olg-hospital.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://olg-hospital.org/wp-json/wp/v2/posts",
+    "pages_api": "https://olg-hospital.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "St. John of God Hosp., Duayaw-nkwanta",
+    "base_url": "https://www.orthopedieghana.nl",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.orthopedieghana.nl/wp-json/wp/v2/posts",
+    "pages_api": "https://www.orthopedieghana.nl/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Abetifi Presby College of Education",
+    "base_url": "https://www.presbyuniversity.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.presbyuniversity.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.presbyuniversity.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "St. Dominic Hospital, Akwatia",
+    "base_url": "https://www.sdhakwatia.org",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.sdhakwatia.org/wp-json/wp/v2/posts",
+    "pages_api": "https://www.sdhakwatia.org/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "St. Louis College of Education",
+    "base_url": "https://slce.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://slce.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://slce.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Twifo Atti-morkwa District Assembly",
+    "base_url": "http://tamda.info",
+    "category": "Local Government (MMDA)",
+    "posts_api": "http://tamda.info/wp-json/wp/v2/posts",
+    "pages_api": "http://tamda.info/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Volta Star Textiles Limited",
+    "base_url": "https://textileworld.com",
+    "category": "Trade, Commerce & Enterprise",
+    "posts_api": "https://textileworld.com/wp-json/wp/v2/posts",
+    "pages_api": "https://textileworld.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Bank of Ghana Clinic",
+    "base_url": "https://thebankhospital.com",
+    "category": "Health & Medical Services",
+    "posts_api": "https://thebankhospital.com/wp-json/wp/v2/posts",
+    "pages_api": "https://thebankhospital.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Tema Trust Clinic",
+    "base_url": "https://www.thetrusthospital.com",
+    "category": "Health & Medical Services",
+    "posts_api": "https://www.thetrusthospital.com/wp-json/wp/v2/posts",
+    "pages_api": "https://www.thetrusthospital.com/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "Takoradi Technical University",
+    "base_url": "https://ttu.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://ttu.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ttu.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "S. D. Dombo University of Business and Integrated Development Studies",
+    "base_url": "https://ubids.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://ubids.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://ubids.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "University of Environment and Sustainable Development",
+    "base_url": "https://www.uesd.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.uesd.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://www.uesd.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "University of Professional Studies",
+    "base_url": "https://upsa.edu.gh",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://upsa.edu.gh/wp-json/wp/v2/posts",
+    "pages_api": "https://upsa.edu.gh/wp-json/wp/v2/pages"
+  },
+  {
+    "name": "West African Examination Council",
+    "base_url": "https://www.waecgh.org",
+    "category": "Education & Academic Institutions",
+    "posts_api": "https://www.waecgh.org/wp-json/wp/v2/posts",
+    "pages_api": "https://www.waecgh.org/wp-json/wp/v2/pages"
+  }
+]

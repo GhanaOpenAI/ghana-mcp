@@ -32,12 +32,12 @@ def test_nlp_noun_chunk_cleaning():
 
 
 def test_public_services_directory():
-    """Verify lookup in the bundled 1,862 Ghana agencies directory."""
+    """Verify live content search on verified Ghana public services portals."""
     provider = PublicServicesProvider()
-    results = provider.search(["revenue", "taxes"], limit=5)
+    results = provider.search(["tax", "vat"], limit=5)
     assert len(results) > 0
-    names = [r.title for r in results]
-    assert any("Revenue" in n or "GRA" in n for n in names)
+    assert any("gra.gov.gh" in r.url or "Revenue" in r.source for r in results)
+    assert any(r.url.startswith("http") for r in results)
 
 
 def test_execute_search_end_to_end():
