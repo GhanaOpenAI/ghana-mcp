@@ -1,48 +1,47 @@
-# Ghana Search: National Information Retrieval Engine 🇬🇭
+<p align="center">
+  <img src="logo/Ghana%20Search%20logo@1x.png" width="360" alt="Ghana Search Logo">
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Demo-Ghana%20Search-yellow)](https://huggingface.co/spaces/ghanaopenai/ghana-mcp-demo)
-[![Organization](https://img.shields.io/badge/Developed%20by-Ghana%20Open%20AI-gold)](https://ghanaopenai.org)
-[![Protocol: MCP](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%202.x-blue)](https://modelcontextprotocol.io/)
+# Ghana Search: National Information Retrieval Engine
 
-A high-performance **Model Context Protocol (MCP)** server and national information retrieval engine that connects Large Language Model (LLM) providers (Claude, Cursor, OpenAI, ChatGPT, custom agents) directly to verified **local Ghanaian digital sources**: real-time news outlets, academic research repositories, 164+ public service portals, court judgments (GhaLII), parliamentary records, and location-tailored Wikipedia background.
-
----
-
-## 🏛️ Organization
-
-Developed and maintained by **[Ghana Open AI](https://github.com/GhanaOpenAI)** (`https://ghanaopenai.org`).
+A high-performance Model Context Protocol (MCP) server and national information retrieval engine that connects Large Language Model (LLM) agents (Claude, Cursor, LangChain, custom applications) directly to verified local Ghanaian digital sources: real-time news outlets, academic research repositories, 164 verified government portals, Supreme Court judgments (GhaLII), parliamentary records, and location-tailored Wikipedia background.
 
 ---
 
-## 🌟 Key Architecture & Capabilities
+## Organization
+
+Developed and maintained by **[Ghana Open AI](https://github.com/GhanaOpenAI)** ([https://ghanaopenai.org](https://ghanaopenai.org)).
+
+---
+
+## Key Architecture and Capabilities
 
 1. **Free-Form Text Input (No Rigid Keywords Required)**:
-   - LLMs simply provide natural language text or user questions.
-   - Powered by **spaCy (`en_core_web_sm`)**, the server automatically extracts and cleans **core noun chunks**, stripping extraneous adjectives, determiners/articles, pronouns, adverbs, and possessives.
-   - Handles **singular and plural inflection variants** (e.g. `tax`/`taxes`, `battery`/`batteries`, `service`/`services`, `minister`/`ministers`) to guarantee high search recall across local databases.
+   - LLMs provide natural language text or user questions.
+   - Powered by spaCy (`en_core_web_sm`), the server extracts and cleans core noun chunks by removing determiners, articles, pronouns, adverbs, and possessives.
+   - Handles singular and plural inflection variants (e.g. `tax`/`taxes`, `battery`/`batteries`, `service`/`services`, `minister`/`ministers`) to guarantee high search recall across local databases.
 
-2. **Default 50 Most Relevant Results (Scalable to Max Retrieved)**:
-   - Defaults to returning the **top 50** most relevant items.
-   - Users can specify any custom `top_k` (e.g. 10, 25, 75, 100), with the upper bound being the full volume of candidates retrieved for those phrases.
+2. **Default 50 Most Relevant Results (Scalable to Full Retrieved Pool)**:
+   - Defaults to returning the top 50 most relevant items.
+   - Users can specify any custom `top_k` (up to 500), with the upper bound being the full volume of candidates retrieved for those phrases.
 
 3. **Hybrid Neural Reranking Pipeline**:
-   - **Stage 1 (EmbeddingGemma-2)**: High-throughput dense vector embeddings narrow candidates down by cosine similarity.
-   - **Stage 2 (BGE-Reranker-v2-M3)**: Full cross-encoder attention computes exact pairwise relevance scores.
-   - **Sub-Millisecond Fallback**: Instant BM25 + noun-overlap lexical scoring ensures zero downtime and sub-millisecond response even if neural inference engines reboot.
+   - Stage 1 (EmbeddingGemma-2): High-throughput dense vector embeddings narrow candidates down by cosine similarity.
+   - Stage 2 (BGE-Reranker-v2-M3): Full cross-encoder attention computes exact pairwise relevance scores.
+   - Sub-Millisecond Fallback: BM25 and noun-overlap lexical scoring ensures zero downtime and sub-millisecond response even during model reboots.
 
 4. **Embedded SQLite WAL Analytics Engine**:
    - Uses SQLite in WAL (Write-Ahead Logging) mode with background asynchronous queues.
-   - Zero-overhead tracking of query volume, latency distribution, trending Ghanaian search terms, and client types (MCP vs. REST vs. Web).
-   - Viewable live via `/api/analytics/stats` or the built-in Web Analytics tab.
+   - Zero-overhead tracking of query volume, latency distribution, trending Ghanaian search terms, and client types.
+   - Accessible via `/api/analytics/stats` and downloadable as continuous evaluation dataset (`.jsonl`).
 
-5. **Cloudflare Tunnel Security & Anti-Abuse**:
-   - Deployed on our NVIDIA H200 GPU instance and routed via **Cloudflare Tunnel** (`mcp.ghanaopenai.org`).
+5. **Cloudflare Tunnel Security**:
+   - Deployed on our NVIDIA H200 GPU instance and routed via Cloudflare Tunnel (`search.ghanaopenai.org`).
    - Enterprise-grade DDoS protection, WAF rate-limiting, and Bot Management to prevent scraper abuse on public endpoints.
 
 ---
 
-## 🌐 Supported Ghanaian Sources & Verified APIs
+## Supported Ghanaian Sources and Verified APIs
 
 All included websites have been individually probed and verified for public programmatic search API access:
 
@@ -50,44 +49,45 @@ All included websites have been individually probed and verified for public prog
 
 | Outlet | Platform / Architecture | API Endpoint | Avg Latency |
 | :--- | :--- | :--- | :---: |
-| **B&FT Online** | Next.js + Payload CMS | `GET https://thebftonline.com/api/search?query={q}` | **~0.52s** |
-| **Ghana Business News** | WordPress REST API | `GET https://www.ghanabusinessnews.com/wp-json/wp/v2/posts?search={q}` | **~0.31s** |
-| **3News (TV3)** | Next.js App Router | `GET https://3news.com/api/search?q={q}` | **~1.17s** |
-| **Yen.com.gh** | AJAX Search Engine | `POST/GET https://yen.com.gh/ajax/search/?query={q}` | **~1.52s** |
-| **The Chronicle Ghana** | WordPress REST API | `GET https://thechronicle.com.gh/wp-json/wp/v2/posts?search={q}` | **~1.80s** |
-| **Citi Newsroom** | WordPress REST API | `GET https://citinewsroom.com/wp-json/wp/v2/posts?search={q}` | **~2.80s** |
-| **Ghana News Agency (GNA)** | WordPress REST API | `GET https://gna.org.gh/wp-json/wp/v2/posts?search={q}` | **~4.00s** |
-| **Starr FM Online** | WordPress REST API | `GET https://starrfm.com.gh/wp-json/wp/v2/posts?search={q}` | **~3.80s** |
+| B&FT Online | Next.js + Payload CMS | `GET https://thebftonline.com/api/search?query={q}` | ~0.52s |
+| Ghana Business News | WordPress REST API | `GET https://www.ghanabusinessnews.com/wp-json/wp/v2/posts?search={q}` | ~0.31s |
+| 3News (TV3) | Next.js App Router | `GET https://3news.com/api/search?q={q}` | ~1.17s |
+| Yen.com.gh | AJAX Search Engine | `POST/GET https://yen.com.gh/ajax/search/?query={q}` | ~1.52s |
+| The Chronicle Ghana | WordPress REST API | `GET https://thechronicle.com.gh/wp-json/wp/v2/posts?search={q}` | ~1.80s |
+| Citi Newsroom | WordPress REST API | `GET https://citinewsroom.com/wp-json/wp/v2/posts?search={q}` | ~2.80s |
+| Ghana News Agency (GNA) | WordPress REST API | `GET https://gna.org.gh/wp-json/wp/v2/posts?search={q}` | ~4.00s |
+| Starr FM Online | WordPress REST API | `GET https://starrfm.com.gh/wp-json/wp/v2/posts?search={q}` | ~3.80s |
 
-> *Note on Gated Outlets*: Portals protected by Cloudflare Managed Challenges or crypto anti-bot verification (GhanaWeb, Graphic Online, Modern Ghana, Asaase Radio) have been intentionally omitted from direct automated queries.
+> Note: Portals protected by Cloudflare Managed Challenges or crypto anti-bot verification (GhanaWeb, Graphic Online, Modern Ghana, Asaase Radio) are omitted from direct automated queries.
 
-### 2. University Academic Research & Theses (DSpace 7 REST APIs)
+### 2. University Academic Research and Theses (DSpace 7 REST APIs)
 
-Queries official institutional repositories for full thesis abstracts, academic departments, author lists, and persistent handle URIs:
-* **Kwame Nkrumah University of Science and Technology (KNUST)**: `https://ir.knust.edu.gh/server/api/discover/search/objects`
-* **University of Ghana (UGSpace / Balme Library)**: `https://ugspace.ug.edu.gh/server/api/discover/search/objects`
-* **University of Cape Coast (UCC ERL)**: `https://erl.ucc.edu.gh/server/api/discover/search/objects`
-* Local indexed corpus fallback from the **Ghana Research Corpus** (KNUST, UCC, UEW, Ashesi).
+Queries official institutional repositories for full thesis abstracts, academic departments, author lists, and direct downloadable PDF URLs:
+- Kwame Nkrumah University of Science and Technology (KNUST): `https://ir.knust.edu.gh/server/api/discover/search/objects`
+- University of Ghana (UGSpace / Balme Library): `https://ugspace.ug.edu.gh/server/api/discover/search/objects`
+- University of Cape Coast (UCC ERL): `https://erl.ucc.edu.gh/server/api/discover/search/objects`
+- Parliament of Ghana Repository: `https://repository.parliament.gh/server/api/discover/search/objects`
+- Local indexed corpus fallback from the Ghana Research Corpus (KNUST, UCC, UEW, Ashesi).
 
-### 3. Public Services & Government Institutions Directory
+### 3. Public Services, Courts, and Government Institutions
 
-* Bundled directory of **1,862 verified Ghanaian public sector entities**: Ministries, Departments, Agencies (MDAs), and Metropolitan, Municipal, and District Assemblies (MMDAs).
-* Provides agency aliases, parent ministries, official `.gov.gh` URLs, physical addresses, and GhanaPost GPS digital addresses.
-* Live REST querying for active government service portals including the **Ghana Revenue Authority (GRA)** and **Ghana Standards Authority (GSA)**.
+- 164 verified Ghanaian public sector portals with active WordPress REST content search endpoints (GRA, GSA, FDA, MLNR, MIIF, Lands Commission, assemblies).
+- Ghana Legal Information Institute (GhaLII): Search API for Supreme Court, Court of Appeal, High Court judgments, Acts of Parliament, and Decrees with direct download links.
+- GhanaDistricts: Assembly news, projects, and reports across all 261 Ghanaian district assemblies.
 
 ### 4. Wikipedia (Ghana Context)
 
-* Uses MediaWiki CirrusSearch scoped to Ghana and MediaWiki Geosearch centered on Accra (`5.6037° N, 0.1870° W`) for background context, constitutional records, and landmark locations.
+- Uses MediaWiki CirrusSearch scoped to Ghana and MediaWiki Geosearch centered on Accra (5.6037 N, 0.1870 W) for background context, constitutional records, and landmark locations.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
 ```bash
-git clone https://github.com/GhanaOpenAI/ghana-mcp.git
-cd ghana-mcp
+git clone https://github.com/GhanaOpenAI/ghana-search.git
+cd ghana-search
 
 # Create virtual environment
 python3 -m venv .venv
@@ -109,36 +109,37 @@ python3 -m ghana_mcp.server --stdio
 ```
 
 Server endpoints:
-* **Web Demo UI**: `http://localhost:8080/`
-* **REST Search API**: `http://localhost:8080/api/search`
-* **MCP SSE Endpoint**: `http://localhost:8080/mcp/sse`
-* **Analytics Stats**: `http://localhost:8080/api/analytics/stats`
-* **Health Check**: `http://localhost:8080/api/health`
+- Web Demo UI: `http://localhost:8000/`
+- REST Search API: `http://localhost:8000/api/search`
+- MCP SSE Endpoint: `http://localhost:8000/mcp/sse`
+- Analytics Stats: `http://localhost:8000/api/analytics/stats`
+- Dataset Export: `http://localhost:8000/api/analytics/dataset?format=jsonl`
+- Health Check: `http://localhost:8000/api/health`
 
 ---
 
-## 🔌 Connecting to LLM Clients (MCP Configuration)
+## Connecting to LLM Clients (MCP Configuration)
 
-### 1. Claude Desktop
+### 1. Claude Desktop (Local Subprocess / stdio)
 
-Add to your `claude_desktop_config.json` (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS or `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "ghana-search": {
-      "command": "/path/to/ghana-mcp/.venv/bin/python3",
+      "command": "/path/to/ghana-search/.venv/bin/python3",
       "args": ["-m", "ghana_mcp.server", "--stdio"]
     }
   }
 }
 ```
 
-### 2. Remote Cloudflare Tunnel Endpoint (No local install needed)
+### 2. Remote Cloudflare Endpoint (Production)
 
 When querying via remote SSE:
-* **URL**: `https://search.ghanaopenai.org/mcp/sse`
-* **Transport**: `sse`
+- URL: `https://search.ghanaopenai.org/mcp/sse`
+- Transport: `sse`
 
 ### 3. REST API Example (cURL / Python / Node)
 
@@ -153,23 +154,23 @@ curl -X POST https://search.ghanaopenai.org/api/search \
 
 ---
 
-## 🛠️ MCP Tools Exposed
+## MCP Tools Exposed
 
-* `ghana_search(text, top_k=50, categories=None, rerank=True)`: Unified multi-source search across all verified Ghanaian domains with NLP noun extraction and hybrid reranking.
-* `ghana_news_search(text, top_k=50)`: Scoped live search across top Ghanaian online news platforms.
-* `ghana_academic_search(text, top_k=50)`: Scoped search for university thesis abstracts from KNUST, UG, and UCC.
-* `ghana_public_services_search(text, top_k=50)`: Scoped search across 164 verified Ghanaian public sector institutions and portals.
-* `ghana_wikipedia_search(text, top_k=50)`: Scoped search for Ghana-focused encyclopedic articles.
-
----
-
-## 📊 Live Web Demo & Hugging Face Space
-
-Experience the interactive web UI, test search phrases, and view live usage analytics:
-👉 **[https://huggingface.co/spaces/ghanaopenai/ghana-mcp-demo](https://huggingface.co/spaces/ghanaopenai/ghana-mcp-demo)**
+- `ghana_search(text, top_k=50, categories=None, rerank=True)`: Unified multi-source search across all verified Ghanaian domains with NLP noun extraction and hybrid reranking.
+- `ghana_news_search(text, top_k=50)`: Scoped live search across top Ghanaian online news platforms.
+- `ghana_academic_search(text, top_k=50)`: Scoped search for university thesis abstracts from KNUST, UG, UCC, and Parliament with direct PDF resolution.
+- `ghana_public_services_search(text, top_k=50)`: Scoped search across 164 verified Ghanaian public sector institutions and legal portals (GhaLII, GhanaDistricts).
+- `ghana_wikipedia_search(text, top_k=50)`: Scoped search for Ghana-focused encyclopedic articles.
 
 ---
 
-## 📜 License
+## Live Web Portal and Hugging Face Space
+
+- Production Web Engine: [https://search.ghanaopenai.org](https://search.ghanaopenai.org)
+- Hugging Face Space: [https://huggingface.co/spaces/ghanaopenai/ghana-search](https://huggingface.co/spaces/ghanaopenai/ghana-search)
+
+---
+
+## License
 
 Licensed under the [MIT License](LICENSE). Maintained by Ghana Open AI.
