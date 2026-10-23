@@ -64,11 +64,25 @@
       color: var(--text-heading);
       cursor: pointer;
     }
-    .brand-logo-img {
-      height: 120px;
-      width: auto;
-      object-fit: contain;
-      display: block;
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+    .brand-mcp {
+      background: #F6CC4F;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #e5bd3b;
     }
     .nav-actions {
       display: flex;
@@ -544,7 +558,7 @@
   <header>
     <div class="header-inner">
       <a href="#" class="brand-block" onclick="resetToHome(event)" title="Return to Home">
-        <img src="/static/images/ghana-search-logo-v2.png" alt="Ghana Search" class="brand-logo-img">
+        <span class="brand-title">GHANA <span class="brand-mcp">SEARCH</span></span>
       </a>
       <div class="nav-actions">
         <button class="nav-btn" onclick="openEndpointsModal()">API Endpoints</button>
