@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghana MCP | National Document Search</title>
+  <title>Ghana MCP | National Information Retrieval Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,11 +20,6 @@
       --text-muted: #64748b;
       --primary: #F6CC4F;
       --primary-hover: #e5bd3b;
-      --primary-subtle: #fefce8;
-      --primary-border: #fef08a;
-      --pdf-color: #b91c1c;
-      --pdf-bg: #fef2f2;
-      --pdf-border: #fecaca;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --font-mono: 'Source Code Pro', monospace;
     }
@@ -42,7 +37,7 @@
       flex-direction: column;
     }
 
-    /* Solid Minimal Header */
+    /* Minimalist Header with Clickable Logo */
     header {
       background: #ffffff;
       border-bottom: 1px solid var(--surface-border);
@@ -64,8 +59,8 @@
       gap: 12px;
       text-decoration: none;
       color: var(--text-heading);
+      cursor: pointer;
     }
-    /* Solid Text Logo with #F6CC4F Background for MCP */
     .brand-title {
       font-size: 20px;
       font-weight: 800;
@@ -114,14 +109,14 @@
       max-width: 900px;
       width: 100%;
       margin: 0 auto;
-      padding: 48px 24px 80px;
+      padding: 44px 24px 70px;
       flex: 1;
     }
 
-    /* Hero / Header Area */
+    /* Hero Area */
     .hero-area {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 30px;
     }
     .hero-h1 {
       font-size: 32px;
@@ -138,7 +133,7 @@
       line-height: 1.55;
     }
 
-    /* Solid Search Input Card */
+    /* Search Bar with #F6CC4F Button and Reset Button */
     .search-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -147,6 +142,7 @@
       box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       display: flex;
       align-items: center;
+      gap: 8px;
       margin-bottom: 14px;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
@@ -155,7 +151,7 @@
       box-shadow: 0 4px 20px rgba(246, 204, 79, 0.25);
     }
     .search-icon-wrap {
-      padding: 0 14px;
+      padding: 0 12px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -181,7 +177,7 @@
       color: #0f172a;
       border: 1px solid #e5bd3b;
       height: 46px;
-      padding: 0 24px;
+      padding: 0 22px;
       border-radius: 7px;
       font-family: inherit;
       font-size: 14px;
@@ -190,7 +186,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.12s, transform 0.1s;
+      transition: background 0.12s;
     }
     .btn-submit:hover {
       background: #e5bd3b;
@@ -199,14 +195,35 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+    .btn-reset {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--surface-border);
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s;
+    }
+    .btn-reset:hover {
+      background: var(--bg-subtle);
+      color: var(--text-heading);
+      border-color: var(--border);
+    }
 
-    /* Subtle Query Suggestions */
+    /* Suggested Topics */
     .suggested-bar {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       font-size: 13px;
     }
     .suggested-lbl {
@@ -253,7 +270,7 @@
       font-weight: 600;
     }
 
-    /* Category Navigation */
+    /* Results Summary Bar */
     .results-nav {
       display: none;
       align-items: center;
@@ -264,36 +281,20 @@
       border-bottom: 1px solid var(--surface-border);
       margin-bottom: 20px;
     }
-    .nav-chips {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .chip-btn {
-      background: #ffffff;
-      border: 1px solid var(--surface-border);
-      color: var(--text-body);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 5px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-    .chip-btn:hover {
-      background: var(--bg-subtle);
-      border-color: var(--border);
-    }
-    .chip-btn.active {
-      background: #F6CC4F;
-      border-color: #e5bd3b;
-      color: #0f172a;
-      font-weight: 700;
-    }
     .summary-metric {
-      font-size: 13px;
+      font-size: 14px;
+      color: var(--text-heading);
+      font-weight: 600;
+    }
+    .ranking-pill {
+      background: var(--bg-subtle);
+      border: 1px solid var(--surface-border);
       color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
     }
 
     /* Structured Document Cards */
@@ -353,23 +354,39 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    .btn-pdf-download {
+
+    /* Distinct Action Buttons */
+    .btn-action {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: var(--pdf-bg);
-      border: 1px solid var(--pdf-border);
-      color: var(--pdf-color);
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 5px;
       text-decoration: none;
-      transition: background 0.1s;
+      transition: all 0.12s ease;
     }
-    .btn-pdf-download:hover {
-      background: #fee2e2;
+    /* PDF Button in Primary #F6CC4F */
+    .btn-pdf {
+      background: #F6CC4F;
+      border: 1px solid #e5bd3b;
+      color: #0f172a;
     }
+    .btn-pdf:hover {
+      background: #e5bd3b;
+    }
+    /* Non-PDF Button: View Full Article */
+    .btn-view {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .btn-view:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
     .cache-flag {
       background: #ecfdf5;
       border: 1px solid #a7f3d0;
@@ -383,6 +400,61 @@
       font-size: 12px;
       color: var(--text-muted);
       margin-left: auto;
+    }
+
+    /* Pagination Bar (10 per page) */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--surface-border);
+    }
+    .page-nav-btn {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-heading);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .page-nav-btn:hover:not(:disabled) {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+    }
+    .page-nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .page-num-btn {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      width: 34px;
+      height: 34px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-heading);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s;
+    }
+    .page-num-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+    }
+    .page-num-btn.active {
+      background: #F6CC4F;
+      border-color: #e5bd3b;
+      color: #0f172a;
+      font-weight: 700;
     }
 
     /* Modal for Endpoints */
@@ -426,11 +498,11 @@
       line-height: 1.5;
     }
 
-    /* Standard Comfortable Footer */
+    /* Standard Comfortable Footer with Logos */
     footer {
       background: #ffffff;
       border-top: 1px solid var(--surface-border);
-      padding: 44px 32px 52px;
+      padding: 40px 32px 48px;
       font-size: 13.5px;
       color: var(--text-muted);
       margin-top: auto;
@@ -447,7 +519,7 @@
     .footer-attribution {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
     }
     .attribution-label {
@@ -468,11 +540,8 @@
       color: var(--text-heading);
       font-weight: 600;
       font-size: 13.5px;
-      transition: opacity 0.15s;
     }
-    .org-link:hover {
-      opacity: 0.8;
-    }
+    .org-link:hover { opacity: 0.85; }
     .footer-logo {
       height: 28px;
       width: 28px;
@@ -481,28 +550,24 @@
       background: #ffffff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .footer-divider {
-      color: var(--border);
-    }
+    .footer-divider { color: var(--border); }
     .footer-github-link {
       color: var(--text-heading);
       text-decoration: none;
       font-weight: 600;
       font-size: 13.5px;
     }
-    .footer-github-link:hover {
-      text-decoration: underline;
-    }
+    .footer-github-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- Solid Minimal Header -->
+  <!-- Solid Minimal Header with Clickable Logo to Home -->
   <header>
     <div class="header-inner">
-      <div class="brand-block">
+      <a href="#" class="brand-block" onclick="resetToHome(event)" title="Return to Home">
         <span class="brand-title">GHANA <span class="brand-mcp">MCP</span></span>
-      </div>
+      </a>
       <div class="nav-actions">
         <button class="nav-btn" onclick="openEndpointsModal()">API Endpoints</button>
         <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="nav-btn">GitHub Docs →</a>
@@ -514,11 +579,11 @@
   <main class="container">
     
     <div class="hero-area">
-      <h1 class="hero-h1">National Document Search</h1>
+      <h1 class="hero-h1">National Information Retrieval Engine</h1>
       <p class="hero-p">Query 164 verified government portals, university thesis repositories (KNUST/UG/UCC), Supreme Court rulings (GhaLII), and national news networks.</p>
     </div>
 
-    <!-- Solid Search Bar Card with #F6CC4F Primary Button -->
+    <!-- Solid Search Bar Card with Search and Reset Buttons -->
     <div class="search-card">
       <div class="search-icon-wrap">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -538,9 +603,13 @@
         <span>Search</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
+      <button id="reset-btn" class="btn-reset" onclick="resetToHome(event)" title="Clear and start a fresh search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>Reset</span>
+      </button>
     </div>
 
-    <!-- Suggested Topics -->
+    <!-- Clean Suggested Topics without Brackets -->
     <div class="suggested-bar">
       <span class="suggested-lbl">Suggested:</span>
       <button class="suggested-btn" onclick="applyQuery('who is the current president of ghana')">President of Ghana</button>
@@ -558,20 +627,17 @@
       <div id="telemetry-time">0.0s</div>
     </div>
 
-    <!-- Results Navigation Bar with #F6CC4F Active State -->
+    <!-- Results Summary Bar -->
     <div id="results-nav" class="results-nav">
-      <div class="nav-chips">
-        <button class="chip-btn active" onclick="setCategory('all', this)">All Documents</button>
-        <button class="chip-btn" onclick="setCategory('academic', this)">Theses & Research</button>
-        <button class="chip-btn" onclick="setCategory('public_services', this)">Government & Law</button>
-        <button class="chip-btn" onclick="setCategory('news', this)">News</button>
-        <button class="chip-btn" onclick="setCategory('wikipedia', this)">Wikipedia</button>
-      </div>
-      <div id="summary-counter" class="summary-metric">0 verified records</div>
+      <div id="summary-counter" class="summary-metric">0 records</div>
+      <div id="summary-badge" class="ranking-pill">Top 50 Neural Reranked</div>
     </div>
 
-    <!-- Results List -->
+    <!-- Results List (Paginated at 10 results per page) -->
     <div id="results-stream" class="results-list"></div>
+
+    <!-- Pagination Controls -->
+    <div id="pagination-controls" class="pagination-bar" style="display: none;"></div>
 
   </main>
 
@@ -646,14 +712,32 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
       ? window.location.origin
       : 'https://mcp.ghanaopenai.org';
 
-    let records = [];
+    let allRecords = [];
     let activeCategory = 'all';
+    let currentPage = 1;
+    const PAGE_SIZE = 10;
 
     function openEndpointsModal() {
       document.getElementById('modal-endpoints').style.display = 'flex';
     }
     function closeEndpointsModal(e) {
       document.getElementById('modal-endpoints').style.display = 'none';
+    }
+
+    function resetToHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('query-input').value = '';
+      document.getElementById('telemetry-bar').className = 'telemetry-row';
+      document.getElementById('results-nav').style.display = 'none';
+      document.getElementById('results-stream').innerHTML = '';
+      document.getElementById('pagination-controls').style.display = 'none';
+      allRecords = [];
+      activeCategory = 'all';
+      currentPage = 1;
+      document.querySelectorAll('.chip-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === 0);
+      });
+      document.getElementById('query-input').focus();
     }
 
     function applyQuery(q) {
@@ -665,23 +749,42 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
       document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCategory = cat;
+      currentPage = 1;
       renderCards();
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      renderCards();
+      document.getElementById('results-nav').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function renderCards() {
       const container = document.getElementById('results-stream');
-      const filtered = activeCategory === 'all'
-        ? records
-        : records.filter(r => r.category === activeCategory);
+      const pagControls = document.getElementById('pagination-controls');
 
-      document.getElementById('summary-counter').innerText = `${filtered.length} verified records`;
+      const totalItems = allRecords.length;
+      const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
 
-      if (filtered.length === 0) {
-        container.innerHTML = '<div style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:36px; text-align:center; color:var(--text-muted);">No records found in this category.</div>';
+      if (currentPage > totalPages) currentPage = 1;
+
+      const startIdx = (currentPage - 1) * PAGE_SIZE;
+      const endIdx = Math.min(startIdx + PAGE_SIZE, totalItems);
+      const pageRecords = allRecords.slice(startIdx, endIdx);
+
+      if (totalItems > 0) {
+        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (Total count: ${totalItems})`;
+      } else {
+        document.getElementById('summary-counter').innerText = '0 records found';
+      }
+
+      if (totalItems === 0) {
+        container.innerHTML = '<div style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:36px; text-align:center; color:var(--text-muted);">No records found for this query.</div>';
+        pagControls.style.display = 'none';
         return;
       }
 
-      container.innerHTML = filtered.map(r => {
+      container.innerHTML = pageRecords.map(r => {
         let domainTrail = r.url;
         try {
           const u = new URL(r.url);
@@ -689,9 +792,11 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
         } catch(e) {}
 
         const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
-        const pdfPill = isPdf
-          ? `<a href="${r.url}" target="_blank" class="btn-pdf-download"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Official PDF</a>`
-          : '';
+        
+        // PDF Action vs Non-PDF Action
+        const actionButton = isPdf
+          ? `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`
+          : `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
 
         const isCached = r.metadata && r.metadata.cached;
         const cacheFlag = isCached ? '<span class="cache-flag">24h Cache Hit</span>' : '';
@@ -711,12 +816,34 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
             </a>
             <div class="doc-snippet">${r.snippet || 'No summary excerpt available.'}</div>
             <div class="doc-actions">
-              ${pdfPill}
+              ${actionButton}
               ${dateTag}
             </div>
           </article>
         `;
       }).join('');
+
+      // Render Pagination Buttons
+      if (totalPages > 1) {
+        pagControls.style.display = 'flex';
+        let pageBtnsHtml = `
+          <button class="page-nav-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Previous</button>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+          pageBtnsHtml += `
+            <button class="page-num-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>
+          `;
+        }
+
+        pageBtnsHtml += `
+          <button class="page-nav-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>
+        `;
+
+        pagControls.innerHTML = pageBtnsHtml;
+      } else {
+        pagControls.style.display = 'none';
+      }
     }
 
     async function executeSearch() {
@@ -729,11 +856,13 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
       const telemetryTime = document.getElementById('telemetry-time');
       const resultsNav = document.getElementById('results-nav');
       const resultsStream = document.getElementById('results-stream');
+      const pagControls = document.getElementById('pagination-controls');
 
       btn.disabled = true;
       telemetryBar.className = 'telemetry-row active';
       telemetryMsg.innerText = 'Analyzing query with spaCy NLP and polling repositories...';
       resultsStream.innerHTML = '';
+      pagControls.style.display = 'none';
       resultsNav.style.display = 'none';
 
       const t0 = performance.now();
@@ -757,10 +886,11 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
         telemetryTime.innerText = `${elapsed}s`;
 
         const data = await res.json();
-        records = data.results || [];
+        allRecords = data.results || [];
+        currentPage = 1;
 
         const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(', ');
-        telemetryMsg.innerText = `Retrieved ${records.length} records • Terms: [${chunks || 'general'}]`;
+        telemetryMsg.innerText = `Retrieved ${allRecords.length} records • Terms: [${chunks || 'general'}]`;
 
         btn.disabled = false;
         resultsNav.style.display = 'flex';
