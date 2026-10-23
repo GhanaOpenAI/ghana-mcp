@@ -195,25 +195,24 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
-    .btn-reset {
-      background: transparent;
-      color: var(--text-muted);
+    .btn-new-search {
+      background: #ffffff;
       border: 1px solid var(--surface-border);
-      height: 46px;
-      padding: 0 16px;
-      border-radius: 7px;
+      color: var(--text-heading);
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 6px;
       font-family: inherit;
-      font-size: 13.5px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: all 0.12s;
     }
-    .btn-reset:hover {
+    .btn-new-search:hover {
       background: var(--bg-subtle);
-      color: var(--text-heading);
       border-color: var(--border);
     }
 
@@ -603,10 +602,6 @@
         <span>Search</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
-      <button id="reset-btn" class="btn-reset" onclick="resetToHome(event)" title="Clear and start a fresh search">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        <span>Reset</span>
-      </button>
     </div>
 
     <!-- Clean Suggested Topics without Brackets -->
@@ -627,10 +622,16 @@
       <div id="telemetry-time">0.0s</div>
     </div>
 
-    <!-- Results Summary Bar -->
+    <!-- Results Summary Bar with Reset / New Search Button -->
     <div id="results-nav" class="results-nav">
-      <div id="summary-counter" class="summary-metric">0 records</div>
-      <div id="summary-badge" class="ranking-pill">Top 50 Neural Reranked</div>
+      <div>
+        <span id="summary-counter" class="summary-metric">0 records</span>
+        <span id="summary-badge" class="ranking-pill" style="margin-left: 8px;">Top 50 Neural Reranked</span>
+      </div>
+      <button class="btn-new-search" onclick="resetToHome(event)" title="Clear and start a fresh search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>New Search</span>
+      </button>
     </div>
 
     <!-- Results List (Paginated at 10 results per page) -->
