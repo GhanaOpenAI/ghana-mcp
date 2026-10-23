@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo/logo.png" width="340" alt="Ghana Search Logo">
+  <img src="logo/ghana-search-logo-v2.png" width="340" alt="Ghana Search Logo">
 </p>
 
 # Ghana Search
