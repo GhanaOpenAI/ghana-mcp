@@ -66,31 +66,24 @@
       text-decoration: none;
       color: var(--text-heading);
     }
-    .ghana-flag-strip {
-      display: inline-flex;
-      height: 15px;
-      width: 24px;
-      border-radius: 2px;
-      overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.1);
-    }
-    .f-red { background: #ce1126; flex: 1; }
-    .f-gold { background: #fecb00; flex: 1; }
-    .f-green { background: #006b3f; flex: 1; }
-
+    /* Solid Text Logo */
     .brand-title {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: var(--text-heading);
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
     }
-    .brand-tag {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--bg-subtle);
-      border: 1px solid var(--surface-border);
-      padding: 2px 8px;
+    .brand-mcp {
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 7px;
       border-radius: 4px;
     }
     .nav-actions {
@@ -114,35 +107,6 @@
     .nav-btn:hover {
       background: var(--bg-subtle);
       border-color: var(--border);
-    }
-
-    /* Purpose Context Banner */
-    .context-bar {
-      background: var(--bg-subtle);
-      border-bottom: 1px solid var(--surface-border);
-      padding: 9px 32px;
-      font-size: 12.5px;
-      color: var(--text-muted);
-    }
-    .context-inner {
-      max-width: 1140px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .live-badge {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--primary);
-      background: var(--primary-subtle);
-      border: 1px solid var(--primary-border);
-      padding: 1px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
     }
 
     /* Main Container */
@@ -487,13 +451,7 @@
   <header>
     <div class="header-inner">
       <div class="brand-block">
-        <span class="ghana-flag-strip">
-          <span class="f-red"></span>
-          <span class="f-gold"></span>
-          <span class="f-green"></span>
-        </span>
-        <span class="brand-title">Ghana MCP</span>
-        <span class="brand-tag">Ghana Open AI × Ghana NLP</span>
+        <span class="brand-title">GHANA <span class="brand-mcp">MCP</span></span>
       </div>
       <div class="nav-actions">
         <button class="nav-btn" onclick="openEndpointsModal()">API Endpoints</button>
@@ -501,19 +459,6 @@
       </div>
     </div>
   </header>
-
-  <!-- Purpose Context Bar -->
-  <div class="context-bar">
-    <div class="context-inner">
-      <div>
-        <span class="live-badge">Tool Interface</span>
-        <span style="margin-left: 6px;">Ghana-MCP provides structured search APIs for LLMs (Claude, Cursor, custom agents). This interface previews live search results.</span>
-      </div>
-      <div>
-        <span>430+ Indexed Repositories • 24h SQLite WAL Cache</span>
-      </div>
-    </div>
-  </div>
 
   <!-- Main Container -->
   <main class="container">
@@ -627,7 +572,7 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
   <footer>
     <div class="footer-inner">
       <div>
-        Republic of Ghana Digital Knowledge Engine • <strong>Ghana Open AI</strong> & <strong>Ghana NLP</strong>
+        National Knowledge Engine • Supported by <strong>Ghana Open AI</strong> and <strong>Ghana NLP</strong>
       </div>
       <div>
         <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" style="color: var(--text-body); text-decoration: none; font-weight: 500;">GitHub Repository →</a>
