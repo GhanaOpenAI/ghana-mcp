@@ -3,11 +3,11 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ghana-mcp"
+name = "ghana-search"
 version = "1.0.0"
-description = "Model Context Protocol (MCP) Server for Ghanaian Local Knowledge & Web Search"
+description = "Ghana Search: National Information Retrieval Engine & Model Context Protocol (MCP) Server"
 authors = [
-    { name = "Ghana Open AI & Ghana NLP" }
+    { name = "Ghana Open AI" }
 ]
 readme = "README.md"
 requires-python = ">=3.10"

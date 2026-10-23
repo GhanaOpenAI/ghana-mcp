@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghana MCP | National Information Retrieval Engine</title>
+  <title>Ghana Search | Ghana's Information Retrieval Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
@@ -555,7 +555,7 @@
   <header>
     <div class="header-inner">
       <a href="#" class="brand-block" onclick="resetToHome(event)" title="Return to Home">
-        <span class="brand-title">GHANA <span class="brand-mcp">MCP</span></span>
+        <span class="brand-title">GHANA <span class="brand-mcp">SEARCH</span></span>
       </a>
       <div class="nav-actions">
         <button class="nav-btn" onclick="openEndpointsModal()">API Endpoints</button>
@@ -568,7 +568,7 @@
   <main class="container">
     
     <div class="hero-area">
-      <h1 class="hero-h1">National Information Retrieval Engine</h1>
+      <h1 class="hero-h1">Ghana's Information Retrieval Engine</h1>
       <p class="hero-p">Query 164 verified government portals, university thesis repositories (KNUST/UG/UCC), Supreme Court rulings (GhaLII), and national news networks.</p>
     </div>
 
@@ -657,12 +657,12 @@
 
       <strong style="font-size: 13px;">2. Remote SSE Endpoint (Production)</strong>
       <div class="code-view">
-https://mcp.ghanaopenai.org/mcp/sse
+https://search.ghanaopenai.org/mcp/sse
       </div>
 
       <strong style="font-size: 13px;">3. Direct REST Search API</strong>
       <div class="code-view">
-curl -X POST https://mcp.ghanaopenai.org/api/search \
+curl -X POST https://search.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
   -d '{"text": "who is the current president of ghana", "top_k": 50}'
       </div>
@@ -675,20 +675,15 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
     </div>
   </div>
 
-  <!-- Standard Comfortable Footer with Ghana Open AI and Ghana NLP Logos -->
+  <!-- Standard Comfortable Footer with Ghana Open AI Logo -->
   <footer>
     <div class="footer-inner">
       <div class="footer-attribution">
-        <span class="attribution-label">Supported by</span>
+        <span class="attribution-label">Developed by</span>
         <div class="org-logos-wrap">
           <a href="https://ghanaopenai.org" target="_blank" class="org-link">
             <img src="/static/images/ghanaopenai-logo.png" onerror="this.src='https://avatars.githubusercontent.com/u/294072949?v=4'" alt="Ghana Open AI Logo" class="footer-logo">
             <span>Ghana Open AI</span>
-          </a>
-          <span class="footer-divider">•</span>
-          <a href="https://ghananlp.org" target="_blank" class="org-link">
-            <img src="/static/images/ghananlp-logo.png" onerror="this.src='https://avatars.githubusercontent.com/u/59252568?v=4'" alt="Ghana NLP Logo" class="footer-logo">
-            <span>Ghana NLP</span>
           </a>
         </div>
       </div>
@@ -701,7 +696,7 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
   <script>
     const BACKEND_URL = (window.location.origin.includes('ghanaopenai.org') || window.location.origin.includes('localhost') || window.location.origin.includes(':8000'))
       ? window.location.origin
-      : 'https://mcp.ghanaopenai.org';
+      : 'https://search.ghanaopenai.org';
 
     let allRecords = [];
     let activeCategory = 'all';

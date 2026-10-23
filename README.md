@@ -1,19 +1,17 @@
-# Ghana-MCP: Local Ghanaian Knowledge & Search Server for LLMs 🇬🇭
+# Ghana Search: National Information Retrieval Engine 🇬🇭
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Demo-Ghana--MCP%20Explorer-yellow)](https://huggingface.co/spaces/ghanaopenai/ghana-mcp-demo)
-[![Partnership](https://img.shields.io/badge/Partnership-Ghana%20Open%20AI%20%C3%97%20Ghana%20NLP-gold)](#partnership)
+[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Demo-Ghana%20Search-yellow)](https://huggingface.co/spaces/ghanaopenai/ghana-mcp-demo)
+[![Organization](https://img.shields.io/badge/Developed%20by-Ghana%20Open%20AI-gold)](https://ghanaopenai.org)
 [![Protocol: MCP](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%202.x-blue)](https://modelcontextprotocol.io/)
 
-A high-performance **Model Context Protocol (MCP)** server that connects Large Language Model (LLM) providers (Claude, Cursor, OpenAI, ChatGPT, custom agents) directly to verified **local Ghanaian digital sources**: real-time news outlets, academic research repositories, 1,860+ public service portals, and location-tailored Wikipedia background.
+A high-performance **Model Context Protocol (MCP)** server and national information retrieval engine that connects Large Language Model (LLM) providers (Claude, Cursor, OpenAI, ChatGPT, custom agents) directly to verified **local Ghanaian digital sources**: real-time news outlets, academic research repositories, 164+ public service portals, court judgments (GhaLII), parliamentary records, and location-tailored Wikipedia background.
 
 ---
 
-## 🤝 Partnership
+## 🏛️ Organization
 
-This project is a joint research and open infrastructure initiative developed by:
-* **[Ghana Open AI](https://github.com/GhanaOpenAI)**
-* **[Ghana NLP](https://github.com/GhanaNLP)**
+Developed and maintained by **[Ghana Open AI](https://github.com/GhanaOpenAI)** (`https://ghanaopenai.org`).
 
 ---
 
@@ -128,7 +126,7 @@ Add to your `claude_desktop_config.json` (`~/Library/Application Support/Claude/
 ```json
 {
   "mcpServers": {
-    "ghana-mcp": {
+    "ghana-search": {
       "command": "/path/to/ghana-mcp/.venv/bin/python3",
       "args": ["-m", "ghana_mcp.server", "--stdio"]
     }
@@ -139,18 +137,17 @@ Add to your `claude_desktop_config.json` (`~/Library/Application Support/Claude/
 ### 2. Remote Cloudflare Tunnel Endpoint (No local install needed)
 
 When querying via remote SSE:
-* **URL**: `https://mcp.ghanaopenai.org/mcp/sse`
+* **URL**: `https://search.ghanaopenai.org/mcp/sse`
 * **Transport**: `sse`
 
 ### 3. REST API Example (cURL / Python / Node)
 
 ```bash
-curl -X POST https://mcp.ghanaopenai.org/api/search \
+curl -X POST https://search.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Who is the current president of Ghana and what are his recent policies?",
-    "top_k": 10,
-    "categories": ["news", "wikipedia", "academic", "public_services"]
+    "top_k": 50
   }'
 ```
 
@@ -161,7 +158,7 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
 * `ghana_search(text, top_k=50, categories=None, rerank=True)`: Unified multi-source search across all verified Ghanaian domains with NLP noun extraction and hybrid reranking.
 * `ghana_news_search(text, top_k=50)`: Scoped live search across top Ghanaian online news platforms.
 * `ghana_academic_search(text, top_k=50)`: Scoped search for university thesis abstracts from KNUST, UG, and UCC.
-* `ghana_public_services_search(text, top_k=50)`: Scoped search across 1,862 Ghanaian public sector institutions and portals.
+* `ghana_public_services_search(text, top_k=50)`: Scoped search across 164 verified Ghanaian public sector institutions and portals.
 * `ghana_wikipedia_search(text, top_k=50)`: Scoped search for Ghana-focused encyclopedic articles.
 
 ---
@@ -175,4 +172,4 @@ Experience the interactive web UI, test search phrases, and view live usage anal
 
 ## 📜 License
 
-Licensed under the [MIT License](LICENSE). Maintained by Ghana Open AI and Ghana NLP.
+Licensed under the [MIT License](LICENSE). Maintained by Ghana Open AI.

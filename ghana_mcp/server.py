@@ -1,5 +1,5 @@
-"""Ghana-MCP Server: Model Context Protocol (MCP) and REST API Server.
-A joint partnership between Ghana Open AI and Ghana NLP.
+"""Ghana Search Server: National Information Retrieval Engine & Model Context Protocol (MCP) Server.
+Developed by Ghana Open AI.
 """
 import os
 import sys
@@ -37,8 +37,8 @@ ghalii_provider = GhaLIIProvider()
 
 # Initialize MCP Server
 mcp = MCPServer(
-    name="ghana-mcp",
-    title="Ghana Local Knowledge & Web Search MCP",
+    name="ghana-search",
+    title="Ghana Search Engine",
     description="Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia with 24-hour caching and hybrid reranking.",
     version="1.0.0",
 )
@@ -256,8 +256,8 @@ async def lifespan(app: FastAPI):
 # --- FastAPI REST App & Web Interface ---
 
 app = FastAPI(
-    title="Ghana-MCP API",
-    description="Ghanaian Local Search & Knowledge MCP Server. Joint partnership between Ghana Open AI and Ghana NLP.",
+    title="Ghana Search API",
+    description="Ghana Search: National Information Retrieval Engine. Developed by Ghana Open AI.",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -377,13 +377,13 @@ async def api_health():
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "service": "ghana-mcp",
+        "service": "ghana-search",
         "version": "1.0.0",
         "nlp_engine": "spaCy (en_core_web_sm)",
         "reranker": "Hybrid (EmbeddingGemma-2 + BGE-Reranker-v2-M3)",
         "caching": "24-Hour Persistent SQLite WAL",
         "evaluation_dataset": "Enabled (JSONL export)",
-        "partnership": "Ghana Open AI x Ghana NLP",
+        "organization": "Ghana Open AI",
         "endpoints": {
             "mcp_sse": "/mcp/sse",
             "rest_search": "/api/search",
