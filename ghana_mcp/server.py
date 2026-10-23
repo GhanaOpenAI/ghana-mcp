@@ -120,14 +120,28 @@ def _execute_search(
             except Exception:
                 pass
 
-    # Deduplicate candidates by canonical URL
+    # Deduplicate candidates by canonical URL and hydrate from permanent URL content cache
     seen_urls = set()
     unique_candidates: List[SearchResult] = []
     sources_count: Dict[str, int] = {}
+    candidate_urls = [c.url for c in candidates if c.url]
+
+    # Tier 2: Batch check permanent URL content cache (0ms SQLite lookup)
+    permanent_cached_docs = search_cache.get_urls_batch(candidate_urls)
+
     for c in candidates:
         norm_url = c.url.strip().rstrip("/")
         if norm_url and norm_url not in seen_urls:
             seen_urls.add(norm_url)
+            # If this URL was permanently cached previously, hydrate full body content & metadata
+            if c.url in permanent_cached_docs:
+                cached_doc = permanent_cached_docs[c.url]
+                if not c.content and cached_doc.content:
+                    c.content = cached_doc.content
+                if not c.published_date and cached_doc.published_date:
+                    c.published_date = cached_doc.published_date
+                if cached_doc.metadata.get("pdf_url") and not c.metadata.get("pdf_url"):
+                    c.metadata["pdf_url"] = cached_doc.metadata["pdf_url"]
             unique_candidates.append(c)
             sources_count[c.source] = sources_count.get(c.source, 0) + 1
         elif not norm_url and c.title not in seen_urls:
@@ -137,7 +151,7 @@ def _execute_search(
 
     effective_k = min(top_k, len(unique_candidates)) if len(unique_candidates) > 0 else top_k
 
-    # 4. Neural hybrid reranking
+    # 4. 100% CPU Terminology Density & Recency Reranking
     if rerank and unique_candidates:
         ranked = reranker.rerank(
             query=text,
@@ -148,7 +162,10 @@ def _execute_search(
     else:
         ranked = unique_candidates[:effective_k]
 
-    # Store in 24-hour cache for future queries
+    # Tier 2: Permanently store all unique documents per URL (title, content, date saved forever)
+    search_cache.set_urls_batch(unique_candidates)
+
+    # Tier 1: Store ranked query results in 24-hour cache
     search_cache.set(text, cats, top_k, ranked)
 
     # Record evaluation dataset & analytics non-blockingly
@@ -393,7 +410,7 @@ async def api_health():
         "version": "1.0.0",
         "nlp_engine": "spaCy (en_core_web_sm)",
         "reranker": "100% CPU Terminology Density & Recency (Zero GPU / 0MB VRAM)",
-        "caching": "24-Hour Persistent SQLite WAL",
+        "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
         "evaluation_dataset": "Enabled (JSONL export)",
         "organization": "Ghana Open AI",
         "endpoints": {
