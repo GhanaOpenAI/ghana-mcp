@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from mcp.server.mcpserver import MCPServer
+from mcp.server.transport_security import TransportSecuritySettings
 
 from ghana_mcp.providers.news import NewsProvider
 from ghana_mcp.providers.wikipedia import WikipediaGhanaProvider
@@ -269,7 +270,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/mcp", mcp.sse_app())
+app.mount(
+    "/mcp",
+    mcp.sse_app(
+        transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+        host="0.0.0.0",
+    ),
+)
 
 
 class SearchRequest(BaseModel):
