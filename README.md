@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo/Ghana%20Search%20logo@1x.png" width="340" alt="Ghana Search Logo">
+</p>
+
 # Ghana Search: Ghana's Information Retrieval Engine
 
 Ghana Search is an information retrieval engine and Model Context Protocol (MCP) server that allows users, developers, and AI agents to search verified Ghanaian digital sources in real time.
