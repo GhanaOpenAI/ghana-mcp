@@ -380,7 +380,7 @@ async def api_health():
         "service": "ghana-search",
         "version": "1.0.0",
         "nlp_engine": "spaCy (en_core_web_sm)",
-        "reranker": "Hybrid (EmbeddingGemma-2 + BGE-Reranker-v2-M3)",
+        "reranker": "100% CPU Terminology Density & Recency (Zero GPU / 0MB VRAM)",
         "caching": "24-Hour Persistent SQLite WAL",
         "evaluation_dataset": "Enabled (JSONL export)",
         "organization": "Ghana Open AI",
