@@ -1,4 +1,4 @@
-"""Ghana Search Server: National Information Retrieval Engine & Model Context Protocol (MCP) Server.
+"""Ghana Search Server: Ghana's Information Retrieval Engine & Model Context Protocol (MCP) Server.
 Developed by Ghana Open AI.
 """
 import os
@@ -12,7 +12,7 @@ import uvicorn
 from fastapi import FastAPI, Query, Body, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse
 from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 
@@ -407,7 +407,14 @@ if os.path.isdir(static_dir):
         if os.path.exists(index_path):
             with open(index_path, "r", encoding="utf-8") as f:
                 return HTMLResponse(content=f.read())
-        return HTMLResponse("<h1>Ghana-MCP Server</h1>")
+        return HTMLResponse("<h1>Ghana Search Server</h1>")
+
+    @app.get("/favicon.ico")
+    async def serve_favicon():
+        favicon_path = os.path.join(static_dir, "images", "favicon.ico")
+        if os.path.exists(favicon_path):
+            return FileResponse(favicon_path, media_type="image/x-icon")
+        return Response(status_code=404)
 
 
 def run():

@@ -6,12 +6,12 @@ colorTo: green
 sdk: static
 pinned: false
 license: mit
-short_description: National Information Retrieval Engine for Ghana
+short_description: Ghana's Information Retrieval Engine
 ---
 
-# Ghana Search
+# Ghana Search: Ghana's Information Retrieval Engine
 
-Interactive demo space for **Ghana Search**, an open-source National Information Retrieval Engine & Model Context Protocol (MCP) server developed by **Ghana Open AI**.
+Interactive demo space for **Ghana Search**, open-source retrieval engine & Model Context Protocol (MCP) server developed by **Ghana Open AI**.
 
 This space allows testing queries across:
 - Local Ghanaian News Outlets: B&FT Online, 3News, Yen.com.gh, Citi Newsroom, Ghana News Agency, The Chronicle, Ghana Business News, Starr FM.

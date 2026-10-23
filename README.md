@@ -2,7 +2,7 @@
   <img src="logo/Ghana%20Search%20logo@1x.png" width="360" alt="Ghana Search Logo">
 </p>
 
-# Ghana Search: National Information Retrieval Engine
+# Ghana Search: Ghana's Information Retrieval Engine
 
 A high-performance Model Context Protocol (MCP) server and national information retrieval engine that connects Large Language Model (LLM) agents (Claude, Cursor, LangChain, custom applications) directly to verified local Ghanaian digital sources: real-time news outlets, academic research repositories, 164 verified government portals, Supreme Court judgments (GhaLII), parliamentary records, and location-tailored Wikipedia background.
 

@@ -1,5 +1,5 @@
 """
-Ghana Search: National Information Retrieval Engine & Model Context Protocol (MCP) Server.
+Ghana Search: Ghana's Information Retrieval Engine & Model Context Protocol (MCP) Server.
 Developed by Ghana Open AI.
 """
 
