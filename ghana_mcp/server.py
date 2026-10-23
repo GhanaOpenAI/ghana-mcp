@@ -285,8 +285,8 @@ class SearchRequest(BaseModel):
         default=["news", "wikipedia", "academic", "public_services"],
         description="Categories to search",
     )
-    top_k: int = Field(default=50, ge=1, le=100, description="Number of results to return (default: 50)")
-    rerank: bool = Field(default=True, description="Enable Gemini AI semantic reranking")
+    top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
+    rerank: bool = Field(default=True, description="Enable hybrid semantic reranking")
 
 
 @app.post("/api/search")
@@ -319,7 +319,7 @@ async def api_search_get(
     text: Optional[str] = Query(None, description="Free-form text input"),
     query: Optional[str] = Query(None, description="Alias for text"),
     categories: Optional[str] = Query(None, description="Comma-separated categories"),
-    top_k: int = Query(50, ge=1, le=100),
+    top_k: int = Query(50, ge=1, le=500),
     rerank: bool = Query(True),
 ):
     """GET REST endpoint for quick URL queries."""

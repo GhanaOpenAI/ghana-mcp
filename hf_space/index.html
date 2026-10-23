@@ -764,7 +764,8 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
       const pageRecords = allRecords.slice(startIdx, endIdx);
 
       if (totalItems > 0) {
-        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (Total count: ${totalItems})`;
+        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (All ${totalItems} retrieved documents ranked by relevance)`;
+        document.getElementById('summary-badge').innerText = `Total: ${totalItems} Records`;
       } else {
         document.getElementById('summary-counter').innerText = '0 records found';
       }
@@ -864,7 +865,7 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             text: q,
-            top_k: 50,
+            top_k: 250,
             rerank: true
           })
         });
