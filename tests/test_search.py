@@ -1,0 +1,60 @@
+"""Tests for Ghana-MCP NLP extraction, providers, and server tools."""
+import pytest
+from ghana_mcp.nlp import extract_search_terms, get_singular_plural_variants
+from ghana_mcp.providers.base import SearchResult
+from ghana_mcp.providers.public_services import PublicServicesProvider
+from ghana_mcp.server import _execute_search
+
+
+def test_singular_plural_variants():
+    """Verify singular and plural generation."""
+    vars_tax = get_singular_plural_variants("tax")
+    assert "tax" in vars_tax and "taxes" in vars_tax
+
+    vars_battery = get_singular_plural_variants("battery")
+    assert "battery" in vars_battery and "batteries" in vars_battery
+
+    vars_minister = get_singular_plural_variants("ministers")
+    assert "minister" in vars_minister and "ministers" in vars_minister
+
+
+def test_nlp_noun_chunk_cleaning():
+    """Verify cleaning of articles, adverbs, and pronouns from noun chunks."""
+    text = "who is the current president of ghana and his very new ministers?"
+    res = extract_search_terms(text)
+
+    # Noun chunks should not contain 'the', 'very', 'who', etc.
+    all_chunks_text = " ".join(res["clean_chunks"]).lower()
+    assert "who" not in all_chunks_text
+    assert "the" not in all_chunks_text
+    assert "very" not in all_chunks_text
+    assert "president" in all_chunks_text or "ghana" in all_chunks_text
+
+
+def test_public_services_directory():
+    """Verify lookup in the bundled 1,862 Ghana agencies directory."""
+    provider = PublicServicesProvider()
+    results = provider.search(["revenue", "taxes"], limit=5)
+    assert len(results) > 0
+    names = [r.title for r in results]
+    assert any("Revenue" in n or "GRA" in n for n in names)
+
+
+def test_execute_search_end_to_end():
+    """Verify end-to-end search query execution."""
+    results = _execute_search("who is the current president of ghana", top_k=5, rerank=True)
+    assert len(results) > 0
+    assert all(isinstance(r, SearchResult) for r in results)
+    assert any("president" in r.title.lower() or "ghana" in r.title.lower() for r in results)
+
+
+if __name__ == "__main__":
+    print("Testing singular/plural variants...")
+    test_singular_plural_variants()
+    print("Testing NLP noun chunk cleaning...")
+    test_nlp_noun_chunk_cleaning()
+    print("Testing Public Services provider...")
+    test_public_services_directory()
+    print("Testing End-to-End search with Gemini reranking...")
+    test_execute_search_end_to_end()
+    print("All unit tests passed successfully!")
