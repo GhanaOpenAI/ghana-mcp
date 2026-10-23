@@ -727,10 +727,10 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
   </footer>
 
   <script>
-    // Always use same-origin relative endpoints when served by the MCP server
-    const BACKEND_URL = (window.location.protocol.startsWith('http'))
+    // Connect to production mcp.ghanaopenai.org or same-origin if hosted locally
+    const BACKEND_URL = (window.location.origin.includes('ghanaopenai.org') || window.location.origin.includes('localhost') || window.location.origin.includes(':8000'))
       ? window.location.origin
-      : 'http://localhost:8800';
+      : 'https://mcp.ghanaopenai.org';
 
     let records = [];
     let activeCategory = 'all';
