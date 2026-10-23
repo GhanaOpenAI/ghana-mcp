@@ -3,39 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghana MCP — The National AI Search & Knowledge Gateway</title>
+  <title>Ghana MCP — National Search & Document Retrieval Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ghana-green: #006b3f;
-      --ghana-green-dark: #004d2c;
-      --ghana-gold: #fecb00;
-      --ghana-gold-dark: #d4a017;
-      --ghana-red: #ce1126;
-      --bg-canvas: #f8faf9;
+      --bg: #ffffff;
+      --bg-subtle: #f8fafc;
       --surface: #ffffff;
-      --surface-subtle: #f1f5f3;
-      --border: #dbe3df;
-      --border-dark: #22352b;
-      --text-dark: #111a15;
-      --text-body: #324239;
-      --text-muted: #5e7368;
-      --accent-link: #005a34;
-      --pdf-red: #c5221f;
-      --pdf-bg: #fdf2f2;
-      --font-main: 'Source Sans 3', system-ui, -apple-system, sans-serif;
-      --font-serif: 'Playfair Display', Georgia, serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --surface-border: #e2e8f0;
+      --border: #d1d5db;
+      --border-focus: #0f172a;
+      --text-heading: #0f172a;
+      --text-body: #334155;
+      --text-muted: #64748b;
+      --primary: #006b3f;
+      --primary-hover: #004d2c;
+      --primary-subtle: #f0fdf4;
+      --primary-border: #bbf7d0;
+      --navy: #1e293b;
+      --pdf-color: #b91c1c;
+      --pdf-bg: #fef2f2;
+      --pdf-border: #fecaca;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Source Code Pro', monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg-canvas);
-      color: var(--text-dark);
-      font-family: var(--font-main);
-      font-size: 15px;
+      background: var(--bg);
+      color: var(--text-body);
+      font-family: var(--font-sans);
+      font-size: 14.5px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
@@ -43,16 +43,89 @@
       flex-direction: column;
     }
 
-    /* Top National Header Bar */
-    .top-national-bar {
-      background: #0a140f;
-      border-bottom: 3px solid var(--ghana-gold);
-      color: #ffffff;
-      padding: 10px 32px;
-      font-size: 13px;
+    /* Solid Minimal Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--surface-border);
+      padding: 14px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
     }
-    .top-bar-inner {
-      max-width: 1180px;
+    .header-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-heading);
+    }
+    .ghana-flag-strip {
+      display: inline-flex;
+      height: 15px;
+      width: 24px;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .f-red { background: #ce1126; flex: 1; }
+    .f-gold { background: #fecb00; flex: 1; }
+    .f-green { background: #006b3f; flex: 1; }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text-heading);
+    }
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      border: 1px solid var(--surface-border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-btn {
+      background: none;
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-heading);
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .nav-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+    }
+
+    /* Purpose Context Banner */
+    .context-bar {
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 9px 32px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    .context-inner {
+      max-width: 1140px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -60,380 +133,290 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    .ghana-flag-strip {
-      display: inline-flex;
-      height: 14px;
-      width: 22px;
-      border-radius: 2px;
-      overflow: hidden;
-      box-shadow: 0 0 4px rgba(0,0,0,0.4);
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    .flag-r { background: var(--ghana-red); flex: 1; }
-    .flag-g { background: var(--ghana-gold); flex: 1; }
-    .flag-b { background: var(--ghana-green); flex: 1; }
-
-    .portal-branding {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
-    .partnership-tag {
+    .live-badge {
       font-size: 11px;
-      padding: 2px 8px;
-      background: rgba(254, 203, 0, 0.15);
-      border: 1px solid rgba(254, 203, 0, 0.3);
-      color: var(--ghana-gold);
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-subtle);
+      border: 1px solid var(--primary-border);
+      padding: 1px 7px;
       border-radius: 4px;
-      font-weight: 600;
-    }
-    .top-links {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .top-link {
-      color: #d1ded8;
-      text-decoration: none;
-      font-size: 12.5px;
-      transition: color 0.15s;
-    }
-    .top-link:hover { color: #ffffff; }
-
-    /* Scenic Hero Banner with Photo Background */
-    .hero-banner {
-      position: relative;
-      background: 
-        linear-gradient(180deg, rgba(8, 26, 17, 0.88) 0%, rgba(9, 21, 15, 0.94) 100%),
-        url('https://www.ghana.gov.gh/static/images/large_ghana-lead.jpg') center/cover no-repeat;
-      color: #ffffff;
-      padding: 64px 24px 72px;
-      box-shadow: inset 0 -2px 10px rgba(0,0,0,0.3);
-      transition: padding 0.3s ease;
-    }
-    .hero-banner.compact {
-      padding: 32px 24px 38px;
-    }
-    .hero-inner {
-      max-width: 880px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .hero-tagline {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 107, 63, 0.4);
-      border: 1px solid rgba(254, 203, 0, 0.4);
-      color: #fff;
-      font-size: 12.5px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
       text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 16px;
+      letter-spacing: 0.3px;
     }
-    .hero-title {
-      font-family: var(--font-serif);
-      font-size: 38px;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 12px;
-      letter-spacing: -0.5px;
+
+    /* Main Container */
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      flex: 1;
     }
-    .hero-banner.compact .hero-title {
-      font-size: 24px;
-      margin-bottom: 6px;
+
+    /* Hero / Header Area */
+    .hero-area {
+      text-align: center;
+      margin-bottom: 32px;
     }
-    .hero-banner.compact .hero-desc {
-      display: none;
+    .hero-h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--text-heading);
+      margin-bottom: 10px;
     }
-    .hero-desc {
-      font-size: 16.5px;
-      color: #dbebe2;
-      max-width: 680px;
-      margin: 0 auto 28px;
-      font-weight: 400;
+    .hero-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto;
       line-height: 1.55;
     }
 
-    /* Ghana.GOV Style Search Bar */
-    .search-box-card {
+    /* Solid Search Input Card */
+    .search-card {
       background: #ffffff;
-      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 6px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       display: flex;
       align-items: center;
-      border: 2px solid #ffffff;
-      transition: all 0.2s ease;
+      margin-bottom: 14px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .search-box-card:focus-within {
-      border-color: var(--ghana-gold);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(254, 203, 0, 0.25);
+    .search-card:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
     }
-    .search-input-prefix {
-      padding-left: 16px;
-      color: var(--ghana-green);
+    .search-icon-wrap {
+      padding: 0 14px;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
     }
-    .main-search-input {
+    .query-input {
       flex: 1;
-      height: 52px;
+      height: 48px;
       border: none;
       outline: none;
-      font-family: var(--font-main);
-      font-size: 17px;
-      padding: 0 16px;
-      color: var(--text-dark);
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text-heading);
       background: transparent;
       font-weight: 500;
     }
-    .main-search-input::placeholder {
-      color: #7b8e84;
+    .query-input::placeholder {
+      color: #94a3b8;
       font-weight: 400;
+      font-size: 15px;
     }
-    .search-action-btn {
-      background: var(--ghana-green);
+    .btn-submit {
+      background: var(--navy);
       color: #ffffff;
       border: none;
-      height: 52px;
-      padding: 0 28px;
-      border-radius: 6px;
+      height: 46px;
+      padding: 0 24px;
+      border-radius: 7px;
       font-family: inherit;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
-      transition: background 0.15s, transform 0.1s;
+      gap: 8px;
+      transition: background 0.12s;
     }
-    .search-action-btn:hover {
-      background: var(--ghana-green-dark);
-      color: var(--ghana-gold);
+    .btn-submit:hover {
+      background: #0f172a;
     }
-    .search-action-btn:disabled {
+    .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    /* Coverage Indicators */
-    .coverage-pills-row {
+    /* Subtle Query Suggestions */
+    .suggested-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 20px;
-    }
-    .hero-banner.compact .coverage-pills-row {
-      display: none;
-    }
-    .cov-pill {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      color: #f0f7f3;
-      padding: 5px 14px;
-      border-radius: 20px;
+      margin-bottom: 28px;
       font-size: 13px;
+    }
+    .suggested-lbl {
+      color: var(--text-muted);
       font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
     }
-    .cov-pill:hover {
-      background: rgba(254, 203, 0, 0.2);
-      border-color: var(--ghana-gold);
-      color: #ffffff;
-    }
-
-    /* Content Area */
-    .content-canvas {
-      max-width: 960px;
-      width: 100%;
-      margin: 32px auto 80px;
-      padding: 0 24px;
-      flex: 1;
-    }
-
-    /* Behind-the-Scenes Search Diagnostics */
-    .engine-telemetry-box {
-      display: none;
+    .suggested-btn {
       background: #ffffff;
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--ghana-green);
-      border-radius: 8px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--surface-border);
+      color: var(--text-body);
+      font-family: inherit;
+      font-size: 12.5px;
+      padding: 3px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
     }
-    .telemetry-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--ghana-green-dark);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .suggested-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border);
     }
-    .telemetry-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+
+    /* Telemetry / Diagnosis (Clean & Structured) */
+    .telemetry-row {
+      display: none;
+      background: var(--bg-subtle);
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      font-size: 12.5px;
       font-family: var(--font-mono);
-      font-size: 12px;
       color: var(--text-muted);
     }
-    .feed-line {
+    .telemetry-row.active {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .feed-tag {
-      color: var(--ghana-green);
-      font-weight: 600;
+    .telemetry-step {
+      color: var(--text-heading);
+      font-weight: 500;
     }
 
-    /* Filter & Results Summary Bar */
-    .results-filter-bar {
+    /* Category Navigation */
+    .results-nav {
       display: none;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 14px;
-      padding: 16px 0;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 24px;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 20px;
     }
-    .filter-tabs {
+    .nav-chips {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
     }
-    .tab-filter-btn {
+    .chip-btn {
       background: #ffffff;
-      border: 1px solid var(--border);
+      border: 1px solid var(--surface-border);
       color: var(--text-body);
       font-family: inherit;
-      font-size: 13.5px;
-      font-weight: 600;
-      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 12px;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.12s;
     }
-    .tab-filter-btn:hover {
-      background: var(--surface-subtle);
-      border-color: #cbd5d0;
+    .chip-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border);
     }
-    .tab-filter-btn.active {
-      background: var(--ghana-green);
-      border-color: var(--ghana-green);
+    .chip-btn.active {
+      background: var(--text-heading);
+      border-color: var(--text-heading);
       color: #ffffff;
+      font-weight: 600;
     }
-    .results-stat-text {
-      font-size: 14px;
+    .summary-metric {
+      font-size: 13px;
       color: var(--text-muted);
-      font-weight: 500;
     }
 
     /* Structured Document Cards */
-    .documents-stream {
+    .results-list {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
-    .document-card {
+    .doc-card {
       background: #ffffff;
-      border: 1px solid var(--border);
+      border: 1px solid var(--surface-border);
       border-radius: 8px;
-      padding: 22px 24px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-      transition: all 0.15s ease;
+      padding: 18px 22px;
+      transition: border-color 0.12s, box-shadow 0.12s;
     }
-    .document-card:hover {
-      border-color: var(--ghana-green);
-      box-shadow: 0 8px 24px rgba(0, 107, 63, 0.08);
-      transform: translateY(-1px);
+    .doc-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
     }
-    .doc-portal-badge {
+    .doc-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 12.5px;
-    }
-    .portal-name {
-      font-weight: 700;
-      color: var(--ghana-green);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      font-size: 11.5px;
-    }
-    .domain-trail {
-      color: var(--text-muted);
+      margin-bottom: 6px;
       font-size: 12px;
     }
-    .doc-headline {
-      font-size: 18.5px;
-      font-weight: 700;
-      color: var(--accent-link);
+    .doc-source {
+      font-weight: 600;
+      color: var(--text-heading);
+    }
+    .doc-trail {
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+    .doc-title-link {
+      font-size: 17.5px;
+      font-weight: 600;
+      color: #1d4ed8;
       text-decoration: none;
-      line-height: 1.35;
+      line-height: 1.4;
       display: inline-block;
       margin-bottom: 8px;
     }
-    .doc-headline:hover {
-      color: var(--ghana-green-dark);
+    .doc-title-link:hover {
       text-decoration: underline;
+      color: #1e40af;
     }
-    .doc-summary {
-      font-size: 14.5px;
+    .doc-snippet {
+      font-size: 14px;
       color: var(--text-body);
       line-height: 1.6;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-    .doc-footer-actions {
+    .doc-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
-    .download-pdf-btn {
+    .btn-pdf-download {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       background: var(--pdf-bg);
-      color: var(--pdf-red);
-      border: 1px solid rgba(197, 34, 31, 0.25);
+      border: 1px solid var(--pdf-border);
+      color: var(--pdf-color);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 10px;
       border-radius: 4px;
-      padding: 4px 12px;
-      font-size: 12px;
-      font-weight: 700;
       text-decoration: none;
-      transition: background 0.15s;
+      transition: background 0.1s;
     }
-    .download-pdf-btn:hover {
-      background: rgba(197, 34, 31, 0.12);
+    .btn-pdf-download:hover {
+      background: #fee2e2;
     }
-    .cache-indicator {
-      background: #e6f5ec;
-      border: 1px solid #c2e8d0;
-      color: var(--ghana-green-dark);
+    .cache-flag {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
       font-size: 11px;
       font-weight: 600;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
     }
-    .pub-date {
-      font-size: 12.5px;
+    .date-label {
+      font-size: 12px;
       color: var(--text-muted);
       margin-left: auto;
     }
@@ -443,172 +426,173 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 20, 15, 0.7);
+      background: rgba(15, 23, 42, 0.5);
       backdrop-filter: blur(4px);
       z-index: 100;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
-    .modal-dialog {
+    .modal-box {
       background: #ffffff;
-      border-radius: 8px;
-      border-top: 5px solid var(--ghana-green);
-      max-width: 640px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-width: 600px;
       width: 100%;
-      padding: 28px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
     }
-    .dialog-header {
+    .modal-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 14px;
     }
-    .dialog-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--ghana-green-dark);
-    }
-    .code-box {
-      background: #f4f7f5;
-      border: 1px solid var(--border);
+    .modal-h { font-size: 18px; font-weight: 700; color: var(--text-heading); }
+    .code-view {
+      background: #f8fafc;
+      border: 1px solid var(--surface-border);
       border-radius: 6px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       font-family: var(--font-mono);
-      font-size: 12.5px;
-      color: var(--text-dark);
-      margin: 8px 0 16px;
+      font-size: 12px;
+      color: #0f172a;
       overflow-x: auto;
+      margin: 8px 0 16px;
+      line-height: 1.5;
     }
 
     /* Footer */
     footer {
-      background: #0d1a12;
-      border-top: 3px solid var(--ghana-gold);
-      color: #cedbd3;
-      padding: 32px 32px 40px;
-      font-size: 13.5px;
-      margin-top: auto;
+      background: #ffffff;
+      border-top: 1px solid var(--surface-border);
+      padding: 24px 32px;
+      font-size: 13px;
+      color: var(--text-muted);
     }
     .footer-inner {
-      max-width: 1180px;
+      max-width: 1140px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 12px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top National Flag & Institutional Bar -->
-  <div class="top-national-bar">
-    <div class="top-bar-inner">
-      <div class="portal-branding">
+  <!-- Solid Minimal Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-block">
         <span class="ghana-flag-strip">
-          <span class="flag-r"></span>
-          <span class="flag-g"></span>
-          <span class="flag-b"></span>
+          <span class="f-red"></span>
+          <span class="f-gold"></span>
+          <span class="f-green"></span>
         </span>
-        <span>GHANA MCP : National Search & Knowledge Engine</span>
-        <span class="partnership-tag">Ghana Open AI × Ghana NLP</span>
+        <span class="brand-title">Ghana MCP</span>
+        <span class="brand-tag">Ghana Open AI × Ghana NLP</span>
       </div>
-      <div class="top-links">
-        <a href="#" class="top-link" onclick="openEndpointsModal()">API Endpoints for LLMs</a>
-        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="top-link">GitHub Documentation →</a>
+      <div class="nav-actions">
+        <button class="nav-btn" onclick="openEndpointsModal()">API Endpoints</button>
+        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="nav-btn">GitHub Docs →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Purpose Context Bar -->
+  <div class="context-bar">
+    <div class="context-inner">
+      <div>
+        <span class="live-badge">Tool Interface</span>
+        <span style="margin-left: 6px;">Ghana-MCP provides structured search APIs for LLMs (Claude, Cursor, custom agents). This interface previews live search results.</span>
+      </div>
+      <div>
+        <span>430+ Indexed Repositories • 24h SQLite WAL Cache</span>
       </div>
     </div>
   </div>
 
-  <!-- Ghana.GOV Style Hero Banner with Official Photo Background -->
-  <section id="hero-banner" class="hero-banner">
-    <div class="hero-inner">
-      <div class="hero-tagline">Official Digital Knowledge Gateway</div>
-      <h1 class="hero-title">Welcome to Ghana's National AI Search Engine</h1>
-      <p class="hero-desc">
-        Direct content and document retrieval across 164 verified government ministries and agencies, university thesis repositories, Supreme Court judgments (GhaLII), and national news outlets.
-      </p>
-
-      <!-- Prominent Search Bar (Search First, No Chat Confusion) -->
-      <div class="search-box-card">
-        <div class="search-input-prefix">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </div>
-        <input
-          type="text"
-          id="main-query-input"
-          class="main-search-input"
-          placeholder="What are you looking for? (e.g. Tax filing requirements, solar energy research at KNUST, Supreme Court rulings...)"
-          autocomplete="off"
-        />
-        <button id="search-submit-btn" class="search-action-btn" onclick="executeSearch()">
-          <span>SEARCH ARCHIVES</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Quick Suggested Phrases -->
-      <div class="coverage-pills-row">
-        <span class="cov-pill" onclick="quickQuery('who is the current president of ghana')">President of Ghana</span>
-        <span class="cov-pill" onclick="quickQuery('renewable solar energy battery storage research KNUST')">Solar Theses (Direct PDFs)</span>
-        <span class="cov-pill" onclick="quickQuery('Supreme Court income tax judgment GhaLII')">Tax Judgments</span>
-        <span class="cov-pill" onclick="quickQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</span>
-        <span class="cov-pill" onclick="quickQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills (PDF)</span>
-        <span class="cov-pill" onclick="quickQuery('Kumasi Metropolitan Assembly developmental projects')">GhanaDistricts Reports</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Main Content & Document Results Area -->
-  <main class="content-canvas">
-
-    <!-- Transparent Engine Telemetry & Behind-the-Scenes Trace -->
-    <div id="engine-telemetry" class="engine-telemetry-box">
-      <div class="telemetry-header">
-        <span>National Retrieval Engine Trace</span>
-        <span id="telemetry-clock" style="color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;">0.0s</span>
-      </div>
-      <div id="telemetry-feed" class="telemetry-feed"></div>
+  <!-- Main Container -->
+  <main class="container">
+    
+    <div class="hero-area">
+      <h1 class="hero-h1">National Search & Document Retrieval</h1>
+      <p class="hero-p">Query 164 verified government portals, university thesis repositories (KNUST/UG/UCC), Supreme Court rulings (GhaLII), and national news networks.</p>
     </div>
 
-    <!-- Filter & Results Header Bar -->
-    <div id="results-bar" class="results-filter-bar">
-      <div class="filter-tabs">
-        <button class="tab-filter-btn active" onclick="setCategoryFilter('all', this)">All Documents</button>
-        <button class="tab-filter-btn" onclick="setCategoryFilter('academic', this)">📄 Theses (Direct PDFs)</button>
-        <button class="tab-filter-btn" onclick="setCategoryFilter('public_services', this)">🏛️ Government & Law</button>
-        <button class="tab-filter-btn" onclick="setCategoryFilter('news', this)">📰 News Media</button>
-        <button class="tab-filter-btn" onclick="setCategoryFilter('wikipedia', this)">📖 Wikipedia</button>
+    <!-- Solid Search Bar Card -->
+    <div class="search-card">
+      <div class="search-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
       </div>
-      <div id="results-count-text" class="results-stat-text">0 verified records</div>
+      <input
+        type="text"
+        id="query-input"
+        class="query-input"
+        placeholder="Enter search terms, policy questions, or research topics..."
+        value=""
+        autocomplete="off"
+      />
+      <button id="search-btn" class="btn-submit" onclick="executeSearch()">
+        <span>Search</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
     </div>
 
-    <!-- Results Stream -->
-    <div id="documents-stream" class="documents-stream"></div>
+    <!-- Suggested Topics -->
+    <div class="suggested-bar">
+      <span class="suggested-lbl">Suggested:</span>
+      <button class="suggested-btn" onclick="applyQuery('who is the current president of ghana')">President of Ghana</button>
+      <button class="suggested-btn" onclick="applyQuery('renewable solar energy battery storage research KNUST')">Solar Theses (Direct PDFs)</button>
+      <button class="suggested-btn" onclick="applyQuery('Supreme Court income tax judgment GhaLII')">Tax Judgments (GhaLII)</button>
+      <button class="suggested-btn" onclick="applyQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</button>
+      <button class="suggested-btn" onclick="applyQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills</button>
+    </div>
+
+    <!-- Telemetry State -->
+    <div id="telemetry-bar" class="telemetry-row">
+      <div>
+        <span class="telemetry-step" id="telemetry-msg">Ready</span>
+      </div>
+      <div id="telemetry-time">0.0s</div>
+    </div>
+
+    <!-- Results Navigation Bar -->
+    <div id="results-nav" class="results-nav">
+      <div class="nav-chips">
+        <button class="chip-btn active" onclick="setCategory('all', this)">All Documents</button>
+        <button class="chip-btn" onclick="setCategory('academic', this)">Theses (Direct PDFs)</button>
+        <button class="chip-btn" onclick="setCategory('public_services', this)">Government & Law</button>
+        <button class="chip-btn" onclick="setCategory('news', this)">News</button>
+        <button class="chip-btn" onclick="setCategory('wikipedia', this)">Wikipedia</button>
+      </div>
+      <div id="summary-counter" class="summary-metric">0 verified records</div>
+    </div>
+
+    <!-- Results List -->
+    <div id="results-stream" class="results-list"></div>
 
   </main>
 
-  <!-- Modal for Developers & LLM Endpoints -->
-  <div id="endpoints-modal" class="modal-overlay" onclick="closeEndpointsModal(event)">
-    <div class="modal-dialog" onclick="event.stopPropagation()">
-      <div class="dialog-header">
-        <div class="dialog-title">Model Context Protocol (MCP) Endpoints</div>
+  <!-- Modal for API Endpoints -->
+  <div id="modal-endpoints" class="modal-overlay" onclick="closeEndpointsModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-h">MCP Server Integration</div>
         <button style="background:none; border:none; font-size:22px; cursor:pointer;" onclick="closeEndpointsModal()">&times;</button>
       </div>
-      <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 12px;">
-        Ghana-MCP is an autonomous MCP server designed for LLMs (Claude Desktop, Cursor, LangChain). Connect your agent via these endpoints:
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">
+        Connect Claude Desktop, Cursor, or any MCP client to query Ghanaian local sites directly:
       </p>
 
-      <strong>1. Claude Desktop (stdio mode)</strong>
-      <div class="code-box">
+      <strong style="font-size: 13px;">1. Claude Desktop (stdio mode)</strong>
+      <div class="code-view">
 {
   "mcpServers": {
     "ghana-mcp": {
@@ -619,121 +603,113 @@
 }
       </div>
 
-      <strong>2. Remote SSE Endpoint (Cloudflare Protected)</strong>
-      <div class="code-box">
+      <strong style="font-size: 13px;">2. Remote SSE Endpoint (Production)</strong>
+      <div class="code-view">
 https://mcp.ghanaopenai.org/mcp/sse
       </div>
 
-      <strong>3. Direct REST Search API</strong>
-      <div class="code-box">
+      <strong style="font-size: 13px;">3. Direct REST Search API</strong>
+      <div class="code-view">
 curl -X POST https://mcp.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
   -d '{"text": "who is the current president of ghana", "top_k": 50}'
       </div>
 
       <div style="display:flex; justify-content:flex-end; margin-top:16px;">
-        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="search-action-btn" style="text-decoration:none; height:40px; padding:0 20px; font-size:13px;">
+        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="nav-btn" style="background:#0f172a; color:#fff; border:none;">
           View GitHub Repository →
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Official Footer -->
+  <!-- Clean Footer -->
   <footer>
     <div class="footer-inner">
       <div>
-        <span>Republic of Ghana Digital Knowledge Project • </span>
-        <span>A joint research initiative by <strong>Ghana Open AI</strong> and <strong>Ghana NLP</strong></span>
+        Republic of Ghana Digital Knowledge Engine • <strong>Ghana Open AI</strong> & <strong>Ghana NLP</strong>
       </div>
       <div>
-        <span style="color: var(--ghana-gold);">24h SQLite WAL Cache • 430+ Indexed Repositories</span>
+        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" style="color: var(--text-body); text-decoration: none; font-weight: 500;">GitHub Repository →</a>
       </div>
     </div>
   </footer>
 
   <script>
-    // Robust Backend URL resolution
+    // Robust Backend URL resolution:
+    // 1. If served directly by the MCP server, use same origin
+    // 2. Fallback to production mcp.ghanaopenai.org
     const BACKEND_URL = (window.location.origin.includes('ghanaopenai.org') || window.location.origin.includes('localhost') || window.location.origin.includes(':8000'))
       ? window.location.origin
       : 'https://mcp.ghanaopenai.org';
 
-    let allDocuments = [];
-    let activeFilter = 'all';
+    let records = [];
+    let activeCategory = 'all';
 
     function openEndpointsModal() {
-      document.getElementById('endpoints-modal').style.display = 'flex';
+      document.getElementById('modal-endpoints').style.display = 'flex';
     }
     function closeEndpointsModal(e) {
-      document.getElementById('endpoints-modal').style.display = 'none';
+      document.getElementById('modal-endpoints').style.display = 'none';
     }
 
-    function quickQuery(q) {
-      document.getElementById('main-query-input').value = q;
+    function applyQuery(q) {
+      document.getElementById('query-input').value = q;
       executeSearch();
     }
 
-    function addTelemetryStep(tag, text) {
-      const feed = document.getElementById('telemetry-feed');
-      const row = document.createElement('div');
-      row.className = 'feed-line';
-      row.innerHTML = `<span class="feed-tag">[${tag}]</span> <span>${text}</span>`;
-      feed.appendChild(row);
-    }
-
-    function setCategoryFilter(cat, btn) {
-      document.querySelectorAll('.tab-filter-btn').forEach(b => b.classList.remove('active'));
+    function setCategory(cat, btn) {
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      activeFilter = cat;
-      renderDocumentCards();
+      activeCategory = cat;
+      renderCards();
     }
 
-    function renderDocumentCards() {
-      const stream = document.getElementById('documents-stream');
-      const filtered = activeFilter === 'all'
-        ? allDocuments
-        : allDocuments.filter(d => d.category === activeFilter);
+    function renderCards() {
+      const container = document.getElementById('results-stream');
+      const filtered = activeCategory === 'all'
+        ? records
+        : records.filter(r => r.category === activeCategory);
 
-      document.getElementById('results-count-text').innerText = `${filtered.length} verified records`;
+      document.getElementById('summary-counter').innerText = `${filtered.length} verified records`;
 
       if (filtered.length === 0) {
-        stream.innerHTML = '<div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:40px; text-align:center; color:var(--text-muted);">No records found in this category.</div>';
+        container.innerHTML = '<div style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:36px; text-align:center; color:var(--text-muted);">No records found in this category.</div>';
         return;
       }
 
-      stream.innerHTML = filtered.map(doc => {
-        let domainTrail = doc.url;
+      container.innerHTML = filtered.map(r => {
+        let domainTrail = r.url;
         try {
-          const u = new URL(doc.url);
+          const u = new URL(r.url);
           domainTrail = `${u.hostname} › ${u.pathname.split('/').filter(Boolean).slice(0, 2).join(' › ')}`;
         } catch(e) {}
 
-        const isPdf = doc.url.endsWith('/content') || doc.url.endsWith('.pdf') || doc.url.endsWith('/source') || (doc.metadata && doc.metadata.pdf_url);
-        const pdfButton = isPdf
-          ? `<a href="${doc.url}" target="_blank" class="download-pdf-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Official PDF</a>`
+        const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
+        const pdfPill = isPdf
+          ? `<a href="${r.url}" target="_blank" class="btn-pdf-download"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Official PDF</a>`
           : '';
 
-        const isCached = doc.metadata && doc.metadata.cached;
-        const cacheBadge = isCached ? '<span class="cache-indicator">⚡ 24h Cache Hit</span>' : '';
-        const dateSpan = doc.published_date ? `<span class="pub-date">Date: ${doc.published_date.slice(0, 10)}</span>` : '';
+        const isCached = r.metadata && r.metadata.cached;
+        const cacheFlag = isCached ? '<span class="cache-flag">24h Cache Hit</span>' : '';
+        const dateTag = r.published_date ? `<span class="date-label">Date: ${r.published_date.slice(0, 10)}</span>` : '';
 
         return `
-          <article class="document-card">
-            <div class="doc-portal-badge">
+          <article class="doc-card">
+            <div class="doc-top">
               <div>
-                <span class="portal-name">${doc.source}</span>
-                <span style="color:#a1b5ab;"> • </span>
-                <span class="domain-trail">${domainTrail}</span>
+                <span class="doc-source">${r.source}</span>
+                <span class="doc-trail">${domainTrail}</span>
               </div>
-              ${cacheBadge}
+              ${cacheFlag}
             </div>
-            <a href="${doc.url}" target="_blank" rel="noopener noreferrer" class="doc-headline">
-              ${doc.title}
+            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="doc-title-link">
+              ${r.title}
             </a>
-            <div class="doc-summary">${doc.snippet || 'No excerpt available.'}</div>
-            <div class="doc-footer-actions">
-              ${pdfButton}
-              ${dateSpan}
+            <div class="doc-snippet">${r.snippet || 'No summary excerpt available.'}</div>
+            <div class="doc-actions">
+              ${pdfPill}
+              ${dateTag}
             </div>
           </article>
         `;
@@ -741,39 +717,33 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
     }
 
     async function executeSearch() {
-      const query = document.getElementById('main-query-input').value.trim();
-      if (!query) return;
+      const q = document.getElementById('query-input').value.trim();
+      if (!q) return;
 
-      const hero = document.getElementById('hero-banner');
-      hero.classList.add('compact');
-
-      const btn = document.getElementById('search-submit-btn');
-      const telemetryBox = document.getElementById('engine-telemetry');
-      const telemetryFeed = document.getElementById('telemetry-feed');
-      const telemetryClock = document.getElementById('telemetry-clock');
-      const resultsBar = document.getElementById('results-bar');
-      const documentsStream = document.getElementById('documents-stream');
+      const btn = document.getElementById('search-btn');
+      const telemetryBar = document.getElementById('telemetry-bar');
+      const telemetryMsg = document.getElementById('telemetry-msg');
+      const telemetryTime = document.getElementById('telemetry-time');
+      const resultsNav = document.getElementById('results-nav');
+      const resultsStream = document.getElementById('results-stream');
 
       btn.disabled = true;
-      telemetryFeed.innerHTML = '';
-      telemetryBox.style.display = 'block';
-      documentsStream.innerHTML = '';
-      resultsBar.style.display = 'none';
+      telemetryBar.className = 'telemetry-row active';
+      telemetryMsg.innerText = 'Analyzing query with spaCy NLP and polling repositories...';
+      resultsStream.innerHTML = '';
+      resultsNav.style.display = 'none';
 
       const t0 = performance.now();
       const clockInterval = setInterval(() => {
-        telemetryClock.innerText = `${((performance.now() - t0) / 1000).toFixed(1)}s`;
+        telemetryTime.innerText = `${((performance.now() - t0) / 1000).toFixed(1)}s`;
       }, 100);
-
-      addTelemetryStep('Input Analysis', `Received query: "${query}"`);
-      addTelemetryStep('spaCy Parsing', 'Extracting clean noun chunks (removing determiners, adverbs, articles) & inflection variants...');
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: query,
+            text: q,
             top_k: 50,
             rerank: true
           })
@@ -781,37 +751,26 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
 
         const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
         clearInterval(clockInterval);
-        telemetryClock.innerText = `${elapsed}s`;
+        telemetryTime.innerText = `${elapsed}s`;
 
         const data = await res.json();
-        allDocuments = data.results || [];
+        records = data.results || [];
 
         const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(', ');
-        addTelemetryStep('Entities', `Core noun entities: [${chunks || 'broad search'}]`);
-
-        const isCached = allDocuments.some(d => d.metadata && d.metadata.cached);
-        if (isCached) {
-          addTelemetryStep('24h Cache', 'Retrieved instantly from persistent SQLite WAL cache (0ms external API roundtrip)');
-        } else {
-          addTelemetryStep('Broadcast', 'Polled 164 verified government portals, KNUST/UG/UCC thesis archives, Parliament, GhaLII & news in parallel');
-          addTelemetryStep('PDF Resolution', 'Resolved direct DSpace 7 ORIGINAL bundle bitstreams for thesis downloads');
-          addTelemetryStep('Neural Rank', 'Ranked candidates via EmbeddingGemma-2 + BGE-Reranker');
-        }
-
-        addTelemetryStep('Done', `Retrieved ${allDocuments.length} verified records. Logged query to continuous evaluation dataset.`);
+        telemetryMsg.innerText = `Retrieved ${records.length} records • Terms: [${chunks || 'general'}]`;
 
         btn.disabled = false;
-        resultsBar.style.display = 'flex';
-        renderDocumentCards();
+        resultsNav.style.display = 'flex';
+        renderCards();
 
       } catch (err) {
         clearInterval(clockInterval);
         btn.disabled = false;
-        addTelemetryStep('Error', `${err.message}. Please check connection.`);
+        telemetryMsg.innerText = `Search error: ${err.message}`;
       }
     }
 
-    document.getElementById('main-query-input').addEventListener('keydown', (e) => {
+    document.getElementById('query-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') executeSearch();
     });
   </script>
