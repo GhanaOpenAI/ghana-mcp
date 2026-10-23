@@ -385,16 +385,6 @@
       background: #f1f5f9;
       border-color: #94a3b8;
     }
-
-    .cache-flag {
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      color: #065f46;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 4px;
-    }
     .date-label {
       font-size: 12px;
       color: var(--text-muted);
@@ -799,8 +789,6 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
           ? `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`
           : `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
 
-        const isCached = r.metadata && r.metadata.cached;
-        const cacheFlag = isCached ? '<span class="cache-flag">24h Cache Hit</span>' : '';
         const dateTag = r.published_date ? `<span class="date-label">Date: ${r.published_date.slice(0, 10)}</span>` : '';
 
         return `
@@ -810,7 +798,6 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
                 <span class="doc-source">${r.source}</span>
                 <span class="doc-trail">${domainTrail}</span>
               </div>
-              ${cacheFlag}
             </div>
             <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="doc-title-link">
               ${r.title}
