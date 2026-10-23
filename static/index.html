@@ -3,29 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghana MCP — National AI Knowledge & Search Engine</title>
+  <title>Ghana MCP — National Knowledge & Search Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090a0f;
-      --surface: #11131c;
-      --surface-elevated: #161a26;
-      --surface-hover: #1c2233;
-      --border: #22283a;
-      --border-accent: #2e3a54;
-      --text-main: #f8fafc;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --accent-blue: #38bdf8;
-      --accent-purple: #a855f7;
-      --accent-emerald: #10b981;
-      --accent-gold: #f59e0b;
-      --pdf-red: #f43f5e;
-      --glow-blue: rgba(56, 189, 248, 0.15);
+      --bg: #faf8f5;
+      --bg-alt: #f4efe6;
+      --surface: #ffffff;
+      --surface-subtle: #fbf9f6;
+      --surface-elevated: #ffffff;
+      --border: #e8e3d9;
+      --border-subtle: #efebe4;
+      --text-main: #242220;
+      --text-secondary: #5e5954;
+      --text-muted: #8c857d;
+      --terracotta: #cc6b49;
+      --terracotta-dark: #b55635;
+      --terracotta-subtle: #fcf1ec;
+      --terracotta-border: #f3d4c7;
+      --gold: #b8860b;
+      --forest: #2e6b4d;
+      --forest-subtle: #eef6f1;
+      --pdf-red: #ba3224;
+      --pdf-bg: #faebe8;
+      --shadow-sm: 0 1px 3px rgba(36, 34, 32, 0.04);
+      --shadow-md: 0 4px 20px rgba(36, 34, 32, 0.06);
+      --shadow-lg: 0 12px 36px rgba(36, 34, 32, 0.08);
+      --font-serif: 'Newsreader', Georgia, serif;
       --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #181716;
+      --bg-alt: #201e1d;
+      --surface: #22201e;
+      --surface-subtle: #292724;
+      --surface-elevated: #262422;
+      --border: #383430;
+      --border-subtle: #2e2b27;
+      --text-main: #ede8e1;
+      --text-secondary: #a8a198;
+      --text-muted: #756f67;
+      --terracotta: #e07d5c;
+      --terracotta-dark: #cc6b49;
+      --terracotta-subtle: rgba(224, 125, 92, 0.12);
+      --terracotta-border: rgba(224, 125, 92, 0.25);
+      --forest-subtle: rgba(46, 107, 77, 0.15);
+      --pdf-red: #f07167;
+      --pdf-bg: rgba(240, 113, 103, 0.12);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.5);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,592 +64,626 @@
       background: var(--bg);
       color: var(--text-main);
       font-family: var(--font-sans);
+      font-size: 14.5px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
-    /* Minimalist Top App Bar */
+    /* Claude-style Minimal Editorial Header */
     header {
-      padding: 16px 32px;
+      padding: 18px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--surface);
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 10, 15, 0.85);
+      backdrop-filter: blur(10px);
     }
-    .brand {
+    .brand-wrap {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       gap: 12px;
       text-decoration: none;
       color: var(--text-main);
     }
-    .spark-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 16px var(--glow-blue);
-    }
-    .brand-name {
-      font-size: 16px;
-      font-weight: 700;
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 500;
       letter-spacing: -0.3px;
     }
-    .brand-badge {
-      font-size: 11px;
-      font-weight: 600;
+    .brand-title em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+    .brand-sub {
+      font-size: 11.5px;
       color: var(--text-muted);
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-      border-radius: 12px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
     }
     .header-actions {
       display: flex;
-      gap: 14px;
       align-items: center;
+      gap: 14px;
     }
-    .btn-endpoints {
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      color: var(--accent-blue);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 14px;
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
       border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
       cursor: pointer;
-      text-decoration: none;
+      font-family: inherit;
       transition: all 0.15s;
     }
-    .btn-endpoints:hover {
-      background: rgba(56, 189, 248, 0.2);
+    .btn-ghost:hover {
+      background: var(--surface-subtle);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
     }
 
-    /* Authoritative Notice Banner */
-    .demo-notice-bar {
-      background: rgba(17, 19, 28, 0.7);
+    /* Purpose Ribbon */
+    .context-ribbon {
+      background: var(--bg-alt);
       border-bottom: 1px solid var(--border);
-      padding: 10px 24px;
-      font-size: 13px;
+      padding: 10px 40px;
+      font-size: 12.5px;
       color: var(--text-secondary);
-      text-align: center;
-    }
-    .notice-inner {
-      max-width: 900px;
-      margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
+      justify-content: space-between;
       flex-wrap: wrap;
+      gap: 12px;
     }
-    .pill-live {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--accent-emerald);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 10px;
-      letter-spacing: 0.3px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+    .context-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+    .demo-pill {
+      background: var(--terracotta-subtle);
+      border: 1px solid var(--terracotta-border);
+      color: var(--terracotta);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .doc-link {
+      color: var(--terracotta);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .doc-link:hover { text-decoration: underline; }
 
-    /* Main Viewport */
-    .app-viewport {
+    /* Canvas / Main Viewport */
+    .canvas {
       flex: 1;
-      max-width: 860px;
+      max-width: 820px;
       width: 100%;
       margin: 0 auto;
-      padding: 60px 24px 80px;
+      padding: 56px 24px 80px;
       display: flex;
       flex-direction: column;
       transition: padding 0.3s ease;
     }
-    .app-viewport.results-active {
+    .canvas.searched {
       padding-top: 24px;
     }
 
-    /* Hero */
-    .hero-container {
+    /* Editorial Headline */
+    .headline-area {
       text-align: center;
-      margin-bottom: 36px;
-      transition: all 0.3s ease;
+      margin-bottom: 32px;
+      transition: margin 0.3s ease;
     }
-    .app-viewport.results-active .hero-container {
-      margin-bottom: 18px;
+    .canvas.searched .headline-area {
+      margin-bottom: 20px;
+      text-align: left;
     }
-    .app-viewport.results-active .hero-subtitle {
+    .canvas.searched .headline-sub {
       display: none;
     }
-    .hero-title {
-      font-size: 38px;
-      font-weight: 800;
-      letter-spacing: -1.2px;
-      line-height: 1.2;
+    .headline-main {
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.6px;
       margin-bottom: 12px;
-      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-main);
     }
-    .app-viewport.results-active .hero-title {
-      font-size: 22px;
+    .canvas.searched .headline-main {
+      font-size: 24px;
       margin-bottom: 4px;
     }
-    .hero-subtitle {
+    .headline-main em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+    .headline-sub {
       font-size: 15px;
       color: var(--text-secondary);
-      max-width: 620px;
+      max-width: 580px;
       margin: 0 auto;
-      font-weight: 400;
       line-height: 1.6;
     }
 
-    /* Prominent Prompt Input Box */
-    .ai-prompt-box {
+    /* Claude-style Prompt Card */
+    .input-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 18px;
-      padding: 10px 14px 10px 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      padding: 16px 18px 14px 20px;
+      box-shadow: var(--shadow-md);
       display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .ai-prompt-box:focus-within {
-      border-color: var(--accent-blue);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--glow-blue);
-      background: var(--surface-elevated);
+    .input-card:focus-within {
+      border-color: var(--terracotta);
+      box-shadow: var(--shadow-lg), 0 0 0 1px var(--terracotta);
     }
-    .prompt-input {
+    .input-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .sparkle-badge {
+      color: var(--terracotta);
+      margin-top: 3px;
+    }
+    .query-textarea {
       flex: 1;
       background: transparent;
       border: none;
       outline: none;
-      color: var(--text-main);
+      font-family: var(--font-sans);
       font-size: 16px;
-      font-family: inherit;
-      font-weight: 500;
+      color: var(--text-main);
+      resize: none;
+      min-height: 48px;
+      line-height: 1.5;
     }
-    .prompt-input::placeholder {
+    .query-textarea::placeholder {
       color: var(--text-muted);
-      font-weight: 400;
+      font-size: 15px;
     }
-    .ai-run-btn {
-      background: var(--text-main);
-      color: #090a0f;
+    .input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 6px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .source-meta-tag {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .btn-search {
+      background: var(--terracotta);
+      color: #ffffff;
       border: none;
-      padding: 11px 22px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.15s;
+      gap: 6px;
+      transition: background 0.15s, transform 0.1s;
     }
-    .ai-run-btn:hover {
-      background: #ffffff;
-      transform: scale(1.02);
-      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+    .btn-search:hover {
+      background: var(--terracotta-dark);
+      transform: translateY(-1px);
     }
-    .ai-run-btn:disabled {
+    .btn-search:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       transform: none;
     }
 
-    /* Minimalist starter pills */
-    .starter-queries {
+    /* Gentle Prompt Suggestions */
+    .suggestions-row {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
-      margin-top: 18px;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
     }
-    .app-viewport.results-active .starter-queries {
+    .canvas.searched .suggestions-row {
       display: none;
     }
-    .query-pill {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .pill-prompt {
+      background: var(--surface);
+      border: 1px solid var(--border);
       color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 14px;
-      border-radius: 20px;
+      font-size: 12.5px;
+      padding: 5px 12px;
+      border-radius: 16px;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .query-pill:hover {
-      background: rgba(255, 255, 255, 0.08);
+    .pill-prompt:hover {
+      background: var(--surface-subtle);
       color: var(--text-main);
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--terracotta-border);
     }
 
-    /* Live AI Reasoning Commentary Panel */
-    .ai-reasoning-panel {
+    /* Claude Thinking / Reasoning Container */
+    .thinking-card {
       display: none;
-      background: var(--surface);
+      background: var(--surface-subtle);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 16px 20px;
-      margin: 20px 0;
-      animation: fadeIn 0.3s ease;
+      margin-bottom: 24px;
+      animation: appear 0.25s ease-out;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes appear { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .reasoning-header {
+    .thinking-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
     }
-    .pulse-status {
+    .thinking-pulse {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
+      gap: 8px;
     }
-    .pulse-indicator {
-      width: 9px;
-      height: 9px;
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: var(--accent-blue);
-      box-shadow: 0 0 10px var(--accent-blue);
-      animation: blink 1.2s infinite ease-in-out;
+      background: var(--terracotta);
+      animation: pulse 1.4s infinite ease-in-out;
     }
-    @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.85); } }
 
-    .reasoning-feed {
+    .trace-feed {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       font-family: var(--font-mono);
       font-size: 12px;
       color: var(--text-secondary);
     }
-    .feed-step {
+    .trace-item {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
+      gap: 8px;
     }
-    .step-tag {
-      color: var(--accent-purple);
-      font-weight: 500;
-    }
+    .trace-key { color: var(--terracotta); font-weight: 500; }
 
-    /* Scope Bar */
-    .results-scope-bar {
+    /* Results Header Bar */
+    .results-nav {
       display: none;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 20px;
-      padding: 12px 0;
+      padding: 12px 0 16px;
       border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
     }
-    .scope-tabs {
+    .category-pills {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
     }
-    .scope-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
+    .cat-btn {
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--text-secondary);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
       font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 8px;
+      cursor: pointer;
       transition: all 0.15s;
     }
-    .scope-btn.active {
-      background: rgba(56, 189, 248, 0.1);
-      border-color: var(--accent-blue);
-      color: var(--accent-blue);
+    .cat-btn:hover { color: var(--text-main); background: var(--surface-subtle); }
+    .cat-btn.active {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--terracotta);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
-    .results-count-summary {
+    .result-summary-text {
       font-size: 13px;
       color: var(--text-muted);
     }
 
-    /* Results Stream */
-    .results-stream {
+    /* Result Digest Cards */
+    .results-stack {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
     }
-    .result-card {
+    .digest-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 20px 24px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow-sm);
       transition: all 0.15s ease;
     }
-    .result-card:hover {
+    .digest-card:hover {
+      box-shadow: var(--shadow-md);
       border-color: var(--border-accent);
-      background: var(--surface-elevated);
       transform: translateY(-1px);
     }
-    .card-top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 12px;
-    }
-    .source-domain-chain {
+    .digest-meta {
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 12px;
       color: var(--text-muted);
-    }
-    .source-name {
-      font-weight: 600;
-      color: var(--accent-blue);
-    }
-    .result-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-main);
-      text-decoration: none;
-      line-height: 1.4;
-      display: inline-block;
       margin-bottom: 8px;
     }
-    .result-title:hover {
-      color: var(--accent-blue);
+    .meta-source {
+      font-weight: 600;
+      color: var(--text-secondary);
     }
-    .result-snippet {
-      font-size: 14px;
+    .digest-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      line-height: 1.35;
+      display: inline-block;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+    .digest-title:hover {
+      color: var(--terracotta);
+      text-decoration: underline;
+    }
+    .digest-snippet {
+      font-size: 14.5px;
       color: var(--text-secondary);
       line-height: 1.6;
       margin-bottom: 12px;
     }
-    .card-actions-row {
+    .digest-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
-    .pdf-download-badge {
+    .btn-pdf {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(244, 63, 94, 0.1);
-      border: 1px solid rgba(244, 63, 94, 0.25);
-      color: #fb7185;
-      font-weight: 700;
-      font-size: 11px;
-      padding: 4px 10px;
+      background: var(--pdf-bg);
+      color: var(--pdf-red);
+      border: 1px solid rgba(186, 50, 36, 0.2);
       border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
       text-decoration: none;
-      transition: all 0.15s;
     }
-    .pdf-download-badge:hover {
-      background: rgba(244, 63, 94, 0.2);
+    .btn-pdf:hover {
+      background: rgba(186, 50, 36, 0.18);
     }
-    .cache-pill {
+    .pill-cached {
+      background: var(--forest-subtle);
+      color: var(--forest);
       font-size: 11px;
       font-weight: 600;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      color: #34d399;
       padding: 3px 8px;
-      border-radius: 6px;
+      border-radius: 4px;
     }
-    .meta-date {
+    .item-date {
       font-size: 12px;
       color: var(--text-muted);
       margin-left: auto;
     }
 
     /* Modal for Endpoints */
-    .modal-overlay {
+    .modal-backdrop {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
+      background: rgba(36, 34, 32, 0.6);
+      backdrop-filter: blur(6px);
       z-index: 100;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
     }
-    .modal-box {
+    .modal-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      max-width: 650px;
+      max-width: 620px;
       width: 100%;
       padding: 28px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      box-shadow: var(--shadow-lg);
     }
-    .modal-header {
+    .modal-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .modal-title {
-      font-size: 18px;
-      font-weight: 700;
+    .modal-h {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 500;
     }
-    .close-modal {
+    .btn-close {
       background: none;
       border: none;
+      font-size: 22px;
       color: var(--text-muted);
-      font-size: 20px;
       cursor: pointer;
     }
-    .code-block {
-      background: #090a0f;
+    .code-view {
+      background: var(--surface-subtle);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 16px;
       font-family: var(--font-mono);
       font-size: 12px;
-      color: var(--accent-blue);
-      margin: 8px 0 16px;
+      color: var(--text-main);
       overflow-x: auto;
+      margin: 8px 0 16px;
       line-height: 1.5;
     }
 
-    /* Minimal Footer */
+    /* Claude Footer */
     footer {
-      padding: 24px 32px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--border-subtle);
+      padding: 24px 40px;
+      background: var(--surface);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
       flex-wrap: wrap;
       gap: 12px;
+    }
+    .footer-sig {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top App Bar -->
+  <!-- Editorial Top Bar -->
   <header>
-    <a href="#" class="brand">
-      <div class="spark-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>
-      </div>
-      <div class="brand-name">Ghana MCP</div>
-      <span class="brand-badge">Autonomous LLM Tool</span>
+    <a href="#" class="brand-wrap">
+      <div class="brand-title">Ghana <em>MCP</em></div>
+      <div class="brand-sub">National Knowledge Retrieval</div>
     </a>
     <div class="header-actions">
-      <button class="btn-endpoints" onclick="openModal()">Endpoints & MCP Config</button>
-      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="h-link" style="color: var(--text-secondary); text-decoration: none; font-size: 13px;">Docs →</a>
+      <button class="btn-ghost" onclick="openEndpointsModal()">LLM Endpoints & Docs</button>
+      <button class="btn-ghost" onclick="toggleMode()">Theme</button>
     </div>
   </header>
 
-  <!-- Authoritative Clarification Banner -->
-  <div class="demo-notice-bar">
-    <div class="notice-inner">
-      <span class="pill-live">INTERACTIVE DEMO</span>
-      <span>Ghana-MCP is a backend tool engineered for LLMs (Claude, Cursor, custom agents) to query live Ghanaian sources. You are previewing its live retrieval capabilities below.</span>
+  <!-- Clear Purpose Ribbon -->
+  <aside class="context-ribbon">
+    <div class="context-left">
+      <span class="demo-pill">Live Demonstration</span>
+      <span>Ghana-MCP is a backend tool for LLMs (Claude, Cursor, custom agents) to query Ghana's digital archives.</span>
     </div>
-  </div>
-
-  <!-- Main Viewport -->
-  <main id="app-viewport" class="app-viewport">
-    
-    <div class="hero-container">
-      <h1 class="hero-title">Ask anything about Ghana</h1>
-      <p class="hero-subtitle">Direct content retrieval across 164 verified government portals, Supreme Court judgments (GhaLII), university theses (KNUST/UG/UCC), and national news outlets.</p>
+    <div>
+      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="doc-link">GitHub Repository →</a>
     </div>
+  </aside>
 
-    <!-- Prominent Prompt Box (Input First) -->
-    <div class="ai-prompt-box">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input
-        type="text"
-        id="prompt-input"
-        class="prompt-input"
-        placeholder="Enter natural language query or question..."
-        value=""
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button id="run-btn" class="ai-run-btn" onclick="triggerSearch()">
-        <span>Search</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-      </button>
+  <!-- Main Canvas -->
+  <main id="main-canvas" class="canvas">
+
+    <div class="headline-area">
+      <h1 class="headline-main">Ask anything about <em>Ghana</em></h1>
+      <p class="headline-sub">Direct content retrieval across 164 verified government portals, Supreme Court judgments (GhaLII), university theses (KNUST/UG/UCC), and national news outlets.</p>
     </div>
 
-    <!-- Minimal starter suggestions -->
-    <div class="starter-queries">
-      <span class="query-pill" onclick="setQuery('who is the current president of ghana')">President of Ghana</span>
-      <span class="query-pill" onclick="setQuery('solar energy battery storage research in KNUST and UCC')">Solar Theses (Direct PDFs)</span>
-      <span class="query-pill" onclick="setQuery('Supreme Court income tax judgment GhaLII')">Tax Court Judgments</span>
-      <span class="query-pill" onclick="setQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</span>
-      <span class="query-pill" onclick="setQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills (PDF)</span>
+    <!-- Generous Prompt Input -->
+    <div class="input-card">
+      <div class="input-row">
+        <svg class="sparkle-badge" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/>
+        </svg>
+        <textarea
+          id="query-box"
+          class="query-textarea"
+          placeholder="Ask a question or enter a research topic..."
+          rows="1"
+        ></textarea>
+      </div>
+
+      <div class="input-footer">
+        <span class="source-meta-tag">430+ institutions indexed • 24h SQLite WAL Cache</span>
+        <button id="btn-submit" class="btn-search" onclick="runSearch()">
+          <span>Search</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Behind-The-Scenes Reasoning Commentary -->
-    <div id="ai-reasoning" class="ai-reasoning-panel">
-      <div class="reasoning-header">
-        <div class="pulse-status">
-          <div class="pulse-indicator"></div>
-          <span id="pulse-label">Engine Initializing...</span>
+    <!-- Suggested Queries -->
+    <div class="suggestions-row">
+      <span class="pill-prompt" onclick="setQueryText('who is the current president of ghana')">Current President of Ghana</span>
+      <span class="pill-prompt" onclick="setQueryText('renewable solar energy battery storage research in KNUST and UCC')">Solar Theses (Direct PDFs)</span>
+      <span class="pill-prompt" onclick="setQueryText('Supreme Court income tax judgment GhaLII')">Tax Court Judgments</span>
+      <span class="pill-prompt" onclick="setQueryText('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Regulations</span>
+      <span class="pill-prompt" onclick="setQueryText('Parliament of Ghana Budget Bill report')">Parliamentary Bills (PDF)</span>
+    </div>
+
+    <!-- Claude-style Thinking Trace -->
+    <div id="thinking-box" class="thinking-card">
+      <div class="thinking-header">
+        <div class="thinking-pulse">
+          <div class="pulse-dot"></div>
+          <span id="thinking-status">Analyzing query...</span>
         </div>
-        <span id="pulse-timer" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">0.0s</span>
+        <span id="thinking-clock" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">0.0s</span>
       </div>
-      <div id="reasoning-feed" class="reasoning-feed"></div>
+      <div id="trace-lines" class="trace-feed"></div>
     </div>
 
-    <!-- Results Scope Filter Bar -->
-    <div id="scope-bar" class="results-scope-bar">
-      <div class="scope-tabs">
-        <button class="scope-btn active" onclick="filterCategory('all', this)">All Results</button>
-        <button class="scope-btn" onclick="filterCategory('academic', this)">📄 Theses (PDFs)</button>
-        <button class="scope-btn" onclick="filterCategory('public_services', this)">⚖️ Government & Law</button>
-        <button class="scope-btn" onclick="filterCategory('news', this)">📰 News</button>
-        <button class="scope-btn" onclick="filterCategory('wikipedia', this)">📖 Wikipedia</button>
+    <!-- Results Navigation & Filters -->
+    <div id="results-nav-bar" class="results-nav">
+      <div class="category-pills">
+        <button class="cat-btn active" onclick="applyFilter('all', this)">All</button>
+        <button class="cat-btn" onclick="applyFilter('academic', this)">Theses (Direct PDFs)</button>
+        <button class="cat-btn" onclick="applyFilter('public_services', this)">Government & Law</button>
+        <button class="cat-btn" onclick="applyFilter('news', this)">News</button>
+        <button class="cat-btn" onclick="applyFilter('wikipedia', this)">Wikipedia</button>
       </div>
-      <div id="results-count" class="results-count-summary">0 results</div>
+      <div id="summary-counter" class="result-summary-text">0 documents</div>
     </div>
 
-    <!-- Results Stream -->
-    <div id="results-stream" class="results-stream"></div>
+    <!-- Results Digest -->
+    <div id="results-container" class="results-stack"></div>
 
   </main>
 
-  <!-- Modal for MCP Server Endpoints & Integration Details -->
-  <div id="endpoints-modal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title">MCP Server Endpoints for LLMs</div>
-        <button class="close-modal" onclick="closeModal()">&times;</button>
+  <!-- Claude-Style Modal for Endpoints -->
+  <div id="modal-endpoints" class="modal-backdrop" onclick="closeEndpointsModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-h">MCP Server Endpoints</div>
+        <button class="btn-close" onclick="closeEndpointsModal()">&times;</button>
       </div>
-      <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin-bottom: 12px;">
-        Ghana-MCP runs persistently as an autonomous server. Connect your LLM client via any of these endpoints:
+      <p style="color: var(--text-secondary); font-size: 13.5px; margin-bottom: 14px; line-height: 1.6;">
+        Ghana-MCP is built on the official Model Context Protocol. Use these configuration snippets to connect your LLM agent:
       </p>
 
       <strong style="font-size: 13px;">1. Claude Desktop (stdio mode)</strong>
-      <div class="code-block">
+      <div class="code-view">
 {
   "mcpServers": {
     "ghana-mcp": {
@@ -630,81 +695,94 @@
       </div>
 
       <strong style="font-size: 13px;">2. Remote SSE Endpoint (Cloudflare Protected)</strong>
-      <div class="code-block">
+      <div class="code-view">
 https://mcp.ghanaopenai.org/mcp/sse
       </div>
 
       <strong style="font-size: 13px;">3. Direct REST Search API (cURL / Python)</strong>
-      <div class="code-block">
+      <div class="code-view">
 curl -X POST https://mcp.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
   -d '{"text": "who is the current president of ghana", "top_k": 50}'
       </div>
 
-      <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="btn-endpoints" style="text-decoration: none;">
-          View Full Documentation on GitHub →
+      <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+        <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" class="btn-search" style="text-decoration: none;">
+          View Documentation on GitHub →
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Minimalist Footer -->
+  <!-- Warm Editorial Footer -->
   <footer>
-    <div>
-      Joint Initiative by <strong>Ghana Open AI</strong> & <strong>Ghana NLP</strong> • NVIDIA H200 GPU Cluster
+    <div class="footer-sig">
+      <span>Developed by <strong>Ghana Open AI</strong> & <strong>Ghana NLP</strong></span>
+      <span>•</span>
+      <span>NVIDIA H200 GPU Cluster</span>
     </div>
     <div>
-      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" style="color: var(--accent-blue); text-decoration: none;">GitHub Repository →</a>
+      <a href="https://github.com/GhanaOpenAI/ghana-mcp" target="_blank" style="color: var(--terracotta); text-decoration: none; font-weight: 600;">GitHub Repository →</a>
     </div>
   </footer>
 
   <script>
-    const BACKEND_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes(':8080') || window.location.origin.includes(':8800')
+    // Robust Backend URL resolution:
+    // 1. If running on Hugging Face or self, use relative URL (zero cross-origin issues)
+    // 2. Fallback to direct H200 Cloudflare endpoint
+    const BACKEND_URL = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes('ghanaopenai.org') || window.location.origin.includes('.hf.space') || window.location.origin.includes(':8800'))
       ? window.location.origin
-      : 'https://salem-stevens-nightlife-gel.trycloudflare.com';
+      : 'https://mcp-demo.ghanaopenai.org';
 
-    let currentResults = [];
-    let activeFilter = 'all';
+    let records = [];
+    let activeCategory = 'all';
 
-    function setQuery(q) {
-      document.getElementById('prompt-input').value = q;
-      triggerSearch();
+    function toggleMode() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('ghana_theme', isDark ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('ghana_theme') === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
     }
 
-    function openModal() {
-      document.getElementById('endpoints-modal').style.display = 'flex';
+    function openEndpointsModal() {
+      document.getElementById('modal-endpoints').style.display = 'flex';
+    }
+    function closeEndpointsModal(e) {
+      document.getElementById('modal-endpoints').style.display = 'none';
     }
 
-    function closeModal() {
-      document.getElementById('endpoints-modal').style.display = 'none';
+    function setQueryText(q) {
+      document.getElementById('query-box').value = q;
+      runSearch();
     }
 
-    function addFeedStep(tag, text) {
-      const feed = document.getElementById('reasoning-feed');
+    function addTrace(tag, msg) {
+      const feed = document.getElementById('trace-lines');
       const div = document.createElement('div');
-      div.className = 'feed-step';
-      div.innerHTML = `<span class="step-tag">[${tag}]</span> <span>${text}</span>`;
+      div.className = 'trace-item';
+      div.innerHTML = `<span class="trace-key">[${tag}]</span> <span>${msg}</span>`;
       feed.appendChild(div);
     }
 
-    function filterCategory(cat, btn) {
-      document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('active'));
+    function applyFilter(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      activeFilter = cat;
-      renderResults();
+      activeCategory = cat;
+      renderCards();
     }
 
-    function renderResults() {
-      const container = document.getElementById('results-stream');
-      const filtered = activeFilter === 'all' 
-        ? currentResults 
-        : currentResults.filter(r => r.category === activeFilter);
+    function renderCards() {
+      const container = document.getElementById('results-container');
+      const filtered = activeCategory === 'all'
+        ? records
+        : records.filter(r => r.category === activeCategory);
 
-      document.getElementById('results-count').innerText = `${filtered.length} authoritative records`;
+      document.getElementById('summary-counter').innerText = `${filtered.length} authoritative documents`;
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">No matching records found in this category.</div>';
+        container.innerHTML = '<div style="color: var(--text-muted); padding: 40px 0; text-align: center;">No matching documents found in this section.</div>';
         return;
       }
 
@@ -716,110 +794,123 @@ curl -X POST https://mcp.ghanaopenai.org/api/search \
         } catch(e) {}
 
         const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
-        const pdfButton = isPdf
-          ? `<a href="${r.url}" target="_blank" class="pdf-download-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Direct PDF Download</a>`
+        const pdfPill = isPdf
+          ? `<a href="${r.url}" target="_blank" class="btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Official PDF</a>`
           : '';
 
         const isCached = r.metadata && r.metadata.cached;
-        const cachePill = isCached ? '<span class="cache-pill">⚡ 24h Cache Hit</span>' : '';
-        const dateTag = r.published_date ? `<span class="meta-date">📅 ${r.published_date.slice(0, 10)}</span>` : '';
+        const cachePill = isCached ? '<span class="pill-cached">24h Cache Hit</span>' : '';
+        const dateTag = r.published_date ? `<span class="item-date">Date: ${r.published_date.slice(0, 10)}</span>` : '';
 
         return `
-          <div class="result-card">
-            <div class="card-top-row">
-              <div class="source-domain-chain">
-                <span class="source-name">${r.source}</span>
-                <span>•</span>
-                <span>${domainPath}</span>
-              </div>
+          <article class="digest-card">
+            <div class="digest-meta">
+              <span class="meta-source">${r.source}</span>
+              <span>•</span>
+              <span>${domainPath}</span>
               ${cachePill}
             </div>
-            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="result-title">
+            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="digest-title">
               ${r.title}
             </a>
-            <div class="result-snippet">${r.snippet || 'No excerpt available.'}</div>
-            <div class="card-actions-row">
-              ${pdfButton}
+            <p class="digest-snippet">${r.snippet || 'No summary excerpt available.'}</p>
+            <div class="digest-actions">
+              ${pdfPill}
               ${dateTag}
             </div>
-          </div>
+          </article>
         `;
       }).join('');
     }
 
-    async function triggerSearch() {
-      const query = document.getElementById('prompt-input').value.trim();
-      if (!query) return;
+    async function runSearch() {
+      const q = document.getElementById('query-box').value.trim();
+      if (!q) return;
 
-      const viewport = document.getElementById('app-viewport');
-      viewport.classList.add('results-active');
+      const canvas = document.getElementById('main-canvas');
+      canvas.classList.add('searched');
 
-      const btn = document.getElementById('run-btn');
-      const reasoningPanel = document.getElementById('ai-reasoning');
-      const reasoningFeed = document.getElementById('reasoning-feed');
-      const pulseLabel = document.getElementById('pulse-label');
-      const pulseTimer = document.getElementById('pulse-timer');
-      const scopeBar = document.getElementById('scope-bar');
-      const resultsStream = document.getElementById('results-stream');
+      const btn = document.getElementById('btn-submit');
+      const thinkBox = document.getElementById('thinking-box');
+      const traceLines = document.getElementById('trace-lines');
+      const thinkStatus = document.getElementById('thinking-status');
+      const thinkClock = document.getElementById('thinking-clock');
+      const navBar = document.getElementById('results-nav-bar');
+      const resultsContainer = document.getElementById('results-container');
 
       btn.disabled = true;
-      reasoningFeed.innerHTML = '';
-      reasoningPanel.style.display = 'block';
-      resultsStream.innerHTML = '';
-      scopeBar.style.display = 'none';
+      traceLines.innerHTML = '';
+      thinkBox.style.display = 'block';
+      resultsContainer.innerHTML = '';
+      navBar.style.display = 'none';
 
       const t0 = performance.now();
-      const timerInterval = setInterval(() => {
-        pulseTimer.innerText = `${((performance.now() - t0) / 1000).toFixed(1)}s`;
+      const clockInterval = setInterval(() => {
+        thinkClock.innerText = `${((performance.now() - t0) / 1000).toFixed(1)}s`;
       }, 100);
 
-      pulseLabel.innerText = 'Extracting Core Entities with spaCy NLP...';
-      addFeedStep('NLP', 'Parsing grammatical structure, removing determiners/adjectives, generating inflection pairs...');
+      thinkStatus.innerText = 'Extracting Core Entities with spaCy NLP...';
+      addTrace('NLP', 'Parsing query, stripping determiners/adverbs, extracting clean nominal pairs...');
+
+      // Auto-grow textarea
+      const tx = document.getElementById('query-box');
+      tx.style.height = 'auto';
+      tx.style.height = `${tx.scrollHeight}px`;
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: query,
+            text: q,
             top_k: 50,
             rerank: true
           })
         });
 
         const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-        clearInterval(timerInterval);
-        pulseTimer.innerText = `${elapsed}s`;
+        clearInterval(clockInterval);
+        thinkClock.innerText = `${elapsed}s`;
 
         const data = await res.json();
-        currentResults = data.results || [];
+        records = data.results || [];
 
-        const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(' • ');
-        addFeedStep('Entities', `Identified core nominal phrases: [${chunks || 'broad search'}]`);
+        const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(', ');
+        addTrace('Entities', `Core noun entities: [${chunks || 'broad query'}]`);
 
-        const isCached = currentResults.some(r => r.metadata && r.metadata.cached);
+        const isCached = records.some(r => r.metadata && r.metadata.cached);
         if (isCached) {
-          addFeedStep('24h Cache', 'Served instantly from persistent SQLite WAL cache (0ms external API roundtrip)');
+          addTrace('24h Cache', 'Served from persistent SQLite WAL cache (instant microsecond retrieval)');
         } else {
-          addFeedStep('Dispatch', 'Polled 164 government portals, KNUST/UG/UCC repositories, Parliament, GhaLII & news in parallel');
-          addFeedStep('Rerank', 'Executed neural hybrid reranking (EmbeddingGemma-2 + BGE-Reranker)');
+          addTrace('Broadcast', 'Polled 164 government portals, DSpace thesis archives (KNUST/UG/UCC), Parliament, GhaLII & news in parallel');
+          addTrace('Neural Rerank', 'Reranked candidate pool via EmbeddingGemma-2 + BGE-Reranker');
         }
 
-        pulseLabel.innerText = `Retrieved ${currentResults.length} Authoritative Documents`;
+        thinkStatus.innerText = `Retrieved ${records.length} Documents`;
         btn.disabled = false;
-        scopeBar.style.display = 'flex';
-        renderResults();
+        navBar.style.display = 'flex';
+        renderCards();
 
       } catch (err) {
-        clearInterval(timerInterval);
+        clearInterval(clockInterval);
         btn.disabled = false;
-        pulseLabel.innerText = 'Connection Error';
-        addFeedStep('Error', err.message);
+        thinkStatus.innerText = 'Query Failed';
+        addTrace('Error', `${err.message}. Please verify server connection.`);
       }
     }
 
-    document.getElementById('prompt-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') triggerSearch();
+    document.getElementById('query-box').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        runSearch();
+      }
+    });
+
+    // Auto resize textarea
+    const tx = document.getElementById('query-box');
+    tx.addEventListener('input', () => {
+      tx.style.height = 'auto';
+      tx.style.height = `${tx.scrollHeight}px`;
     });
   </script>
 </body>
