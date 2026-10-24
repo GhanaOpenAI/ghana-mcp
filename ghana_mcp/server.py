@@ -434,7 +434,7 @@ async def api_health():
         "nlp_engine": "spaCy (en_core_web_sm)",
         "reranker": "100% CPU Terminology Density & Recency (Zero GPU / 0MB VRAM)",
         "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
-        "default_max_wait_seconds": 3.0,
+        "default_max_wait_seconds": 5.0,
         "evaluation_dataset": "Enabled (JSONL export)",
         "hf_backup_repo": "ghanaopenai/ghana-search-corpus",
         "organization": "Ghana Open AI",
@@ -473,17 +473,20 @@ if os.path.isdir(static_dir):
 
 
 def run():
-    """CLI Entrypoint to start the server."""
+    """CLI Entrypoint to start the server with automatic multi-core worker scaling."""
     if "--stdio" in sys.argv:
         asyncio.run(mcp.run_stdio_async())
     else:
         port = int(os.environ.get("PORT", SERVER_PORT))
         host = os.environ.get("HOST", SERVER_HOST)
-        print(f"🚀 Starting Ghana-MCP Server on http://{host}:{port}")
+        # Default to 4 workers on multi-core environments, or scale to available CPU cores
+        default_workers = min(4, max(1, os.cpu_count() or 1))
+        workers = int(os.environ.get("WEB_CONCURRENCY", default_workers))
+        print(f"🚀 Starting Ghana Search Engine on http://{host}:{port} with {workers} worker processes")
         print(f"   MCP SSE Endpoint: http://{host}:{port}/mcp/sse")
         print(f"   REST Search API:  http://{host}:{port}/api/search")
         print(f"   Interactive UI:   http://{host}:{port}/")
-        uvicorn.run(app, host=host, port=port)
+        uvicorn.run("ghana_mcp.server:app", host=host, port=port, workers=workers)
 
 
 if __name__ == "__main__":
