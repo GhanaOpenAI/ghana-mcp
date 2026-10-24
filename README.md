@@ -27,50 +27,80 @@ Ghana Search queries the public search APIs of over 430 Ghanaian institutions an
 
 ## Web Search Interface
 
-Visit [https://search.ghanaopenai.org](https://search.ghanaopenai.org) to search directly from your browser.
+Visit [https://search.ghanaopenai.org](https://search.ghanaopenai.org) to search directly from your browser with three specialized modes:
 
-- Enter any natural language question or topic.
-- Automatic entity extraction and singular/plural inflection matching powered by spaCy NLP.
-- 24-hour query caching for fast repeat searches.
-- Direct "Download PDF" links for academic theses, court rulings, and parliamentary bills.
-- Paginated results (10 per page) ordered by relevance.
+1. **National Knowledge (Core)**:
+   - Queries 164 verified government portals, university thesis repositories (KNUST/UG/UCC), Supreme Court rulings (GhaLII), parliamentary records, and national news networks.
+   - Title-first & recent-first ranking with direct PDF download links.
+
+2. **Business Directory (Yellow Pages)**:
+   - **Two-way lookup**: Search by product/commodity to find suppliers and stores (e.g. *"solar panels"*, *"tractor parts"*, *"pharmacies Kumasi"*), OR search by business name (e.g. *"Ernest Chemists"*, *"Solar 4 Ghana"*) to get branches, physical addresses, and direct phone call links.
+
+3. **Price Finder (Marketplace Intelligence)**:
+   - Search active Ghanaian classifieds ads and calculate real-time pricing metrics in Ghana Cedis (`GH₵`): average market price, price range (min/max), and active product listings.
 
 ---
 
-## Querying the Search API
+## Querying the APIs
 
-You can query Ghana Search programmatically via HTTP POST:
+Ghana Search offers dedicated endpoints for each capability:
 
-### Example Request (cURL)
+### 1. National Knowledge Retrieval (`POST /api/search`)
 
 ```bash
 curl -X POST https://search.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Ghana Revenue Authority VAT and electronic invoicing requirements",
-    "top_k": 10
+    "top_k": 5
   }'
 ```
 
-### Example Request (Python)
+### 2. Business Directory & Supplier Locator (`POST /api/business/search`)
 
-```python
-import requests
-
-response = requests.post(
-    "https://search.ghanaopenai.org/api/search",
-    json={
-        "text": "renewable solar energy battery research KNUST",
-        "top_k": 5
-    }
-)
-
-for item in response.json().get("results", []):
-    print(f"- {item['title']} ({item['source']})")
-    print(f"  URL: {item['url']}\n")
+```bash
+curl -X POST https://search.ghanaopenai.org/api/business/search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "tractor parts Accra",
+    "top_k": 5
+  }'
 ```
 
-### Request Parameters
+### 3. Classifieds & Market Price Finder (`POST /api/prices/search`)
+
+```bash
+curl -X POST https://search.ghanaopenai.org/api/prices/search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "product": "MacBook Pro",
+    "limit": 5
+  }'
+```
+
+```json
+{
+  "status": "success",
+  "data": {
+    "query": "MacBook Pro",
+    "sample_size": 2,
+    "average_price_ghs": 5700.0,
+    "min_price_ghs": 2900.0,
+    "max_price_ghs": 8500.0,
+    "currency": "GHS (Ghana Cedi)",
+    "listings": [
+      {
+        "title": "MacBook Pro 2019",
+        "price_ghs": 8500.0,
+        "location": "Accra",
+        "url": "https://www.ghanabusinessweb.com/classifieds/1254-macbook-pro-2019"
+      }
+    ]
+  }
+}
+```
+
+### Request Parameters (`POST /api/search`)
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |

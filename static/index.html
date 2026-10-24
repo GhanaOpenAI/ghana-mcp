@@ -205,6 +205,125 @@
       border-color: var(--border);
     }
 
+    /* Mode Switcher Tabs */
+    .mode-switcher {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .mode-tab {
+      background: #ffffff;
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .mode-tab:hover {
+      border-color: #cbd5e1;
+      color: var(--text-heading);
+    }
+    .mode-tab.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    .mode-badge {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .mode-tab.active .mode-badge {
+      background: #F6CC4F;
+      color: #0f172a;
+    }
+
+    /* Price Summary Banner */
+    .price-summary-banner {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #10b981;
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .price-metric-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 28px;
+    }
+    .price-metric-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .price-metric-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+    }
+    .price-metric-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .price-metric-val.highlight {
+      color: #059669;
+    }
+    .price-tag-badge {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 3px 10px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-call {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: all 0.12s;
+    }
+    .btn-call:hover {
+      background: #dbeafe;
+    }
+
     /* Suggested Topics */
     .suggested-bar {
       display: flex;
@@ -558,7 +677,26 @@
     
     <div class="hero-area">
       <h1 class="hero-h1">Ghana's Information Retrieval Engine</h1>
-      <p class="hero-p">Query 164 verified government portals, Ghana Yellow Pages & business directories, university repositories (KNUST/UG/UCC), court judgments (GhaLII), and national news networks.</p>
+      <p class="hero-p">Search verified government portals, court judgments, university research, commercial directories, and marketplace classifieds.</p>
+    </div>
+
+    <!-- Mode Switcher Tabs -->
+    <div class="mode-switcher" id="mode-switcher">
+      <button class="mode-tab active" id="tab-knowledge" onclick="switchMode('knowledge')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>National Knowledge</span>
+        <span class="mode-badge">Core</span>
+      </button>
+      <button class="mode-tab" id="tab-business" onclick="switchMode('business')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Business Directory</span>
+        <span class="mode-badge">Yellow Pages</span>
+      </button>
+      <button class="mode-tab" id="tab-prices" onclick="switchMode('prices')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Price Finder</span>
+        <span class="mode-badge">Classifieds</span>
+      </button>
     </div>
 
     <!-- Solid Search Bar Card with Search and Reset Buttons -->
@@ -584,11 +722,10 @@
     </div>
 
     <!-- Clean Suggested Topics without Brackets -->
-    <div class="suggested-bar">
+    <div class="suggested-bar" id="suggested-bar">
       <span class="suggested-lbl">Suggested:</span>
       <button class="suggested-btn" onclick="applyQuery('who is the current president of ghana')">President of Ghana</button>
       <button class="suggested-btn" onclick="applyQuery('renewable solar energy battery storage research KNUST')">Solar Energy</button>
-      <button class="suggested-btn" onclick="applyQuery('solar energy companies in Accra', ['business'])">Solar Companies</button>
       <button class="suggested-btn" onclick="applyQuery('Supreme Court income tax judgment GhaLII')">Tax Judgments</button>
       <button class="suggested-btn" onclick="applyQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</button>
       <button class="suggested-btn" onclick="applyQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills</button>
@@ -614,6 +751,9 @@
       </button>
     </div>
 
+    <!-- Dynamic Market Pricing Banner (Price Finder mode) -->
+    <div id="pricing-banner-area"></div>
+
     <!-- Results List (Paginated at 10 results per page) -->
     <div id="results-stream" class="results-list"></div>
 
@@ -626,40 +766,42 @@
   <div id="modal-endpoints" class="modal-overlay" onclick="closeEndpointsModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-top">
-        <div class="modal-h">MCP Server Integration</div>
+        <div class="modal-h">API Endpoints & Tool Calling</div>
         <button style="background:none; border:none; font-size:22px; cursor:pointer;" onclick="closeEndpointsModal()">&times;</button>
       </div>
       <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">
-        Connect Claude Desktop, Cursor, or any MCP client to query Ghanaian local sites directly:
+        Connect vLLM, SGLang, or any agent framework to Ghana Search tools:
       </p>
 
-      <strong style="font-size: 13px;">1. Claude Desktop (Local Subprocess / stdio)</strong>
+      <strong style="font-size: 13px;">1. OpenAI-Compatible Tools Schema</strong>
       <div class="code-view">
-{
-  "mcpServers": {
-    "ghana-search": {
-      "command": "python3",
-      "args": ["-m", "ghana_mcp.server", "--stdio"]
-    }
-  }
-}
+GET https://search.ghanaopenai.org/api/tools
       </div>
 
-      <strong style="font-size: 13px;">2. Remote SSE Endpoint (Production)</strong>
-      <div class="code-view">
-https://search.ghanaopenai.org/mcp/sse
-      </div>
-
-      <strong style="font-size: 13px;">3. Direct REST Search API</strong>
+      <strong style="font-size: 13px;">2. National Knowledge Retrieval</strong>
       <div class="code-view">
 curl -X POST https://search.ghanaopenai.org/api/search \
   -H "Content-Type: application/json" \
-  -d '{"text": "who is the current president of ghana", "top_k": 50}'
+  -d '{"text": "who is the current president of ghana", "top_k": 10}'
+      </div>
+
+      <strong style="font-size: 13px;">3. Business Directory & Supplier Locator</strong>
+      <div class="code-view">
+curl -X POST https://search.ghanaopenai.org/api/business/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "tractor parts Accra", "top_k": 10}'
+      </div>
+
+      <strong style="font-size: 13px;">4. Marketplace Classifieds & Price Finder</strong>
+      <div class="code-view">
+curl -X POST https://search.ghanaopenai.org/api/prices/search \
+  -H "Content-Type: application/json" \
+  -d '{"product": "MacBook Pro", "limit": 10}'
       </div>
 
       <div style="display:flex; justify-content:flex-end; margin-top:16px;">
         <a href="https://github.com/GhanaOpenAI/ghana-search" target="_blank" class="nav-btn" style="background:#F6CC4F; color:#0f172a; font-weight:700; border:1px solid #e5bd3b;">
-          View GitHub Repository →
+          View Documentation on GitHub →
         </a>
       </div>
     </div>
@@ -688,10 +830,81 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       ? window.location.origin
       : 'https://search.ghanaopenai.org';
 
+    let currentMode = 'knowledge'; // 'knowledge' | 'business' | 'prices'
+    let currentPricingData = null;
     let allRecords = [];
-    let activeCategory = 'all';
     let currentPage = 1;
     const PAGE_SIZE = 10;
+
+    const MODE_CONFIG = {
+      knowledge: {
+        placeholder: "Enter policy question, law, thesis topic, or national news query...",
+        badge: "Title Match & Recent First",
+        suggestions: [
+          { label: "President of Ghana", query: "who is the current president of ghana" },
+          { label: "Solar Energy", query: "renewable solar energy battery storage research KNUST" },
+          { label: "Tax Judgments", query: "Supreme Court income tax judgment GhaLII" },
+          { label: "GRA VAT Policies", query: "Ghana Revenue Authority VAT and electronic invoicing requirements" },
+          { label: "Parliamentary Bills", query: "Parliament of Ghana Budget Bill report" }
+        ]
+      },
+      business: {
+        placeholder: "Search product/service to buy or business name (e.g. 'solar panels', 'Ernest Chemists')...",
+        badge: "Ghana Yellow Pages",
+        suggestions: [
+          { label: "Solar Companies Accra", query: "solar companies Accra" },
+          { label: "Pharmacies Kumasi", query: "pharmacies Kumasi" },
+          { label: "Tractor Parts", query: "tractor parts Accra" },
+          { label: "Ernest Chemists", query: "Ernest Chemists" },
+          { label: "Lawyers Takoradi", query: "lawyers Takoradi" }
+        ]
+      },
+      prices: {
+        placeholder: "Enter product name to check market prices in Ghana (e.g. 'MacBook Pro', 'solar inverter')...",
+        badge: "Market Price Intelligence",
+        suggestions: [
+          { label: "MacBook Pro", query: "MacBook Pro" },
+          { label: "Solar Inverter", query: "solar inverter" },
+          { label: "Toner Cartridge", query: "toner cartridge" },
+          { label: "Car Tracker", query: "car tracking systems" },
+          { label: "Graphic Card", query: "graphic card" }
+        ]
+      }
+    };
+
+    function switchMode(mode) {
+      if (!MODE_CONFIG[mode]) return;
+      currentMode = mode;
+      currentPricingData = null;
+
+      // Update Tab Styles
+      document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-${mode}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      // Update Input Placeholder
+      const input = document.getElementById('query-input');
+      input.placeholder = MODE_CONFIG[mode].placeholder;
+
+      // Update Suggested Buttons
+      const bar = document.getElementById('suggested-bar');
+      bar.innerHTML = `
+        <span class="suggested-lbl">Suggested:</span>
+        ${MODE_CONFIG[mode].suggestions.map(s => `
+          <button class="suggested-btn" onclick="applyQuery('${s.query}')">${s.label}</button>
+        `).join('')}
+      `;
+
+      // Clear previous results
+      document.getElementById('pricing-banner-area').innerHTML = '';
+      document.getElementById('results-stream').innerHTML = '';
+      document.getElementById('results-nav').style.display = 'none';
+      document.getElementById('pagination-controls').style.display = 'none';
+      document.getElementById('telemetry-bar').className = 'telemetry-row';
+      allRecords = [];
+      currentPage = 1;
+      input.focus();
+    }
 
     function openEndpointsModal() {
       document.getElementById('modal-endpoints').style.display = 'flex';
@@ -705,31 +918,18 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       document.getElementById('query-input').value = '';
       document.getElementById('telemetry-bar').className = 'telemetry-row';
       document.getElementById('results-nav').style.display = 'none';
+      document.getElementById('pricing-banner-area').innerHTML = '';
       document.getElementById('results-stream').innerHTML = '';
       document.getElementById('pagination-controls').style.display = 'none';
       allRecords = [];
-      activeCategory = 'all';
+      currentPricingData = null;
       currentPage = 1;
-      document.querySelectorAll('.chip-btn').forEach((b, i) => {
-        b.classList.toggle('active', i === 0);
-      });
       document.getElementById('query-input').focus();
     }
 
-    let explicitCategories = null;
-
-    function applyQuery(q, cats = null) {
+    function applyQuery(q) {
       document.getElementById('query-input').value = q;
-      explicitCategories = cats;
       executeSearch();
-    }
-
-    function setCategory(cat, btn) {
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeCategory = cat;
-      currentPage = 1;
-      renderCards();
     }
 
     function goToPage(page) {
@@ -741,6 +941,7 @@ curl -X POST https://search.ghanaopenai.org/api/search \
     function renderCards() {
       const container = document.getElementById('results-stream');
       const pagControls = document.getElementById('pagination-controls');
+      const pricingBannerArea = document.getElementById('pricing-banner-area');
 
       const totalItems = allRecords.length;
       const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
@@ -751,15 +952,40 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       const endIdx = Math.min(startIdx + PAGE_SIZE, totalItems);
       const pageRecords = allRecords.slice(startIdx, endIdx);
 
+      // Render Price Summary Banner in 'prices' mode
+      if (currentMode === 'prices' && currentPricingData && currentPricingData.average_price_ghs) {
+        pricingBannerArea.innerHTML = `
+          <div class="price-summary-banner">
+            <div class="price-metric-group">
+              <div class="price-metric-box">
+                <span class="price-metric-lbl">Average Asking Price</span>
+                <span class="price-metric-val highlight">GH₵${currentPricingData.average_price_ghs.toLocaleString()}</span>
+              </div>
+              <div class="price-metric-box">
+                <span class="price-metric-lbl">Price Range (Min – Max)</span>
+                <span class="price-metric-val">GH₵${(currentPricingData.min_price_ghs || 0).toLocaleString()} – GH₵${(currentPricingData.max_price_ghs || 0).toLocaleString()}</span>
+              </div>
+              <div class="price-metric-box">
+                <span class="price-metric-lbl">Market Sample</span>
+                <span class="price-metric-val" style="font-size: 20px;">${currentPricingData.sample_size} Active Ads</span>
+              </div>
+            </div>
+            <span class="price-tag-badge">Ghana Marketplace</span>
+          </div>
+        `;
+      } else {
+        pricingBannerArea.innerHTML = '';
+      }
+
       if (totalItems > 0) {
-        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (Title match & recent first)`;
-        document.getElementById('summary-badge').innerText = `Total: ${totalItems} Records`;
+        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} results`;
+        document.getElementById('summary-badge').innerText = MODE_CONFIG[currentMode].badge;
       } else {
         document.getElementById('summary-counter').innerText = '0 records found';
       }
 
       if (totalItems === 0) {
-        container.innerHTML = '<div style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:36px; text-align:center; color:var(--text-muted);">No records found for this query.</div>';
+        container.innerHTML = '<div style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:36px; text-align:center; color:var(--text-muted);">No listings or records found for this query.</div>';
         pagControls.style.display = 'none';
         return;
       }
@@ -771,16 +997,25 @@ curl -X POST https://search.ghanaopenai.org/api/search \
           domainTrail = `${u.hostname} › ${u.pathname.split('/').filter(Boolean).slice(0, 2).join(' › ')}`;
         } catch(e) {}
 
-        const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
+        const isPdf = r.url && (r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url));
         
-        // PDF Action vs Directory Action vs Article Action
-        let actionButton;
+        let actionButtons = '';
         if (isPdf) {
-          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`;
+          actionButtons = `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`;
+        } else if (r.category === 'classifieds') {
+          actionButtons = `
+            <a href="${r.url}" target="_blank" class="btn-action btn-pdf">View Classified Ad →</a>
+            <span class="price-tag-badge">GH₵${(r.price_ghs || 0).toLocaleString()}</span>
+          `;
         } else if (r.category === 'business') {
-          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-view" style="border-color:#F6CC4F;">View Directory Listing →</a>`;
+          const phone = r.metadata?.phone;
+          const phoneBtn = phone ? `<a href="tel:${phone}" class="btn-call">📞 Call ${phone}</a>` : '';
+          actionButtons = `
+            <a href="${r.url}" target="_blank" class="btn-action btn-view" style="border-color:#F6CC4F;">View Directory Profile →</a>
+            ${phoneBtn}
+          `;
         } else {
-          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
+          actionButtons = `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
         }
 
         const dateTag = r.published_date ? `<span class="date-label">Date: ${r.published_date.slice(0, 10)}</span>` : '';
@@ -796,9 +1031,9 @@ curl -X POST https://search.ghanaopenai.org/api/search \
             <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="doc-title-link">
               ${r.title}
             </a>
-            <div class="doc-snippet">${r.snippet || 'No summary excerpt available.'}</div>
+            <div class="doc-snippet">${r.snippet || 'No details available.'}</div>
             <div class="doc-actions">
-              ${actionButton}
+              ${actionButtons}
               ${dateTag}
             </div>
           </article>
@@ -839,10 +1074,21 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       const resultsNav = document.getElementById('results-nav');
       const resultsStream = document.getElementById('results-stream');
       const pagControls = document.getElementById('pagination-controls');
+      const pricingBannerArea = document.getElementById('pricing-banner-area');
 
       btn.disabled = true;
       telemetryBar.className = 'telemetry-row active';
-      telemetryMsg.innerText = 'Analyzing query with spaCy NLP and polling repositories...';
+      pricingBannerArea.innerHTML = '';
+      currentPricingData = null;
+
+      if (currentMode === 'prices') {
+        telemetryMsg.innerText = 'Scanning marketplace classifieds & computing price metrics...';
+      } else if (currentMode === 'business') {
+        telemetryMsg.innerText = 'Polling Ghana Yellow Pages and commercial directory...';
+      } else {
+        telemetryMsg.innerText = 'Analyzing query with spaCy NLP and polling repositories...';
+      }
+
       resultsStream.innerHTML = '';
       pagControls.style.display = 'none';
       resultsNav.style.display = 'none';
@@ -853,18 +1099,21 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       }, 100);
 
       try {
-        const payload = {
-          text: q,
-          top_k: 250,
-          rerank: true,
-          max_wait_seconds: 4.0
-        };
-        if (explicitCategories) {
-          payload.categories = explicitCategories;
-          explicitCategories = null;
+        let endpoint = `${BACKEND_URL}/api/search`;
+        let payload = {};
+
+        if (currentMode === 'prices') {
+          endpoint = `${BACKEND_URL}/api/prices/search`;
+          payload = { product: q, limit: 30 };
+        } else if (currentMode === 'business') {
+          endpoint = `${BACKEND_URL}/api/business/search`;
+          payload = { query: q, top_k: 30 };
+        } else {
+          endpoint = `${BACKEND_URL}/api/search`;
+          payload = { text: q, top_k: 250, rerank: true, max_wait_seconds: 4.0 };
         }
 
-        const res = await fetch(`${BACKEND_URL}/api/search`, {
+        const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -875,11 +1124,30 @@ curl -X POST https://search.ghanaopenai.org/api/search \
         telemetryTime.innerText = `${elapsed}s`;
 
         const data = await res.json();
-        allRecords = data.results || [];
         currentPage = 1;
 
-        const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(', ');
-        telemetryMsg.innerText = `Retrieved ${allRecords.length} records • Terms: [${chunks || 'general'}]`;
+        if (currentMode === 'prices') {
+          currentPricingData = data.data || {};
+          const rawListings = currentPricingData.listings || [];
+          allRecords = rawListings.map(item => ({
+            title: item.title,
+            url: item.url,
+            snippet: `Active Classifieds Listing • Price: GH₵${(item.price_ghs || 0).toLocaleString()} • Location: ${item.location || 'Ghana'}`,
+            source: 'Ghana Classifieds (GhanaBusinessWeb)',
+            category: 'classifieds',
+            price_ghs: item.price_ghs,
+            location: item.location,
+          }));
+          const avgStr = currentPricingData.average_price_ghs ? ` • Avg: GH₵${currentPricingData.average_price_ghs.toLocaleString()}` : '';
+          telemetryMsg.innerText = `Sampled ${allRecords.length} classified ads${avgStr}`;
+        } else if (currentMode === 'business') {
+          allRecords = data.results || [];
+          telemetryMsg.innerText = `Retrieved ${allRecords.length} verified commercial listings`;
+        } else {
+          allRecords = data.results || [];
+          const chunks = (data.extracted_terms?.clean_noun_chunks || []).join(', ');
+          telemetryMsg.innerText = `Retrieved ${allRecords.length} records • Terms: [${chunks || 'general'}]`;
+        }
 
         btn.disabled = false;
         resultsNav.style.display = 'flex';
