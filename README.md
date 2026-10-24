@@ -80,29 +80,140 @@ for item in response.json().get("results", []):
 
 ---
 
-## Connecting to AI Assistants (Claude Desktop / Cursor)
+## AI Inference Frameworks & Tool Calling (vLLM & SGLang)
 
-Ghana Search implements the Model Context Protocol (MCP) to allow AI assistants to query Ghanaian sources autonomously.
+Ghana Search is built natively for open-weights LLM inference runtimes (**vLLM** and **SGLang**). It provides standard OpenAI-compatible tool specifications and execution endpoints so models (such as Qwen 2.5, Llama 3.1/3.3, Mistral, Command R) can autonomously retrieve verified Ghanaian sources to ground their responses.
 
-### Claude Desktop Configuration
+### 1. vLLM Tool Calling
 
-Add the following to your `claude_desktop_config.json`:
+Launch vLLM with auto tool calling enabled:
 
-```json
-{
-  "mcpServers": {
-    "ghana-search": {
-      "command": "python3",
-      "args": ["-m", "ghana_mcp.server", "--stdio"]
-    }
-  }
-}
+```bash
+vllm serve Qwen/Qwen2.5-7B-Instruct \
+  --enable-auto-tool-choice \
+  --tool-call-parser hermes \
+  --port 8000
 ```
 
-### Remote SSE Endpoint
+Autonomous agent loop using the standard OpenAI client:
 
-For clients connecting over Server-Sent Events (SSE):
-- URL: `https://search.ghanaopenai.org/mcp/sse`
+```python
+import requests
+from openai import OpenAI
+
+# Connect to local vLLM instance
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="EMPTY")
+
+# 1. Fetch OpenAI-compatible tool definitions from Ghana Search
+tools = requests.get("https://search.ghanaopenai.org/api/tools").json()["tools"]
+
+messages = [
+    {
+        "role": "user",
+        "content": "What are the latest VAT invoicing requirements from the Ghana Revenue Authority?",
+    }
+]
+
+# 2. Model decides to call ghana_search
+response = client.chat.completions.create(
+    model="Qwen/Qwen2.5-7B-Instruct",
+    messages=messages,
+    tools=tools,
+    tool_choice="auto",
+)
+
+choice = response.choices[0]
+if choice.message.tool_calls:
+    tool_call = choice.message.tool_calls[0]
+    messages.append(choice.message)
+
+    # 3. Execute tool call via Ghana Search tool execution endpoint
+    tool_result = requests.post(
+        "https://search.ghanaopenai.org/api/tools/execute",
+        json={
+            "name": tool_call.function.name,
+            "arguments": tool_call.function.arguments,  # Pass raw arguments directly
+        },
+    ).json()
+
+    # 4. Feed grounded factual records back into conversation history
+    messages.append({
+        "role": "tool",
+        "tool_call_id": tool_call.id,
+        "content": tool_result["content"],
+    })
+
+    # 5. Generate final referenced answer
+    final_response = client.chat.completions.create(
+        model="Qwen/Qwen2.5-7B-Instruct",
+        messages=messages,
+    )
+    print(final_response.choices[0].message.content)
+```
+
+### 2. SGLang Tool Calling
+
+Launch SGLang server:
+
+```bash
+python3 -m sglang.launch_server \
+  --model-path meta-llama/Llama-3.1-8B-Instruct \
+  --port 30000
+```
+
+Autonomous agent execution with SGLang:
+
+```python
+import requests
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
+
+# Fetch Ghana Search tool specifications
+tools = requests.get("https://search.ghanaopenai.org/api/tools").json()["tools"]
+
+messages = [
+    {
+        "role": "user",
+        "content": "Find recent KNUST research on solar energy battery storage.",
+    }
+]
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-3.1-8B-Instruct",
+    messages=messages,
+    tools=tools,
+)
+
+if response.choices[0].message.tool_calls:
+    call = response.choices[0].message.tool_calls[0]
+    messages.append(response.choices[0].message)
+
+    # Execute search
+    res = requests.post(
+        "https://search.ghanaopenai.org/api/tools/execute",
+        json={"name": call.function.name, "arguments": call.function.arguments},
+    ).json()
+
+    messages.append({
+        "role": "tool",
+        "tool_call_id": call.id,
+        "content": res["content"],
+    })
+
+    answer = client.chat.completions.create(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        messages=messages,
+    )
+    print(answer.choices[0].message.content)
+```
+
+### 3. Model Context Protocol (MCP) Remote Endpoint
+
+For MCP clients and agent orchestrators connecting over Server-Sent Events (SSE):
+- **SSE Endpoint**: `https://search.ghanaopenai.org/mcp/sse`
+- **Tool Schema Endpoint**: `https://search.ghanaopenai.org/api/tools`
+- **Tool Execution Endpoint**: `https://search.ghanaopenai.org/api/tools/execute`
 
 ---
 

@@ -5,7 +5,7 @@ import os
 import sys
 import json
 import asyncio
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any, Union
 from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
 import uvicorn
@@ -390,6 +390,153 @@ async def api_search_get(
     }
 
 
+# --- Standard OpenAI-Compatible Tool Specifications for vLLM & SGLang ---
+
+GHANA_SEARCH_OPENAI_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "ghana_search",
+            "description": (
+                "Search verified Ghanaian national digital repositories including government ministries, "
+                "departments and agencies (GRA, FDA, GSA, Lands Commission), district assemblies (261 MMDAs), "
+                "court judgments and legislation (GhaLII), parliamentary bills, university thesis repositories "
+                "(KNUST, University of Ghana, UCC), and national news platforms. Returns factual titles, source agency, "
+                "publication dates, excerpts, and direct links."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": (
+                            "Natural language query or question regarding Ghana "
+                            "(e.g., 'Ghana Revenue Authority VAT requirements', 'KNUST solar battery storage research', "
+                            "'Supreme Court election petition judgments')."
+                        ),
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["news", "academic", "public_services", "wikipedia"],
+                        },
+                        "description": "Optional category filter. Defaults to all verified sources.",
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "Number of relevant documents to return (default: 10, max: 50).",
+                        "default": 10,
+                    },
+                },
+                "required": ["text"],
+            },
+        },
+    }
+]
+
+
+class ToolExecutionRequest(BaseModel):
+    name: Optional[str] = Field("ghana_search", description="Tool name")
+    arguments: Optional[Union[Dict[str, Any], str]] = Field(
+        None,
+        description="Tool arguments (either a JSON string as emitted by vLLM/SGLang tool callers, or a parsed dictionary)",
+    )
+    text: Optional[str] = Field(None, description="Direct search query")
+    categories: Optional[List[str]] = Field(None, description="Direct category filter")
+    top_k: Optional[int] = Field(10, description="Direct top_k count")
+    max_wait_seconds: Optional[float] = Field(4.0, description="Timeout budget in seconds")
+
+
+@app.get("/api/tools")
+@app.get("/v1/tools")
+async def api_tools():
+    """Return standard OpenAI-compatible tool specifications for vLLM, SGLang, and agent runtimes."""
+    return {
+        "tools": GHANA_SEARCH_OPENAI_TOOLS,
+        "format": "openai_compatible",
+        "supported_frameworks": ["vllm", "sglang", "ollama", "litellm", "langchain"],
+    }
+
+
+@app.post("/api/tools/execute")
+@app.post("/v1/tools/execute")
+async def api_tools_execute(req: ToolExecutionRequest = Body(...)):
+    """Execute a tool call emitted by vLLM, SGLang, or any OpenAI-compatible function calling model.
+    Accepts tool arguments either as a parsed dictionary or as a raw JSON string (as returned in
+    tool_call.function.arguments). Returns prompt-ready formatted text content and structured results.
+    """
+    args = {}
+    if req.arguments:
+        if isinstance(req.arguments, str):
+            try:
+                args = json.loads(req.arguments)
+            except Exception:
+                args = {"text": req.arguments}
+        elif isinstance(req.arguments, dict):
+            args = req.arguments
+
+    query_text = args.get("text") or req.text or ""
+    if not query_text.strip():
+        return {
+            "status": "error",
+            "message": "Missing required 'text' parameter in tool arguments",
+            "output": "No search query provided.",
+            "content": "No search query provided.",
+            "results": [],
+        }
+
+    raw_top_k = args.get("top_k") or req.top_k or 10
+    try:
+        top_k = max(1, min(int(raw_top_k), 50))
+    except (ValueError, TypeError):
+        top_k = 10
+
+    categories = args.get("categories") or req.categories
+    max_wait = float(args.get("max_wait_seconds") or req.max_wait_seconds or 4.0)
+
+    results = await asyncio.to_thread(
+        _execute_search,
+        text=query_text,
+        categories=categories,
+        top_k=top_k,
+        rerank=True,
+        max_wait_seconds=max_wait,
+        client_type="inference_tool_caller",
+    )
+
+    formatted_chunks = []
+    for idx, r in enumerate(results, 1):
+        snippet = r.content if r.content and len(r.content) > len(r.snippet) else r.snippet
+        if snippet and len(snippet) > 800:
+            snippet = snippet[:800] + "..."
+        date_str = f" | Date: {r.published_date}" if r.published_date else ""
+        pdf_str = f" | PDF: {r.metadata.get('pdf_url')}" if r.metadata.get("pdf_url") else ""
+        formatted_chunks.append(
+            f"[{idx}] {r.title}\n"
+            f"Source: {r.source}{date_str}{pdf_str}\n"
+            f"URL: {r.url}\n"
+            f"Content: {snippet}"
+        )
+
+    llm_context_output = (
+        f"Retrieved {len(results)} verified Ghanaian records for query '{query_text}':\n\n"
+        + "\n\n".join(formatted_chunks)
+        if formatted_chunks
+        else f"No verified Ghanaian records found for query '{query_text}'."
+    )
+
+    return {
+        "status": "success",
+        "tool_name": req.name or "ghana_search",
+        "query": query_text,
+        "count": len(results),
+        "output": llm_context_output,
+        "content": llm_context_output,
+        "results": [r.to_dict() for r in results],
+    }
+
+
 @app.get("/api/analytics/stats")
 async def api_analytics_stats():
     """Return live usage statistics, query latency, cache hit rate, and trending topics."""
@@ -443,6 +590,8 @@ async def api_health():
         "endpoints": {
             "mcp_sse": "/mcp/sse",
             "rest_search": "/api/search",
+            "tools_schema": "/api/tools",
+            "tools_execute": "/api/tools/execute",
             "analytics_stats": "/api/analytics/stats",
             "analytics_dataset": "/api/analytics/dataset",
             "backup_hf": "/api/analytics/backup-hf",
