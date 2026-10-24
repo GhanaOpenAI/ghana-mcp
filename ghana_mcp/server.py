@@ -50,7 +50,7 @@ def _execute_search(
     categories: Optional[List[str]] = None,
     top_k: int = 50,
     rerank: bool = True,
-    max_wait_seconds: float = 5.0,
+    max_wait_seconds: float = 4.0,
     client_type: str = "mcp_tool",
     user_agent: str = "",
 ) -> List[SearchResult]:
@@ -114,7 +114,7 @@ def _execute_search(
     from concurrent.futures import ThreadPoolExecutor, wait
     executor = ThreadPoolExecutor(max_workers=len(tasks) or 1)
     future_to_task = {executor.submit(fn): name for name, fn in tasks}
-    # Wait strictly up to max_wait_seconds budget (default: 3.0s)
+    # Wait strictly up to max_wait_seconds budget (default: 4.0s)
     done, not_done = wait(future_to_task.keys(), timeout=max_wait_seconds)
     for future in done:
         try:
@@ -204,7 +204,7 @@ def ghana_search(
     top_k: int = 50,
     categories: Optional[List[str]] = None,
     rerank: bool = True,
-    max_wait_seconds: float = 5.0,
+    max_wait_seconds: float = 4.0,
 ) -> str:
     """Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia.
     Takes free-form text input, extracts nouns using spaCy, queries local APIs, and ranks results by relevance.
@@ -214,7 +214,7 @@ def ghana_search(
         top_k: Number of most relevant results to return (default: 50, maximum: total retrieved candidates)
         categories: Optional list of data sources to query: ["news", "wikipedia", "academic", "public_services"]
         rerank: Whether to rerank candidates by terminology and recency (default: True)
-        max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 5.0s)
+        max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 4.0s)
     """
     results = _execute_search(text, categories, top_k, rerank, max_wait_seconds=max_wait_seconds)
     return json.dumps([r.to_dict() for r in results], indent=2)
@@ -326,7 +326,7 @@ class SearchRequest(BaseModel):
     )
     top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
     rerank: bool = Field(default=True, description="Enable hybrid semantic reranking")
-    max_wait_seconds: float = Field(default=5.0, ge=0.5, le=30.0, description="Maximum seconds to wait for external providers (default: 5.0s)")
+    max_wait_seconds: float = Field(default=4.0, ge=0.5, le=30.0, description="Maximum seconds to wait for external providers (default: 4.0s)")
 
 
 @app.post("/api/search")
@@ -363,7 +363,7 @@ async def api_search_get(
     categories: Optional[str] = Query(None, description="Comma-separated categories"),
     top_k: int = Query(50, ge=1, le=500),
     rerank: bool = Query(True),
-    max_wait_seconds: float = Query(5.0, ge=0.5, le=30.0),
+    max_wait_seconds: float = Query(4.0, ge=0.5, le=30.0),
 ):
     """GET REST endpoint for quick URL queries (non-blocking concurrent execution)."""
     input_str = text or query or ""
@@ -436,7 +436,7 @@ async def api_health():
         "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
         "workers": int(os.environ.get("WEB_CONCURRENCY", min(4, max(1, os.cpu_count() or 1)))),
         "cpu_cores": os.cpu_count(),
-        "default_max_wait_seconds": 5.0,
+        "default_max_wait_seconds": 4.0,
         "evaluation_dataset": "Enabled (JSONL export)",
         "hf_backup_repo": "ghanaopenai/ghana-search-corpus",
         "organization": "Ghana Open AI",

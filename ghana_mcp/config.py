@@ -15,4 +15,4 @@ USER_AGENT = (
     "Ghana-MCP/1.0 (+https://github.com/GhanaOpenAI/ghana-mcp)"
 )
 
-DEFAULT_TIMEOUT = 8.0  # seconds per external API query
+DEFAULT_TIMEOUT = 4.0  # seconds per external API query
