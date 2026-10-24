@@ -29,7 +29,7 @@ from ghana_mcp.nlp import extract_search_terms
 from ghana_mcp.analytics import analytics
 from ghana_mcp.cache import search_cache
 from ghana_mcp.hf_sync import hf_sync
-from ghana_mcp.config import SERVER_HOST, SERVER_PORT
+from ghana_mcp.config import SERVER_HOST, SERVER_PORT, MAX_SEARCH_SECONDS, PROVIDER_TIMEOUT
 
 # Initialize providers
 news_provider = NewsProvider()
@@ -60,7 +60,6 @@ def _execute_search(
     categories: Optional[List[str]] = None,
     top_k: int = 50,
     rerank: bool = True,
-    max_wait_seconds: float = 4.0,
     client_type: str = "mcp_tool",
     user_agent: str = "",
 ) -> List[SearchResult]:
@@ -158,8 +157,8 @@ def _execute_search(
     from concurrent.futures import ThreadPoolExecutor, wait
     executor = ThreadPoolExecutor(max_workers=len(tasks) or 1)
     future_to_task = {executor.submit(fn): name for name, fn in tasks}
-    # Wait strictly up to max_wait_seconds budget (default: 4.0s)
-    done, not_done = wait(future_to_task.keys(), timeout=max_wait_seconds)
+    # Wait strictly up to PROVIDER_TIMEOUT budget (3.2s so total response delivers under 4.0s)
+    done, not_done = wait(future_to_task.keys(), timeout=PROVIDER_TIMEOUT)
     for future in done:
         try:
             res = future.result()
@@ -248,19 +247,18 @@ def ghana_search(
     top_k: int = 50,
     categories: Optional[List[str]] = None,
     rerank: bool = True,
-    max_wait_seconds: float = 4.0,
 ) -> str:
     """Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia.
     Takes free-form text input, extracts nouns using spaCy, queries local APIs, and ranks results by relevance.
+    All searches strictly enforce a 4.0-second timeout budget across all providers.
 
     Args:
         text: Free-form text input or query from the LLM (e.g. "Who is the current president of Ghana?", "Research on solar energy from KNUST and UCC", "Ghana Revenue Authority tax requirements")
         top_k: Number of most relevant results to return (default: 50, maximum: total retrieved candidates)
         categories: Optional list of data sources to query. Defaults to knowledge repositories: ["news", "wikipedia", "academic", "public_services"]. Pass "business" explicitly to query Yellow Pages commercial listings.
         rerank: Whether to rerank candidates by terminology and recency (default: True)
-        max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 4.0s)
     """
-    results = _execute_search(text, categories, top_k, rerank, max_wait_seconds=max_wait_seconds)
+    results = _execute_search(text, categories, top_k, rerank)
     return json.dumps([r.to_dict() for r in results], indent=2)
 
 
@@ -410,21 +408,26 @@ class SearchRequest(BaseModel):
     )
     top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
     rerank: bool = Field(default=True, description="Enable hybrid semantic reranking")
-    max_wait_seconds: float = Field(default=4.0, ge=0.5, le=30.0, description="Maximum seconds to wait for external providers (default: 4.0s)")
 
 
 @app.post("/api/search")
 async def api_search_post(req: SearchRequest = Body(...)):
-    """REST API endpoint taking raw text input (non-blocking concurrent execution)."""
+    """REST API endpoint taking raw text input (enforces strict 4.0s timeout budget)."""
     nlp_data = extract_search_terms(req.text)
-    results = await asyncio.to_thread(
-        _execute_search,
-        text=req.text,
-        categories=req.categories,
-        top_k=req.top_k,
-        rerank=req.rerank,
-        max_wait_seconds=req.max_wait_seconds,
-    )
+    try:
+        results = await asyncio.wait_for(
+            asyncio.to_thread(
+                _execute_search,
+                text=req.text,
+                categories=req.categories,
+                top_k=req.top_k,
+                rerank=req.rerank,
+            ),
+            timeout=MAX_SEARCH_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        results = []
+
     return {
         "status": "success",
         "input_text": req.text,
@@ -447,19 +450,24 @@ async def api_search_get(
     categories: Optional[str] = Query(None, description="Comma-separated categories"),
     top_k: int = Query(50, ge=1, le=500),
     rerank: bool = Query(True),
-    max_wait_seconds: float = Query(4.0, ge=0.5, le=30.0),
 ):
-    """GET REST endpoint for quick URL queries (non-blocking concurrent execution)."""
+    """GET REST endpoint for quick URL queries (enforces strict 4.0s timeout budget)."""
     input_str = text or query or ""
     cat_list = [c.strip() for c in categories.split(",")] if categories else None
-    results = await asyncio.to_thread(
-        _execute_search,
-        text=input_str,
-        categories=cat_list,
-        top_k=top_k,
-        rerank=rerank,
-        max_wait_seconds=max_wait_seconds,
-    )
+    try:
+        results = await asyncio.wait_for(
+            asyncio.to_thread(
+                _execute_search,
+                text=input_str,
+                categories=cat_list,
+                top_k=top_k,
+                rerank=rerank,
+            ),
+            timeout=MAX_SEARCH_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        results = []
+
     nlp_data = extract_search_terms(input_str)
     return {
         "status": "success",
@@ -486,14 +494,21 @@ class PriceSearchRequest(BaseModel):
 
 @app.post("/api/business/search")
 async def api_business_search(req: BusinessSearchRequest = Body(...)):
-    """Search Ghana Business Directory & Yellow Pages for companies or product suppliers."""
-    results = await asyncio.to_thread(
-        _execute_search,
-        text=req.query,
-        categories=["business"],
-        top_k=req.top_k,
-        rerank=True,
-    )
+    """Search Ghana Business Directory & Yellow Pages for companies or product suppliers (enforces strict 4.0s timeout)."""
+    try:
+        results = await asyncio.wait_for(
+            asyncio.to_thread(
+                _execute_search,
+                text=req.query,
+                categories=["business"],
+                top_k=req.top_k,
+                rerank=True,
+            ),
+            timeout=MAX_SEARCH_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        results = []
+
     return {
         "status": "success",
         "query": req.query,
@@ -504,12 +519,27 @@ async def api_business_search(req: BusinessSearchRequest = Body(...)):
 
 @app.post("/api/prices/search")
 async def api_prices_search(req: PriceSearchRequest = Body(...)):
-    """Search active classifieds listings in Ghana and compute real-time price metrics in Ghana Cedis (GH₵)."""
-    data = await asyncio.to_thread(
-        price_finder.search_prices,
-        product_query=req.product,
-        limit=req.limit,
-    )
+    """Search active classifieds listings in Ghana and compute real-time price metrics in Ghana Cedis (enforces strict 4.0s timeout)."""
+    try:
+        data = await asyncio.wait_for(
+            asyncio.to_thread(
+                price_finder.search_prices,
+                product_query=req.product,
+                limit=req.limit,
+            ),
+            timeout=MAX_SEARCH_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        data = {
+            "query": req.product,
+            "sample_size": 0,
+            "average_price_ghs": None,
+            "min_price_ghs": None,
+            "max_price_ghs": None,
+            "currency": "GHS (Ghana Cedi)",
+            "listings": [],
+        }
+
     return {
         "status": "success",
         "data": data,
@@ -626,7 +656,6 @@ class ToolExecutionRequest(BaseModel):
     text: Optional[str] = Field(None, description="Direct search query")
     categories: Optional[List[str]] = Field(None, description="Direct category filter")
     top_k: Optional[int] = Field(10, description="Direct top_k count")
-    max_wait_seconds: Optional[float] = Field(4.0, description="Timeout budget in seconds")
 
 
 @app.get("/api/tools")
@@ -730,17 +759,21 @@ async def api_tools_execute(req: ToolExecutionRequest = Body(...)):
         top_k = 10
 
     categories = args.get("categories") or req.categories
-    max_wait = float(args.get("max_wait_seconds") or req.max_wait_seconds or 4.0)
 
-    results = await asyncio.to_thread(
-        _execute_search,
-        text=query_text,
-        categories=categories,
-        top_k=top_k,
-        rerank=True,
-        max_wait_seconds=max_wait,
-        client_type="inference_tool_caller",
-    )
+    try:
+        results = await asyncio.wait_for(
+            asyncio.to_thread(
+                _execute_search,
+                text=query_text,
+                categories=categories,
+                top_k=top_k,
+                rerank=True,
+                client_type="inference_tool_caller",
+            ),
+            timeout=MAX_SEARCH_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        results = []
 
     formatted_chunks = []
     for idx, r in enumerate(results, 1):

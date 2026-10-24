@@ -1,5 +1,6 @@
 """Configuration and constants for Ghana-MCP."""
 import os
+import socket
 
 # Optional Gemini API key (defaults to empty since we use self-hosted EmbeddingGemma + BGE-Reranker)
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
@@ -15,4 +16,8 @@ USER_AGENT = (
     "Ghana-MCP/1.0 (+https://github.com/GhanaOpenAI/ghana-mcp)"
 )
 
-DEFAULT_TIMEOUT = 4.0  # seconds per external API query
+# Strict 4.0s hard cap across all operations and sockets
+MAX_SEARCH_SECONDS = 4.0
+PROVIDER_TIMEOUT = 3.2  # maximum time to wait for external parallel providers
+DEFAULT_TIMEOUT = 3.0   # seconds per individual external API socket query
+socket.setdefaulttimeout(DEFAULT_TIMEOUT)

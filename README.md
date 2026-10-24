@@ -107,7 +107,8 @@ curl -X POST https://search.ghanaopenai.org/api/prices/search \
 | `text` | string | Required | Your question or search topic |
 | `top_k` | integer | `50` | Number of ranked results to return (max 500) |
 | `categories` | list | Knowledge sources | Defaults to verified knowledge sources: `["news", "academic", "public_services", "wikipedia"]`. Pass `"business"` explicitly to search Ghana Yellow Pages commercial directory. |
-| `max_wait_seconds` | float | `4.0` | Maximum seconds to wait for providers before returning gathered results (supports up to 30.0s) |
+
+*Note: All search endpoints and external providers strictly enforce a hard 4.0-second timeout budget to guarantee rapid responses without hanging.*
 
 ---
 
