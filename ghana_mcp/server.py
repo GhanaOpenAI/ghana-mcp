@@ -434,6 +434,8 @@ async def api_health():
         "nlp_engine": "spaCy (en_core_web_sm)",
         "reranker": "100% CPU Terminology Density & Recency (Zero GPU / 0MB VRAM)",
         "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
+        "workers": int(os.environ.get("WEB_CONCURRENCY", min(4, max(1, os.cpu_count() or 1)))),
+        "cpu_cores": os.cpu_count(),
         "default_max_wait_seconds": 5.0,
         "evaluation_dataset": "Enabled (JSONL export)",
         "hf_backup_repo": "ghanaopenai/ghana-search-corpus",
