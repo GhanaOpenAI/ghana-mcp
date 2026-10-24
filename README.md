@@ -209,12 +209,22 @@ if response.choices[0].message.tool_calls:
     print(answer.choices[0].message.content)
 ```
 
-### 3. Model Context Protocol (MCP) Remote Endpoint
+### 3. Model Context Protocol (MCP) Remote Endpoint & Tools
+
+Ghana Search provides three distinct, dedicated MCP tools:
+
+| MCP Tool Name | Functionality | Expected Input | Example Output |
+| :--- | :--- | :--- | :--- |
+| `ghana_search` | Verified national knowledge (gov, laws, theses, news) | Question or policy topic | Official acts, thesis abstracts, news reports |
+| `ghana_business_directory` | Yellow pages & product supplier locator | Product, service, or business name | Matching businesses, locations, and phone numbers |
+| `ghana_price_finder` | Classifieds product search & price estimation | Product / item name | Average price (GH₵), price range, active listings |
 
 For MCP clients and agent orchestrators connecting over Server-Sent Events (SSE):
 - **SSE Endpoint**: `https://search.ghanaopenai.org/mcp/sse`
 - **Tool Schema Endpoint**: `https://search.ghanaopenai.org/api/tools`
 - **Tool Execution Endpoint**: `https://search.ghanaopenai.org/api/tools/execute`
+- **Commercial Directory Endpoint**: `https://search.ghanaopenai.org/api/business/search`
+- **Classifieds Price Finder Endpoint**: `https://search.ghanaopenai.org/api/prices/search`
 
 ---
 

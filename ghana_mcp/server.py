@@ -22,6 +22,7 @@ from ghana_mcp.providers.academic import AcademicProvider
 from ghana_mcp.providers.public_services import PublicServicesProvider
 from ghana_mcp.providers.ghalii import GhaLIIProvider
 from ghana_mcp.providers.business import BusinessDirectoryProvider
+from ghana_mcp.providers.price_finder import PriceFinderProvider
 from ghana_mcp.providers.base import SearchResult
 from ghana_mcp.reranker import reranker
 from ghana_mcp.nlp import extract_search_terms
@@ -37,6 +38,7 @@ academic_provider = AcademicProvider()
 public_provider = PublicServicesProvider()
 ghalii_provider = GhaLIIProvider()
 business_provider = BusinessDirectoryProvider()
+price_finder = PriceFinderProvider()
 
 # Offline Mode Flag (air-gapped / local cache operation)
 OFFLINE_MODE = (
@@ -325,19 +327,43 @@ def ghana_wikipedia_search(
 
 
 @mcp.tool()
-def ghana_business_search(
-    text: str,
-    top_k: int = 50,
+def ghana_business_directory(
+    query: str,
+    top_k: int = 15,
 ) -> str:
-    """Search the Ghana Yellow Pages and business directory for commercial enterprises, companies, shops, products, and services across all 16 regions of Ghana.
-    Returns verified business names, categories, physical locations/addresses, telephone numbers, and directory URLs.
+    """Search the Ghana Business Directory & Yellow Pages for companies, commercial enterprises, shops, and services across all 16 regions of Ghana.
+    Works both ways:
+    1. Product / Commodity / Service Search: Pass what you are looking to buy or hire (e.g. 'solar panels', 'fertilizer', 'tractor parts', 'pharmacies in Kumasi', 'car batteries') to get a list of Ghanaian businesses that sell or supply them with physical locations and phone contacts.
+    2. Business Name Lookup: Pass a company or provider name (e.g. 'Ernest Chemists', 'Solar 4 Ghana', 'Lawyer Gwira') to retrieve their profile, location, and contact numbers.
 
     Args:
-        text: Commercial query or product search (e.g. "solar energy suppliers Accra", "pharmacies in Kumasi", "lawyers solicitor", "computer hardware shop")
-        top_k: Number of business listings to return (default: 50)
+        query: Product, commodity, service, or business name to search for
+        top_k: Number of business listings to return (default: 15)
     """
-    results = _execute_search(text, categories=["business"], top_k=top_k, rerank=True)
+    results = _execute_search(query, categories=["business"], top_k=top_k, rerank=True)
     return json.dumps([r.to_dict() for r in results], indent=2)
+
+
+@mcp.tool()
+def ghana_business_search(text: str, top_k: int = 15) -> str:
+    """Alias for ghana_business_directory."""
+    return ghana_business_directory(query=text, top_k=top_k)
+
+
+@mcp.tool()
+def ghana_price_finder(
+    product: str,
+    limit: int = 10,
+) -> str:
+    """Search Ghanaian marketplace classifieds to find active product listings and calculate real-time market price metrics in Ghana Cedis (GH₵).
+    Calculates the average price, price range (min/max), and returns current active ad listings with locations and links.
+
+    Args:
+        product: Product or item name to price check (e.g. 'MacBook Pro', 'solar inverter', 'car tracking system', 'HP toner cartridge')
+        limit: Number of classified listings to sample (default: 10)
+    """
+    res = price_finder.search_prices(product, limit=limit)
+    return json.dumps(res, indent=2)
 
 
 @asynccontextmanager
@@ -448,6 +474,48 @@ async def api_search_get(
     }
 
 
+class BusinessSearchRequest(BaseModel):
+    query: str = Field(..., description="Product, commodity, service, or business name to search for")
+    top_k: int = Field(default=15, ge=1, le=50, description="Number of business listings to return")
+
+
+class PriceSearchRequest(BaseModel):
+    product: str = Field(..., description="Product name or item to search prices for in Ghana")
+    limit: int = Field(default=10, ge=1, le=50, description="Maximum classifieds listings to sample")
+
+
+@app.post("/api/business/search")
+async def api_business_search(req: BusinessSearchRequest = Body(...)):
+    """Search Ghana Business Directory & Yellow Pages for companies or product suppliers."""
+    results = await asyncio.to_thread(
+        _execute_search,
+        text=req.query,
+        categories=["business"],
+        top_k=req.top_k,
+        rerank=True,
+    )
+    return {
+        "status": "success",
+        "query": req.query,
+        "count": len(results),
+        "results": [r.to_dict() for r in results],
+    }
+
+
+@app.post("/api/prices/search")
+async def api_prices_search(req: PriceSearchRequest = Body(...)):
+    """Search active classifieds listings in Ghana and compute real-time price metrics in Ghana Cedis (GH₵)."""
+    data = await asyncio.to_thread(
+        price_finder.search_prices,
+        product_query=req.product,
+        limit=req.limit,
+    )
+    return {
+        "status": "success",
+        "data": data,
+    }
+
+
 # --- Standard OpenAI-Compatible Tool Specifications for vLLM & SGLang ---
 
 GHANA_SEARCH_OPENAI_TOOLS = [
@@ -458,10 +526,9 @@ GHANA_SEARCH_OPENAI_TOOLS = [
             "description": (
                 "Search verified Ghanaian national digital repositories including government ministries, "
                 "departments and agencies (GRA, FDA, GSA, Lands Commission), district assemblies (261 MMDAs), "
-                "court judgments and legislation (GhaLII), parliamentary bills, university thesis repositories "
-                "(KNUST, University of Ghana, UCC), national news platforms, and Ghana Yellow Pages business "
-                "directories (commercial enterprises, products, pharmacies, legal chambers, locations, telephone contacts). "
-                "Returns factual titles, source agency, publication dates, excerpts, and direct links."
+                "court judgments and legislation (GhaLII), parliamentary bills, university thesis archives "
+                "(KNUST, University of Ghana, UCC), and national news platforms. Returns factual titles, source agency, "
+                "publication dates, excerpts, and direct links."
             ),
             "parameters": {
                 "type": "object",
@@ -469,22 +536,18 @@ GHANA_SEARCH_OPENAI_TOOLS = [
                     "text": {
                         "type": "string",
                         "description": (
-                            "Natural language query or question regarding Ghana "
+                            "Natural language question or policy query regarding Ghana "
                             "(e.g., 'Ghana Revenue Authority VAT requirements', 'KNUST solar battery storage research', "
-                            "'Supreme Court election petition judgments', 'solar energy companies in Accra', 'pharmacies in Kumasi')."
+                            "'Supreme Court election petition judgments', 'Cocoa Marketing Board regulations')."
                         ),
                     },
                     "categories": {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "enum": ["news", "academic", "public_services", "wikipedia", "business"],
+                            "enum": ["news", "academic", "public_services", "wikipedia"],
                         },
-                        "description": (
-                            "Optional category filter. Defaults to verified knowledge sources (news, academic, "
-                            "public_services, wikipedia). Pass 'business' explicitly to search commercial Yellow Pages, "
-                            "enterprises, and contact numbers."
-                        ),
+                        "description": "Optional category filter. Defaults to all verified knowledge sources.",
                     },
                     "top_k": {
                         "type": "integer",
@@ -495,7 +558,62 @@ GHANA_SEARCH_OPENAI_TOOLS = [
                 "required": ["text"],
             },
         },
-    }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ghana_business_directory",
+            "description": (
+                "Search the Ghana Business Directory & Yellow Pages for commercial enterprises, companies, shops, and services. "
+                "Works both ways: (1) Pass a product, commodity, or service (e.g. 'solar panels', 'fertilizer', 'tractor parts', "
+                "'pharmacies in Kumasi') to get verified businesses that sell or supply them along with physical locations/addresses "
+                "and phone numbers; (2) Pass a specific business or company name (e.g. 'Ernest Chemists', 'Solar 4 Ghana') to "
+                "retrieve branch locations, telephone numbers, and profile details."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Product, commodity, service, or business name to search for (e.g. 'solar panels Accra', 'fertilizer', 'Ernest Chemists').",
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "Number of business listings to return (default: 10, max: 30).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ghana_price_finder",
+            "description": (
+                "Search active Ghanaian marketplace classifieds to find product listings and calculate real-time market price "
+                "metrics in Ghana Cedis (GH₵). Pass a product or item (e.g. 'MacBook Pro', 'solar inverter', 'car tracking system', "
+                "'HP toner cartridge') to get active classifieds ads, average price (GH₵), price range (min/max), sample size, "
+                "and direct listing links."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "product": {
+                        "type": "string",
+                        "description": "Product or item name to price check in Ghana (e.g. 'MacBook Pro', 'solar inverter', 'Yamaha generator').",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of classified listings to sample (default: 10, max: 30).",
+                        "default": 10,
+                    },
+                },
+                "required": ["product"],
+            },
+        },
+    },
 ]
 
 
@@ -527,7 +645,7 @@ async def api_tools():
 async def api_tools_execute(req: ToolExecutionRequest = Body(...)):
     """Execute a tool call emitted by vLLM, SGLang, or any OpenAI-compatible function calling model.
     Accepts tool arguments either as a parsed dictionary or as a raw JSON string (as returned in
-    tool_call.function.arguments). Returns prompt-ready formatted text content and structured results.
+    tool_call.function.arguments). Supports 'ghana_search', 'ghana_business_directory', and 'ghana_price_finder'.
     """
     args = {}
     if req.arguments:
@@ -535,10 +653,66 @@ async def api_tools_execute(req: ToolExecutionRequest = Body(...)):
             try:
                 args = json.loads(req.arguments)
             except Exception:
-                args = {"text": req.arguments}
+                args = {"text": req.arguments, "query": req.arguments, "product": req.arguments}
         elif isinstance(req.arguments, dict):
             args = req.arguments
 
+    tool_name = req.name or "ghana_search"
+
+    # --- 1. Price Finder Tool Execution ---
+    if tool_name == "ghana_price_finder":
+        product_query = args.get("product") or args.get("query") or args.get("text") or req.text or ""
+        limit = int(args.get("limit") or 10)
+        data = await asyncio.to_thread(price_finder.search_prices, product_query=product_query, limit=limit)
+        listings = data.get("listings", [])
+        avg = data.get("average_price_ghs")
+        min_p = data.get("min_price_ghs")
+        max_p = data.get("max_price_ghs")
+
+        lines = [f"Ghana Marketplace Price Summary for '{product_query}':"]
+        if avg is not None:
+            lines.append(f"• Average Market Price: GH₵{avg:,.2f}")
+            lines.append(f"• Price Range: GH₵{min_p:,.2f} – GH₵{max_p:,.2f}")
+            lines.append(f"• Sampled Classifieds: {len(listings)}\n")
+        else:
+            lines.append("• No exact active classifieds listings found for this product.\n")
+
+        if listings:
+            lines.append("Active Classifieds Listings:")
+            for idx, item in enumerate(listings, 1):
+                lines.append(f"[{idx}] {item['title']} — GH₵{item['price_ghs']:,.2f} (Location: {item.get('location', 'Ghana')})\nURL: {item['url']}")
+
+        llm_context_output = "\n".join(lines)
+        return {
+            "status": "success",
+            "tool_name": tool_name,
+            "product": product_query,
+            "data": data,
+            "output": llm_context_output,
+            "content": llm_context_output,
+        }
+
+    # --- 2. Business Directory Tool Execution ---
+    if tool_name in ("ghana_business_directory", "ghana_business_search"):
+        biz_query = args.get("query") or args.get("text") or req.text or ""
+        top_k = int(args.get("top_k") or req.top_k or 15)
+        results = await asyncio.to_thread(_execute_search, text=biz_query, categories=["business"], top_k=top_k, rerank=True)
+        lines = [f"Found {len(results)} verified Ghanaian business listings for '{biz_query}':\n"]
+        for idx, r in enumerate(results, 1):
+            lines.append(f"[{idx}] {r.title}\n{r.snippet}\nDirectory Profile: {r.url}")
+
+        llm_context_output = "\n\n".join(lines) if results else f"No verified Ghanaian businesses found matching '{biz_query}'."
+        return {
+            "status": "success",
+            "tool_name": tool_name,
+            "query": biz_query,
+            "count": len(results),
+            "output": llm_context_output,
+            "content": llm_context_output,
+            "results": [r.to_dict() for r in results],
+        }
+
+    # --- 3. National Knowledge Search (Default) ---
     query_text = args.get("text") or req.text or ""
     if not query_text.strip():
         return {
@@ -591,7 +765,7 @@ async def api_tools_execute(req: ToolExecutionRequest = Body(...)):
 
     return {
         "status": "success",
-        "tool_name": req.name or "ghana_search",
+        "tool_name": tool_name,
         "query": query_text,
         "count": len(results),
         "output": llm_context_output,
@@ -655,6 +829,8 @@ async def api_health():
         "endpoints": {
             "mcp_sse": "/mcp/sse",
             "rest_search": "/api/search",
+            "rest_business_search": "/api/business/search",
+            "rest_price_search": "/api/prices/search",
             "tools_schema": "/api/tools",
             "tools_execute": "/api/tools/execute",
             "analytics_stats": "/api/analytics/stats",
