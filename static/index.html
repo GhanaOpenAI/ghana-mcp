@@ -1096,14 +1096,13 @@ curl -X POST https://search.ghanaopenai.org/api/prices/search \
       const controller = new AbortController();
       const abortTimer = setTimeout(() => {
         controller.abort();
-      }, 4000);
+      }, 5000);
 
       const t0 = performance.now();
       const clockInterval = setInterval(() => {
         const curElapsed = (performance.now() - t0) / 1000;
         if (curElapsed >= 4.0) {
           telemetryTime.innerText = '4.0s';
-          clearInterval(clockInterval);
         } else {
           telemetryTime.innerText = `${curElapsed.toFixed(1)}s`;
         }
