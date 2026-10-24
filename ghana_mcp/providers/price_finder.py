@@ -1,6 +1,6 @@
 """Classifieds ads product search and price aggregation provider for Ghana.
-Integrates live Ghanaian marketplaces (Jumia Ghana, Ghana Classifieds) and attempts
-classifieds networks (Tonaton) to extract real-time market asking prices in Ghana Cedis (GH₵).
+Queries Tonaton.com's official API to extract live classified ads, calculate
+average asking prices, price ranges (min/max), and provide direct listing URLs in Ghana Cedis (GH₵).
 """
 import re
 import json
@@ -10,7 +10,7 @@ import ssl
 from typing import Dict, Any, List, Optional, Tuple
 from bs4 import BeautifulSoup
 
-from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
+from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT, TONATON_COOKIE
 
 try:
     from curl_cffi import requests as cffi_requests
@@ -28,35 +28,79 @@ class PriceFinderProvider:
     def __init__(self, timeout: float = DEFAULT_TIMEOUT):
         self.timeout = timeout
         self.headers = {
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "Accept": "application/json",
+            "Referer": "https://tonaton.com/",
+            "Cookie": TONATON_COOKIE,
         }
 
-    def _fetch_jumia_ghana(self, product_query: str, limit: int) -> Tuple[List[Dict[str, Any]], Optional[str]]:
-        """Fetch live product retail & vendor prices from Jumia Ghana Marketplace."""
+    def _fetch_tonaton_api(self, product_query: str, limit: int) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """Fetch live classified ads directly from Tonaton.com's internal API."""
+        listings: List[Dict[str, Any]] = []
+        url = f"https://tonaton.com/api_web/v1/listing?query={urllib.parse.quote(product_query)}"
+        err_msg = None
+
+        try:
+            req = urllib.request.Request(url, headers=self.headers)
+            with urllib.request.urlopen(req, timeout=min(self.timeout, 3.2), context=SSL_CTX) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+
+            adverts = data.get("adverts_list", {}).get("adverts", [])
+            for ad in adverts:
+                title = ad.get("title") or ""
+                price_title = ad.get("price_title") or ""
+                digits = re.sub(r"[^\d]", "", price_title)
+                try:
+                    price_val = float(digits) if digits else 0.0
+                except ValueError:
+                    price_val = 0.0
+
+                slug = ad.get("slug") or ""
+                guid = ad.get("guid") or ""
+                link = (
+                    f"https://tonaton.com/a-{guid}-{slug}.html"
+                    if guid and slug
+                    else f"https://tonaton.com/en/ad/{ad.get('id')}"
+                )
+                loc = ad.get("region_item_text") or ad.get("region_name") or "Ghana"
+
+                if price_val > 0 and title:
+                    listings.append({
+                        "title": title,
+                        "price_ghs": price_val,
+                        "source": "Tonaton.com",
+                        "location": loc,
+                        "url": link,
+                    })
+
+                if len(listings) >= limit:
+                    break
+        except Exception as e:
+            err_msg = str(e)
+
+        return listings, err_msg
+
+    def _fetch_jumia_ghana(self, product_query: str, limit: int) -> List[Dict[str, Any]]:
+        """Fallback: Fetch live product retail & vendor prices from Jumia Ghana Marketplace."""
         listings: List[Dict[str, Any]] = []
         url = f"https://www.jumia.com.gh/catalog/?q={urllib.parse.quote(product_query)}"
-        err_msg = None
 
         try:
             html = ""
             if cffi_requests is not None:
-                resp = cffi_requests.get(url, impersonate="chrome124", timeout=min(self.timeout, 3.8))
+                resp = cffi_requests.get(url, impersonate="chrome124", timeout=min(self.timeout, 3.2))
                 if resp.status_code == 200:
                     html = resp.text
-                else:
-                    err_msg = f"cffi HTTP {resp.status_code}"
             else:
-                err_msg = "cffi_requests is None (not installed)"
-                req = urllib.request.Request(url, headers=self.headers)
-                with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as r:
+                req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+                with urllib.request.urlopen(req, timeout=min(self.timeout, 2.5), context=SSL_CTX) as r:
                     html = r.read().decode("utf-8", errors="ignore")
 
             if not html:
-                return listings, err_msg
+                return []
 
             soup = BeautifulSoup(html, "html.parser")
-            seen_jumia_urls = set()
+            seen_urls = set()
 
             for prc in soup.find_all("div", class_=lambda c: c and "prc" in c):
                 a = prc.find_parent("a", href=True)
@@ -69,7 +113,7 @@ class PriceFinderProvider:
                     if item_href.startswith("/")
                     else item_href
                 )
-                if link in seen_jumia_urls:
+                if link in seen_urls:
                     continue
 
                 name_el = a.find(class_=lambda c: c and "name" in c) or a.find("h3") or a.find("h2")
@@ -77,17 +121,7 @@ class PriceFinderProvider:
                     continue
 
                 name = name_el.get_text(strip=True)
-                name_lower = name.lower()
-
-                # Filter out accessories (e.g. cables, cases) if they don't match core query term
-                query_words = [w for w in product_query.lower().split() if len(w) > 2]
-                if query_words and query_words[0] not in name_lower:
-                    continue
-
-                seen_jumia_urls.add(link)
                 raw_price = prc.get_text(strip=True)
-
-                # Extract digits and clean Ghana Cedi value
                 digits = re.sub(r"[^\d]", "", raw_price)
                 try:
                     price_val = float(digits) if digits else 0.0
@@ -95,6 +129,7 @@ class PriceFinderProvider:
                     price_val = 0.0
 
                 if price_val > 0:
+                    seen_urls.add(link)
                     listings.append({
                         "title": name,
                         "price_ghs": price_val,
@@ -105,83 +140,29 @@ class PriceFinderProvider:
 
                 if len(listings) >= limit:
                     break
-        except Exception as e:
-            err_msg = str(e)
+        except Exception:
+            pass
 
-        return listings, err_msg
+        return listings
 
-    def _fetch_tonaton_or_classifieds(self, product_query: str, limit: int) -> List[Dict[str, Any]]:
-        """Attempt Tonaton classifieds or Ghana Classifieds directory."""
+    def _fetch_ghana_classifieds(self, product_query: str, limit: int) -> List[Dict[str, Any]]:
+        """Fallback: Secondary classifieds ads from Ghana Classifieds."""
         listings: List[Dict[str, Any]] = []
-
-        # 1. Attempt Tonaton via browser impersonation
-        if cffi_requests is not None:
-            try:
-                tonaton_url = f"https://tonaton.com/en/ads/ghana?query={urllib.parse.quote(product_query)}"
-                r = cffi_requests.get(tonaton_url, impersonate="chrome124", timeout=2.0)
-                if r.status_code == 200 and "Human Verification" not in r.text:
-                    soup = BeautifulSoup(r.text, "html.parser")
-                    for a in soup.find_all("a", href=lambda h: h and "/en/ad/" in h):
-                        title = a.get_text(strip=True)
-                        if title and len(title) > 3:
-                            price_m = re.search(r"GH[₵¢S]?\s*([\d,]+)", a.get_text())
-                            if price_m:
-                                price_val = float(price_m.group(1).replace(",", ""))
-                                link = (
-                                    f"https://tonaton.com{a['href']}"
-                                    if a["href"].startswith("/")
-                                    else a["href"]
-                                )
-                                listings.append({
-                                    "title": title,
-                                    "price_ghs": price_val,
-                                    "source": "Tonaton Ghana Classifieds",
-                                    "location": "Ghana",
-                                    "url": link,
-                                })
-            except Exception:
-                pass
-
-        # 2. Fetch from Ghana Classifieds
         try:
             url = f"https://www.ghanabusinessweb.com/classifieds?q={urllib.parse.quote(product_query)}"
-            req = urllib.request.Request(url, headers=self.headers)
-            with urllib.request.urlopen(req, timeout=min(self.timeout, 2.5), context=SSL_CTX) as resp:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=min(self.timeout, 2.0), context=SSL_CTX) as resp:
                 html = resp.read().decode("utf-8", errors="ignore")
 
             soup = BeautifulSoup(html, "html.parser")
-
-            # JSON-LD product offers
-            for script_tag in soup.find_all("script", type="application/ld+json"):
-                try:
-                    data = json.loads(script_tag.string)
-                    if data.get("@type") == "Product" and "offers" in data:
-                        name = data.get("name")
-                        p_val = float(data["offers"].get("price", 0))
-                        item_url = data["offers"].get("url")
-                        if p_val > 0 and item_url:
-                            listings.append({
-                                "title": name,
-                                "price_ghs": p_val,
-                                "source": "Ghana Classifieds",
-                                "location": "Ghana",
-                                "url": item_url,
-                            })
-                except Exception:
-                    pass
-
-            # HTML cards
             for a in soup.find_all("a", href=lambda h: h and "/classifieds/" in h and any(c.isdigit() for c in h)):
                 title = a.get_text(strip=True)
                 href = a["href"]
                 if not title or len(title) < 3 or "Post" in title or "category" in href:
                     continue
-                if any(it["url"] == href for it in listings):
-                    continue
 
                 parent = a.find_parent("div")
                 card_text = parent.get_text(" | ", strip=True) if parent else ""
-
                 price_match = re.search(r"GH[₵¢S]?\s*([\d,]+)", card_text)
                 if price_match:
                     num_str = price_match.group(1).replace(",", "")
@@ -222,36 +203,43 @@ class PriceFinderProvider:
                 "listings": [],
             }
 
-        # 1. Primary: Live market retail and vendor prices (Jumia Ghana)
-        jumia_items, err_msg = self._fetch_jumia_ghana(clean_query, limit=limit)
+        # 1. Primary Source: Tonaton.com live classifieds API
+        tonaton_items, err_msg = self._fetch_tonaton_api(clean_query, limit=limit)
 
-        # 2. Secondary: Classifieds ads (Tonaton / Ghana Classifieds)
-        classified_items = self._fetch_tonaton_or_classifieds(clean_query, limit=limit)
+        all_listings = list(tonaton_items)
 
-        # Combine and deduplicate by URL
+        # 2. Secondary Fallback: If Tonaton had 0 items or errored, fetch Jumia & Ghana Classifieds
+        if len(all_listings) < limit:
+            fallback_items = self._fetch_jumia_ghana(clean_query, limit=limit - len(all_listings))
+            all_listings.extend(fallback_items)
+
+        if len(all_listings) < limit:
+            classified_items = self._fetch_ghana_classifieds(clean_query, limit=limit - len(all_listings))
+            all_listings.extend(classified_items)
+
+        # Deduplicate by URL
         seen_urls = set()
-        all_listings: List[Dict[str, Any]] = []
-
-        for it in jumia_items + classified_items:
+        unique_listings = []
+        for it in all_listings:
             u = it.get("url", "")
             if u and u not in seen_urls:
                 seen_urls.add(u)
-                all_listings.append(it)
-            if len(all_listings) >= limit:
+                unique_listings.append(it)
+            if len(unique_listings) >= limit:
                 break
 
-        prices = [it["price_ghs"] for it in all_listings if it.get("price_ghs")]
+        prices = [it["price_ghs"] for it in unique_listings if it.get("price_ghs")]
         avg_price = round(sum(prices) / len(prices), 2) if prices else None
         min_price = min(prices) if prices else None
         max_price = max(prices) if prices else None
 
         return {
             "query": clean_query,
-            "sample_size": len(all_listings),
+            "sample_size": len(unique_listings),
             "average_price_ghs": avg_price,
             "min_price_ghs": min_price,
             "max_price_ghs": max_price,
             "currency": "GHS (Ghana Cedi)",
-            "debug_info": {"cffi_available": cffi_requests is not None, "jumia_err": err_msg},
-            "listings": all_listings,
+            "primary_source": "Tonaton.com",
+            "listings": unique_listings,
         }
