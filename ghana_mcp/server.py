@@ -70,7 +70,7 @@ def _execute_search(
     lemma_chunks = nlp_data.get("lemma_chunks", [])
     nouns = nlp_data.get("nouns", [])
 
-    cats = categories or ["news", "wikipedia", "academic", "public_services", "business"]
+    cats = categories or ["news", "wikipedia", "academic", "public_services"]
 
     # 2. Check 24-hour cache first (instant response for repeated queries)
     cached_results = search_cache.get(text, cats, top_k)
@@ -210,13 +210,13 @@ def ghana_search(
     rerank: bool = True,
     max_wait_seconds: float = 4.0,
 ) -> str:
-    """Search Ghanaian local news, university thesis archives, government agencies, Yellow Pages business directories, and Ghana Wikipedia.
+    """Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia.
     Takes free-form text input, extracts nouns using spaCy, queries local APIs, and ranks results by relevance.
 
     Args:
-        text: Free-form text input or query from the LLM (e.g. "Who is the current president of Ghana?", "Research on solar energy from KNUST and UCC", "Ghana Revenue Authority tax requirements", "Solar installation companies in Accra", "Pharmacies in Kumasi")
+        text: Free-form text input or query from the LLM (e.g. "Who is the current president of Ghana?", "Research on solar energy from KNUST and UCC", "Ghana Revenue Authority tax requirements")
         top_k: Number of most relevant results to return (default: 50, maximum: total retrieved candidates)
-        categories: Optional list of data sources to query: ["news", "wikipedia", "academic", "public_services", "business"]
+        categories: Optional list of data sources to query. Defaults to knowledge repositories: ["news", "wikipedia", "academic", "public_services"]. Pass "business" explicitly to query Yellow Pages commercial listings.
         rerank: Whether to rerank candidates by terminology and recency (default: True)
         max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 4.0s)
     """
@@ -341,8 +341,8 @@ app.mount(
 class SearchRequest(BaseModel):
     text: str = Field(..., description="Free-form query text input")
     categories: Optional[List[str]] = Field(
-        default=["news", "wikipedia", "academic", "public_services", "business"],
-        description="Categories to search",
+        default=None,
+        description="Categories to search (defaults to knowledge repositories: news, wikipedia, academic, public_services. Pass 'business' explicitly to query Yellow Pages & commercial directory)",
     )
     top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
     rerank: bool = Field(default=True, description="Enable hybrid semantic reranking")
@@ -442,7 +442,11 @@ GHANA_SEARCH_OPENAI_TOOLS = [
                             "type": "string",
                             "enum": ["news", "academic", "public_services", "wikipedia", "business"],
                         },
-                        "description": "Optional category filter. Defaults to all verified sources.",
+                        "description": (
+                            "Optional category filter. Defaults to verified knowledge sources (news, academic, "
+                            "public_services, wikipedia). Pass 'business' explicitly to search commercial Yellow Pages, "
+                            "enterprises, and contact numbers."
+                        ),
                     },
                     "top_k": {
                         "type": "integer",

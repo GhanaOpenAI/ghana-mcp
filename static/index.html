@@ -588,7 +588,7 @@
       <span class="suggested-lbl">Suggested:</span>
       <button class="suggested-btn" onclick="applyQuery('who is the current president of ghana')">President of Ghana</button>
       <button class="suggested-btn" onclick="applyQuery('renewable solar energy battery storage research KNUST')">Solar Energy</button>
-      <button class="suggested-btn" onclick="applyQuery('solar energy companies in Accra')">Solar Companies</button>
+      <button class="suggested-btn" onclick="applyQuery('solar energy companies in Accra', ['business'])">Solar Companies</button>
       <button class="suggested-btn" onclick="applyQuery('Supreme Court income tax judgment GhaLII')">Tax Judgments</button>
       <button class="suggested-btn" onclick="applyQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</button>
       <button class="suggested-btn" onclick="applyQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills</button>
@@ -716,8 +716,11 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       document.getElementById('query-input').focus();
     }
 
-    function applyQuery(q) {
+    let explicitCategories = null;
+
+    function applyQuery(q, cats = null) {
       document.getElementById('query-input').value = q;
+      explicitCategories = cats;
       executeSearch();
     }
 
@@ -850,15 +853,21 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       }, 100);
 
       try {
+        const payload = {
+          text: q,
+          top_k: 250,
+          rerank: true,
+          max_wait_seconds: 4.0
+        };
+        if (explicitCategories) {
+          payload.categories = explicitCategories;
+          explicitCategories = null;
+        }
+
         const res = await fetch(`${BACKEND_URL}/api/search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: q,
-            top_k: 250,
-            rerank: true,
-            max_wait_seconds: 4.0
-          })
+          body: JSON.stringify(payload)
         });
 
         const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
