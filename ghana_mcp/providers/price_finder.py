@@ -40,7 +40,7 @@ class PriceFinderProvider:
         try:
             html = ""
             if cffi_requests is not None:
-                resp = cffi_requests.get(url, impersonate="chrome124", timeout=min(self.timeout, 3.2))
+                resp = cffi_requests.get(url, impersonate="chrome124", timeout=min(self.timeout, 3.8))
                 if resp.status_code == 200:
                     html = resp.text
             else:
@@ -52,21 +52,36 @@ class PriceFinderProvider:
                 return []
 
             soup = BeautifulSoup(html, "html.parser")
-            for prc in soup.find_all("div", class_="prc"):
-                parent = prc.find_parent("article") or prc.find_parent("div")
-                name_el = parent.find(class_="name") if parent else None
-                core_a = parent.find("a", class_="core") if parent else None
-                if not name_el:
+            seen_jumia_urls = set()
+
+            for prc in soup.find_all("div", class_=lambda c: c and "prc" in c):
+                a = prc.find_parent("a", href=True)
+                if not a:
                     continue
 
-                name = name_el.get_text(strip=True)
-                raw_price = prc.get_text(strip=True)
-                item_href = core_a["href"] if core_a and core_a.get("href") else ""
+                item_href = a.get("href", "")
                 link = (
                     f"https://www.jumia.com.gh{item_href}"
                     if item_href.startswith("/")
                     else item_href
                 )
+                if link in seen_jumia_urls:
+                    continue
+
+                name_el = a.find(class_=lambda c: c and "name" in c) or a.find("h3") or a.find("h2")
+                if not name_el:
+                    continue
+
+                name = name_el.get_text(strip=True)
+                name_lower = name.lower()
+
+                # Filter out accessories (e.g. cables, cases) if they don't match core query term
+                query_words = [w for w in product_query.lower().split() if len(w) > 2]
+                if query_words and query_words[0] not in name_lower:
+                    continue
+
+                seen_jumia_urls.add(link)
+                raw_price = prc.get_text(strip=True)
 
                 # Extract digits and clean Ghana Cedi value
                 digits = re.sub(r"[^\d]", "", raw_price)
