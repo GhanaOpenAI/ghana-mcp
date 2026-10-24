@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from ghana_mcp.providers.base import BaseProvider, SearchResult
 from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
-from ghana_mcp.reranker import token_matches_title
+from ghana_mcp.nlp import token_matches_title, is_foreign_title, FOREIGN_COUNTRIES
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 WIKI_REST_SUMMARY = "https://en.wikipedia.org/api/rest_v1/page/summary"

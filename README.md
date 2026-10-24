@@ -20,6 +20,7 @@ Ghana Search queries the public search APIs of over 430 Ghanaian institutions an
 - **Parliament of Ghana**: Official parliamentary Bills, Hansard records, and committee reports with direct PDF downloads.
 - **University Theses and Research**: Academic research abstracts and direct PDF thesis download links from KNUST, University of Ghana (UGSpace), and University of Cape Coast (UCC).
 - **National News Outlets**: Real-time articles from B&FT Online, 3News, Citi Newsroom, Ghana News Agency (GNA), Yen.com.gh, The Chronicle, Ghana Business News, and Starr FM.
+- **Ghana Yellow Pages & Commercial Directory (GhanaBusinessWeb)**: Direct search across verified Ghanaian commercial enterprises, pharmacies, hospitals, legal chambers, solar energy suppliers, hotels, and contractors with physical addresses, telephone contacts, and directory listings.
 - **Ghanaian Reference**: Scoped reference and historical background from Wikipedia (Ghana).
 
 ---
@@ -75,7 +76,7 @@ for item in response.json().get("results", []):
 | :--- | :--- | :--- | :--- |
 | `text` | string | Required | Your question or search topic |
 | `top_k` | integer | `50` | Number of ranked results to return (max 500) |
-| `categories` | list | `all` | Optional filter: `["news", "academic", "public_services", "wikipedia"]` |
+| `categories` | list | `all` | Optional filter: `["news", "academic", "public_services", "wikipedia", "business"]` |
 | `max_wait_seconds` | float | `4.0` | Maximum seconds to wait for providers before returning gathered results (supports up to 30.0s) |
 
 ---

@@ -21,6 +21,7 @@ from ghana_mcp.providers.wikipedia import WikipediaGhanaProvider
 from ghana_mcp.providers.academic import AcademicProvider
 from ghana_mcp.providers.public_services import PublicServicesProvider
 from ghana_mcp.providers.ghalii import GhaLIIProvider
+from ghana_mcp.providers.business import BusinessDirectoryProvider
 from ghana_mcp.providers.base import SearchResult
 from ghana_mcp.reranker import reranker
 from ghana_mcp.nlp import extract_search_terms
@@ -35,6 +36,7 @@ wiki_provider = WikipediaGhanaProvider()
 academic_provider = AcademicProvider()
 public_provider = PublicServicesProvider()
 ghalii_provider = GhaLIIProvider()
+business_provider = BusinessDirectoryProvider()
 
 # Initialize MCP Server
 mcp = MCPServer(
@@ -68,7 +70,7 @@ def _execute_search(
     lemma_chunks = nlp_data.get("lemma_chunks", [])
     nouns = nlp_data.get("nouns", [])
 
-    cats = categories or ["news", "wikipedia", "academic", "public_services"]
+    cats = categories or ["news", "wikipedia", "academic", "public_services", "business"]
 
     # 2. Check 24-hour cache first (instant response for repeated queries)
     cached_results = search_cache.get(text, cats, top_k)
@@ -110,6 +112,8 @@ def _execute_search(
     if "public_services" in cats:
         tasks.append(("public_services", lambda: public_provider.search(search_keywords, limit=per_provider_limit)))
         tasks.append(("ghalii", lambda: ghalii_provider.search(search_keywords, limit=min(per_provider_limit, 6))))
+    if "business" in cats:
+        tasks.append(("business", lambda: business_provider.search(search_keywords, limit=per_provider_limit)))
 
     from concurrent.futures import ThreadPoolExecutor, wait
     executor = ThreadPoolExecutor(max_workers=len(tasks) or 1)
@@ -206,13 +210,13 @@ def ghana_search(
     rerank: bool = True,
     max_wait_seconds: float = 4.0,
 ) -> str:
-    """Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia.
+    """Search Ghanaian local news, university thesis archives, government agencies, Yellow Pages business directories, and Ghana Wikipedia.
     Takes free-form text input, extracts nouns using spaCy, queries local APIs, and ranks results by relevance.
 
     Args:
-        text: Free-form text input or query from the LLM (e.g. "Who is the current president of Ghana?", "Research on solar energy from KNUST and UCC", "Ghana Revenue Authority tax requirements")
+        text: Free-form text input or query from the LLM (e.g. "Who is the current president of Ghana?", "Research on solar energy from KNUST and UCC", "Ghana Revenue Authority tax requirements", "Solar installation companies in Accra", "Pharmacies in Kumasi")
         top_k: Number of most relevant results to return (default: 50, maximum: total retrieved candidates)
-        categories: Optional list of data sources to query: ["news", "wikipedia", "academic", "public_services"]
+        categories: Optional list of data sources to query: ["news", "wikipedia", "academic", "public_services", "business"]
         rerank: Whether to rerank candidates by terminology and recency (default: True)
         max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 4.0s)
     """
@@ -282,6 +286,22 @@ def ghana_wikipedia_search(
     return json.dumps([r.to_dict() for r in results], indent=2)
 
 
+@mcp.tool()
+def ghana_business_search(
+    text: str,
+    top_k: int = 50,
+) -> str:
+    """Search the Ghana Yellow Pages and business directory for commercial enterprises, companies, shops, products, and services across all 16 regions of Ghana.
+    Returns verified business names, categories, physical locations/addresses, telephone numbers, and directory URLs.
+
+    Args:
+        text: Commercial query or product search (e.g. "solar energy suppliers Accra", "pharmacies in Kumasi", "lawyers solicitor", "computer hardware shop")
+        top_k: Number of business listings to return (default: 50)
+    """
+    results = _execute_search(text, categories=["business"], top_k=top_k, rerank=True)
+    return json.dumps([r.to_dict() for r in results], indent=2)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application startup and shutdown lifecycle cleanly."""
@@ -321,7 +341,7 @@ app.mount(
 class SearchRequest(BaseModel):
     text: str = Field(..., description="Free-form query text input")
     categories: Optional[List[str]] = Field(
-        default=["news", "wikipedia", "academic", "public_services"],
+        default=["news", "wikipedia", "academic", "public_services", "business"],
         description="Categories to search",
     )
     top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
@@ -401,8 +421,9 @@ GHANA_SEARCH_OPENAI_TOOLS = [
                 "Search verified Ghanaian national digital repositories including government ministries, "
                 "departments and agencies (GRA, FDA, GSA, Lands Commission), district assemblies (261 MMDAs), "
                 "court judgments and legislation (GhaLII), parliamentary bills, university thesis repositories "
-                "(KNUST, University of Ghana, UCC), and national news platforms. Returns factual titles, source agency, "
-                "publication dates, excerpts, and direct links."
+                "(KNUST, University of Ghana, UCC), national news platforms, and Ghana Yellow Pages business "
+                "directories (commercial enterprises, products, pharmacies, legal chambers, locations, telephone contacts). "
+                "Returns factual titles, source agency, publication dates, excerpts, and direct links."
             ),
             "parameters": {
                 "type": "object",
@@ -412,14 +433,14 @@ GHANA_SEARCH_OPENAI_TOOLS = [
                         "description": (
                             "Natural language query or question regarding Ghana "
                             "(e.g., 'Ghana Revenue Authority VAT requirements', 'KNUST solar battery storage research', "
-                            "'Supreme Court election petition judgments')."
+                            "'Supreme Court election petition judgments', 'solar energy companies in Accra', 'pharmacies in Kumasi')."
                         ),
                     },
                     "categories": {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "enum": ["news", "academic", "public_services", "wikipedia"],
+                            "enum": ["news", "academic", "public_services", "wikipedia", "business"],
                         },
                         "description": "Optional category filter. Defaults to all verified sources.",
                     },

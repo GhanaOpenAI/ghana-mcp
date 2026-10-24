@@ -18,6 +18,81 @@ except Exception:
     nlp = None
 
 
+FOREIGN_COUNTRIES = {
+    "kenya", "nigeria", "uganda", "tanzania", "south africa", "zimbabwe",
+    "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
+    "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
+    "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
+    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo",
+    "greece", "russia", "ukraine", "israel", "gaza", "palestine",
+    "iran", "iraq", "afghanistan", "pakistan", "india", "china",
+    "japan", "germany", "france", "britain"
+}
+
+
+def is_foreign_title(title: str) -> bool:
+    """Return True if title refers to a foreign country and lacks Ghana/Ghanaian context."""
+    tl = (title or "").lower()
+    if "ghana" in tl or "ghanaian" in tl:
+        return False
+    for c in FOREIGN_COUNTRIES:
+        if re.search(rf"\b{re.escape(c)}\b", tl):
+            return True
+    return False
+
+
+def token_matches_title(token: str, title: str) -> bool:
+    """Match token in title considering singular/plural and morphological derivations."""
+    t = token.lower().strip()
+    tl = (title or "").lower()
+    if not t or len(t) < 2:
+        return False
+    if t in tl:
+        return True
+
+    # 1. -ies <-> -y (e.g. pharmacies <-> pharmacy, companies <-> company)
+    if t.endswith("ies") and len(t) > 4:
+        sing_y = t[:-3] + "y"
+        if sing_y in tl:
+            return True
+    elif t.endswith("y") and len(t) > 2:
+        plur_ies = t[:-1] + "ies"
+        if plur_ies in tl:
+            return True
+
+    # 2. -es (e.g. branches <-> branch, taxes <-> tax, speeches <-> speech)
+    if t.endswith("es") and len(t) > 4:
+        sing_es = t[:-2]
+        if sing_es in tl:
+            return True
+    elif t.endswith(("ch", "sh", "x", "s", "z")):
+        plur_es = t + "es"
+        if plur_es in tl:
+            return True
+
+    # 3. -s (e.g. bills <-> bill, laws <-> law, books <-> book)
+    if t.endswith("s") and len(t) > 3 and not t.endswith("ss"):
+        sing_s = t[:-1]
+        if sing_s in tl:
+            return True
+    if not t.endswith("s"):
+        plur_s = t + "s"
+        if plur_s in tl:
+            return True
+
+    # 4. Adjective/noun derivations (e.g. parliamentary -> parliament, ghanaian -> ghana)
+    if t.endswith("ary") and len(t) > 6 and t[:-3] in tl:
+        return True
+    if (t + "ary") in tl:
+        return True
+    if t.endswith("ian") and len(t) > 5 and t[:-3] in tl:
+        return True
+    if (t + "ian") in tl:
+        return True
+
+    return False
+
+
 def get_singular_plural_variants(word: str) -> Set[str]:
     """Return both singular and plural forms of a given word."""
     w = word.strip()

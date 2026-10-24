@@ -558,7 +558,7 @@
     
     <div class="hero-area">
       <h1 class="hero-h1">Ghana's Information Retrieval Engine</h1>
-      <p class="hero-p">Query 164 verified government portals, university thesis repositories (KNUST/UG/UCC), Supreme Court rulings (GhaLII), and national news networks.</p>
+      <p class="hero-p">Query 164 verified government portals, Ghana Yellow Pages & business directories, university repositories (KNUST/UG/UCC), court judgments (GhaLII), and national news networks.</p>
     </div>
 
     <!-- Solid Search Bar Card with Search and Reset Buttons -->
@@ -588,6 +588,7 @@
       <span class="suggested-lbl">Suggested:</span>
       <button class="suggested-btn" onclick="applyQuery('who is the current president of ghana')">President of Ghana</button>
       <button class="suggested-btn" onclick="applyQuery('renewable solar energy battery storage research KNUST')">Solar Energy</button>
+      <button class="suggested-btn" onclick="applyQuery('solar energy companies in Accra')">Solar Companies</button>
       <button class="suggested-btn" onclick="applyQuery('Supreme Court income tax judgment GhaLII')">Tax Judgments</button>
       <button class="suggested-btn" onclick="applyQuery('Ghana Revenue Authority VAT and electronic invoicing requirements')">GRA VAT Policies</button>
       <button class="suggested-btn" onclick="applyQuery('Parliament of Ghana Budget Bill report')">Parliamentary Bills</button>
@@ -769,10 +770,15 @@ curl -X POST https://search.ghanaopenai.org/api/search \
 
         const isPdf = r.url.endsWith('/content') || r.url.endsWith('.pdf') || r.url.endsWith('/source') || (r.metadata && r.metadata.pdf_url);
         
-        // PDF Action vs Non-PDF Action
-        const actionButton = isPdf
-          ? `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`
-          : `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
+        // PDF Action vs Directory Action vs Article Action
+        let actionButton;
+        if (isPdf) {
+          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-pdf"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF</a>`;
+        } else if (r.category === 'business') {
+          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-view" style="border-color:#F6CC4F;">View Directory Listing →</a>`;
+        } else {
+          actionButton = `<a href="${r.url}" target="_blank" class="btn-action btn-view">View Full Article →</a>`;
+        }
 
         const dateTag = r.published_date ? `<span class="date-label">Date: ${r.published_date.slice(0, 10)}</span>` : '';
 

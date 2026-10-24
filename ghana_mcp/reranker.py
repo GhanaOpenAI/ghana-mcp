@@ -11,55 +11,7 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Set
 
 from ghana_mcp.providers.base import SearchResult
-
-FOREIGN_COUNTRIES = {
-    "kenya", "nigeria", "uganda", "tanzania", "south africa", "zimbabwe",
-    "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
-    "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
-    "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
-    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo",
-    "greece", "russia", "ukraine", "israel", "gaza", "palestine",
-    "iran", "iraq", "afghanistan", "pakistan", "india", "china",
-    "japan", "germany", "france", "britain"
-}
-
-
-def is_foreign_title(title: str) -> bool:
-    """Return True if title refers to a foreign country and lacks Ghana/Ghanaian context."""
-    tl = title.lower()
-    if "ghana" in tl or "ghanaian" in tl:
-        return False
-    for c in FOREIGN_COUNTRIES:
-        if re.search(rf"\b{re.escape(c)}\b", tl):
-            return True
-    return False
-
-
-def token_matches_title(token: str, title: str) -> bool:
-    """Match token in title considering singular/plural and morphological derivations."""
-    t = token.lower().strip()
-    tl = (title or "").lower()
-    if not t or len(t) < 2:
-        return False
-    if t in tl:
-        return True
-    # Singular / plural matching
-    if t.endswith("s") and len(t) > 3 and t[:-1] in tl:
-        return True
-    if (t + "s") in tl:
-        return True
-    if t.endswith("es") and len(t) > 4 and t[:-2] in tl:
-        return True
-    # Adjective/noun derivations (e.g. parliamentary -> parliament, ghanaian -> ghana)
-    if t.endswith("ary") and len(t) > 6 and t[:-3] in tl:
-        return True
-    if (t + "ary") in tl:
-        return True
-    if t.endswith("ian") and len(t) > 5 and t[:-3] in tl:
-        return True
-    if (t + "ian") in tl:
-        return True
-    return False
+from ghana_mcp.nlp import token_matches_title, is_foreign_title, FOREIGN_COUNTRIES
 
 
 def parse_date_timestamp(date_str: Optional[str]) -> float:
