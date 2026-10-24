@@ -20,10 +20,11 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "spacy>=3.7.0",
     "sse-starlette>=2.0.0",
+    "huggingface_hub>=0.20.0",
 ]
 
 [project.scripts]
-ghana-mcp = "ghana_mcp.server:run"
+ghana-search = "ghana_mcp.server:run"
 
 [tool.setuptools.packages.find]
 where = ["."]

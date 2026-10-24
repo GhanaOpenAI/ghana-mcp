@@ -105,6 +105,15 @@ For clients connecting over Server-Sent Events (SSE):
 
 ---
 
+## Offline Corpus and Backup
+
+All permanently cached documents (titles, body text, publication dates, direct PDF URLs, and source metadata) are continuously backed up to the Hugging Face dataset repository:
+- Dataset: [https://huggingface.co/datasets/ghanaopenai/ghana-search-corpus](https://huggingface.co/datasets/ghanaopenai/ghana-search-corpus)
+
+This dataset can be downloaded to power fully local, offline MCP search servers without requiring internet access.
+
+---
+
 ## Organization
 
 Ghana Search is developed and maintained by **[Ghana Open AI](https://github.com/GhanaOpenAI)** ([https://ghanaopenai.org](https://ghanaopenai.org)).

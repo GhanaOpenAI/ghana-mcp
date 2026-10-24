@@ -26,6 +26,7 @@ from ghana_mcp.reranker import reranker
 from ghana_mcp.nlp import extract_search_terms
 from ghana_mcp.analytics import analytics
 from ghana_mcp.cache import search_cache
+from ghana_mcp.hf_sync import hf_sync
 from ghana_mcp.config import SERVER_HOST, SERVER_PORT
 
 # Initialize providers
@@ -278,7 +279,9 @@ def ghana_wikipedia_search(
 async def lifespan(app: FastAPI):
     """Manage application startup and shutdown lifecycle cleanly."""
     await analytics.start()
+    await hf_sync.start()
     yield
+    await hf_sync.stop()
     await analytics.stop()
 
 
@@ -401,6 +404,13 @@ async def api_analytics_dataset(
     }
 
 
+@app.post("/api/analytics/backup-hf")
+async def api_backup_hf():
+    """Trigger an immediate background backup push of the permanent URL cache to Hugging Face."""
+    result = await asyncio.to_thread(hf_sync.push_to_huggingface)
+    return result
+
+
 @app.get("/api/health")
 async def api_health():
     """Health check endpoint."""
@@ -412,12 +422,14 @@ async def api_health():
         "reranker": "100% CPU Terminology Density & Recency (Zero GPU / 0MB VRAM)",
         "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
         "evaluation_dataset": "Enabled (JSONL export)",
+        "hf_backup_repo": "ghanaopenai/ghana-search-corpus",
         "organization": "Ghana Open AI",
         "endpoints": {
             "mcp_sse": "/mcp/sse",
             "rest_search": "/api/search",
             "analytics_stats": "/api/analytics/stats",
             "analytics_dataset": "/api/analytics/dataset",
+            "backup_hf": "/api/analytics/backup-hf",
             "web_ui": "/",
         },
     }
