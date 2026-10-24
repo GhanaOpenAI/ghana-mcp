@@ -35,28 +35,29 @@ def is_foreign_title(title: str) -> bool:
     return False
 
 
-def token_matches_title(token: str, title_lower: str) -> bool:
+def token_matches_title(token: str, title: str) -> bool:
     """Match token in title considering singular/plural and morphological derivations."""
     t = token.lower().strip()
+    tl = (title or "").lower()
     if not t or len(t) < 2:
         return False
-    if t in title_lower:
+    if t in tl:
         return True
     # Singular / plural matching
-    if t.endswith("s") and len(t) > 3 and t[:-1] in title_lower:
+    if t.endswith("s") and len(t) > 3 and t[:-1] in tl:
         return True
-    if (t + "s") in title_lower:
+    if (t + "s") in tl:
         return True
-    if t.endswith("es") and len(t) > 4 and t[:-2] in title_lower:
+    if t.endswith("es") and len(t) > 4 and t[:-2] in tl:
         return True
     # Adjective/noun derivations (e.g. parliamentary -> parliament, ghanaian -> ghana)
-    if t.endswith("ary") and len(t) > 6 and t[:-3] in title_lower:
+    if t.endswith("ary") and len(t) > 6 and t[:-3] in tl:
         return True
-    if (t + "ary") in title_lower:
+    if (t + "ary") in tl:
         return True
-    if t.endswith("ian") and len(t) > 5 and t[:-3] in title_lower:
+    if t.endswith("ian") and len(t) > 5 and t[:-3] in tl:
         return True
-    if (t + "ian") in title_lower:
+    if (t + "ian") in tl:
         return True
     return False
 

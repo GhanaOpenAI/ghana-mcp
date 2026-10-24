@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from ghana_mcp.providers.base import BaseProvider, SearchResult
 from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
+from ghana_mcp.reranker import token_matches_title
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 WIKI_REST_SUMMARY = "https://en.wikipedia.org/api/rest_v1/page/summary"
@@ -61,14 +62,14 @@ class WikipediaGhanaProvider(BaseProvider):
             return {}
 
     def _cirrus_search(self, query: str, limit: int) -> List[SearchResult]:
-        """Perform CirrusSearch strictly scoped to Category:Ghana and subcategories."""
+        """Perform CirrusSearch strictly scoped to Category:Ghana and subcategories with title matching only."""
         # Use deepcat:"Ghana" to strictly confine Wikipedia results to the Ghanaian category tree
         search_term = f'{query} deepcat:"Ghana"'
         params = {
             "action": "query",
             "list": "search",
             "srsearch": search_term,
-            "srlimit": min(limit * 2, 20),
+            "srlimit": min(limit * 3, 30),
             "format": "json",
             "utf8": 1,
         }
@@ -78,9 +79,20 @@ class WikipediaGhanaProvider(BaseProvider):
             data = json.loads(resp.read().decode("utf-8"))
             items = data.get("query", {}).get("search", [])
 
+        # Extract meaningful query tokens for mandatory title matching
+        stopwords = {"who", "was", "is", "are", "were", "the", "a", "an", "of", "and", "in", "on", "at", "to", "for", "with", "about", "from", "by"}
+        query_tokens = [t for t in re.findall(r"\b[a-zA-Z0-9_\-]{2,}\b", query.lower()) if t not in stopwords]
+
+        # Filter items first: MUST have title match and MUST not be foreign
+        matching_items = []
+        for item in items:
+            title = item.get("title", "")
+            if query_tokens and not any(token_matches_title(tok, title) for tok in query_tokens):
+                continue
+            matching_items.append(item)
+
         results = []
-        # Fetch summary extracts for matches in parallel
-        titles = [item["title"] for item in items[:limit * 2]]
+        titles = [item["title"] for item in matching_items[:limit * 2]]
         summaries = {}
         with ThreadPoolExecutor(max_workers=min(len(titles), 5) or 1) as executor:
             future_to_title = {executor.submit(self._fetch_page_summary, t): t for t in titles}
@@ -91,7 +103,7 @@ class WikipediaGhanaProvider(BaseProvider):
                 except Exception:
                     summaries[t] = {}
 
-        for item in items:
+        for item in matching_items:
             title = item["title"]
             sum_data = summaries.get(title, {})
             extract = sum_data.get("extract")
