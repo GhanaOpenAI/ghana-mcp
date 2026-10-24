@@ -7,7 +7,7 @@ import json
 import urllib.request
 import urllib.parse
 import ssl
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from bs4 import BeautifulSoup
 
 from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
@@ -32,10 +32,11 @@ class PriceFinderProvider:
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         }
 
-    def _fetch_jumia_ghana(self, product_query: str, limit: int) -> List[Dict[str, Any]]:
+    def _fetch_jumia_ghana(self, product_query: str, limit: int) -> Tuple[List[Dict[str, Any]], Optional[str]]:
         """Fetch live product retail & vendor prices from Jumia Ghana Marketplace."""
         listings: List[Dict[str, Any]] = []
         url = f"https://www.jumia.com.gh/catalog/?q={urllib.parse.quote(product_query)}"
+        err_msg = None
 
         try:
             html = ""
@@ -43,13 +44,16 @@ class PriceFinderProvider:
                 resp = cffi_requests.get(url, impersonate="chrome124", timeout=min(self.timeout, 3.8))
                 if resp.status_code == 200:
                     html = resp.text
+                else:
+                    err_msg = f"cffi HTTP {resp.status_code}"
             else:
+                err_msg = "cffi_requests is None (not installed)"
                 req = urllib.request.Request(url, headers=self.headers)
                 with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as r:
                     html = r.read().decode("utf-8", errors="ignore")
 
             if not html:
-                return []
+                return listings, err_msg
 
             soup = BeautifulSoup(html, "html.parser")
             seen_jumia_urls = set()
@@ -101,10 +105,10 @@ class PriceFinderProvider:
 
                 if len(listings) >= limit:
                     break
-        except Exception:
-            pass
+        except Exception as e:
+            err_msg = str(e)
 
-        return listings
+        return listings, err_msg
 
     def _fetch_tonaton_or_classifieds(self, product_query: str, limit: int) -> List[Dict[str, Any]]:
         """Attempt Tonaton classifieds or Ghana Classifieds directory."""
@@ -219,7 +223,7 @@ class PriceFinderProvider:
             }
 
         # 1. Primary: Live market retail and vendor prices (Jumia Ghana)
-        jumia_items = self._fetch_jumia_ghana(clean_query, limit=limit)
+        jumia_items, err_msg = self._fetch_jumia_ghana(clean_query, limit=limit)
 
         # 2. Secondary: Classifieds ads (Tonaton / Ghana Classifieds)
         classified_items = self._fetch_tonaton_or_classifieds(clean_query, limit=limit)
@@ -248,5 +252,6 @@ class PriceFinderProvider:
             "min_price_ghs": min_price,
             "max_price_ghs": max_price,
             "currency": "GHS (Ghana Cedi)",
+            "debug_info": {"cffi_available": cffi_requests is not None, "jumia_err": err_msg},
             "listings": all_listings,
         }
