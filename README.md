@@ -218,12 +218,51 @@ For MCP clients and agent orchestrators connecting over Server-Sent Events (SSE)
 
 ---
 
+## Offline-First Search & Domain Knowledge Packs
+
+Ghana Search is built from the ground up for **offline-first deployments**. In rural communities, farming districts, remote clinics, and schools without reliable internet, local LLMs (running via vLLM, Ollama, SGLang, or llama.cpp) can query pre-built **Domain Knowledge Packs** with **0ms internet latency and zero network access**.
+
+### 1. Build a Custom Offline Knowledge Pack
+
+You can generate a standalone SQLite knowledge pack from any question list, domain file, or Hugging Face dataset using the built-in pack builder CLI:
+
+```bash
+# Build an agricultural offline knowledge pack from Hugging Face:
+python3 -m ghana_mcp.builder \
+  --hf-dataset ghananlpcommunity/ghana-farmer-qa \
+  --column question \
+  --limit 500 \
+  --output-db data/ghana_farmer_qa_pack.db \
+  --export-jsonl data/ghana_farmer_qa_pack.jsonl
+
+# Or build from a local text or CSV file of questions:
+python3 -m ghana_mcp.builder \
+  --queries-file my_health_questions.txt \
+  --output-db data/ghana_health_pack.db
+```
+
+The builder runs each question through Ghana Search, retrieves matching publications, university theses, government circulars, and laws, and stores the full article content into a portable SQLite database.
+
+### 2. Run Ghana Search in 100% Offline Mode
+
+Launch the server completely air-gapped without internet access:
+
+```bash
+# Launch server pointing to your domain knowledge pack
+GHANA_SEARCH_OFFLINE=1 GHANA_SEARCH_DB=data/ghana_farmer_qa_pack.db python3 -m ghana_mcp.server
+```
+
+In offline mode:
+- **0 external network requests** are performed.
+- Queries are matched instantly (< 5ms) against the local knowledge pack using Title-First & Recent-First ranking.
+- All MCP tools, REST endpoints (`/api/search`), and tool execution APIs (`/api/tools/execute`) work seamlessly offline for local LLMs.
+
+---
+
 ## Offline Corpus and Backup
 
 All permanently cached documents (titles, body text, publication dates, direct PDF URLs, and source metadata) are continuously backed up to the Hugging Face dataset repository:
 - Dataset: [https://huggingface.co/datasets/ghanaopenai/ghana-search-corpus](https://huggingface.co/datasets/ghanaopenai/ghana-search-corpus)
-
-This dataset can be downloaded to power fully local, offline MCP search servers without requiring internet access.
 
 ---
 

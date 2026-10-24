@@ -13,7 +13,7 @@ from typing import List, Dict, Any, Optional
 from ghana_mcp.providers.base import SearchResult
 
 CACHE_DIR = os.path.expanduser("~/.cache/ghana_mcp")
-DB_PATH = os.path.join(CACHE_DIR, "search_cache.db")
+DB_PATH = os.environ.get("GHANA_SEARCH_DB", os.path.join(CACHE_DIR, "search_cache.db"))
 DEFAULT_QUERY_TTL = 86400  # 24 hours in seconds
 
 
@@ -355,6 +355,69 @@ class QueryCache:
                     metadata=meta,
                 )
             )
+        return results
+
+    def search_offline(
+        self, query_tokens: List[str], categories: Optional[List[str]] = None, limit: int = 50
+    ) -> List[SearchResult]:
+        """Search permanently cached documents completely offline via title token matches."""
+        if not query_tokens:
+            return []
+
+        # Split chunks into individual word tokens for flexible title matching
+        words = set()
+        for tok in query_tokens:
+            for w in tok.strip().split():
+                cleaned = w.lower().strip()
+                if len(cleaned) >= 2:
+                    words.add(cleaned)
+
+        if not words:
+            return []
+
+        conditions = []
+        params: List[Any] = []
+        for w in list(words)[:12]:
+            conditions.append("title LIKE ?")
+            params.append(f"%{w}%")
+
+        where_clause = " OR ".join(conditions)
+        cat_clause = ""
+        if categories:
+            cat_placeholders = ",".join("?" for _ in categories)
+            cat_clause = f" AND category IN ({cat_placeholders})"
+            params.extend(categories)
+
+        sql = f"""
+            SELECT url, title, snippet, content, source, category, published_date, metadata_json
+            FROM url_content_cache
+            WHERE ({where_clause}) {cat_clause}
+            ORDER BY access_count DESC
+            LIMIT {limit * 3}
+        """
+
+        results: List[SearchResult] = []
+        try:
+            with self._get_connection() as conn:
+                rows = conn.execute(sql, params).fetchall()
+                for row in rows:
+                    meta = json.loads(row["metadata_json"] or "{}")
+                    meta["offline_mode"] = True
+                    results.append(
+                        SearchResult(
+                            title=row["title"],
+                            url=row["url"],
+                            snippet=row["snippet"],
+                            source=row["source"],
+                            category=row["category"],
+                            content=row["content"],
+                            published_date=row["published_date"],
+                            metadata=meta,
+                        )
+                    )
+        except Exception:
+            pass
+
         return results
 
     def clear_expired(self):

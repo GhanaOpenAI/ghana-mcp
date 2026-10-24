@@ -38,6 +38,12 @@ public_provider = PublicServicesProvider()
 ghalii_provider = GhaLIIProvider()
 business_provider = BusinessDirectoryProvider()
 
+# Offline Mode Flag (air-gapped / local cache operation)
+OFFLINE_MODE = (
+    os.environ.get("GHANA_SEARCH_OFFLINE", "").lower() in ("1", "true", "yes")
+    or "--offline" in sys.argv
+)
+
 # Initialize MCP Server
 mcp = MCPServer(
     name="ghana-search",
@@ -97,6 +103,38 @@ def _execute_search(
     search_keywords = clean_chunks if clean_chunks else nouns
     if not search_keywords:
         search_keywords = [t for t in text.split() if len(t) > 1]
+
+    # Offline Mode: Search exclusively across local SQLite cache database with 0 network calls
+    if OFFLINE_MODE:
+        offline_tokens = clean_chunks if clean_chunks else nouns
+        offline_candidates = search_cache.search_offline(offline_tokens, cats, limit=top_k * 3)
+        if rerank and offline_candidates:
+            ranked = reranker.rerank(
+                query=text,
+                keywords=search_keywords,
+                candidates=offline_candidates,
+                top_k=min(top_k, len(offline_candidates)),
+            )
+        else:
+            ranked = offline_candidates[:top_k]
+
+        latency_ms = (time.perf_counter() - start_time) * 1000.0
+        analytics.record_query_sync(
+            query_text=text,
+            clean_chunks=clean_chunks,
+            num_results=len(ranked),
+            latency_ms=latency_ms,
+            cached=False,
+            client_type=client_type,
+            user_agent=user_agent,
+            categories=cats,
+            sources={r.source: 1 for r in ranked},
+            top_results_summary=[
+                {"title": r.title, "url": r.url, "source": r.source}
+                for r in ranked[:5]
+            ],
+        )
+        return ranked
 
     candidates: List[SearchResult] = []
     per_provider_limit = min(max(int(top_k * 0.15), 6), 10)
@@ -606,6 +644,8 @@ async def api_health():
         "nlp_engine": "spaCy (en_core_web_sm)",
         "reranker": "100% CPU Title-Only & Recent-First Ranker (Zero GPU / 0MB VRAM)",
         "caching": "Two-Tier (24h Query Cache + Permanent URL Content Cache)",
+        "offline_mode": OFFLINE_MODE,
+        "offline_records": search_cache.get_url_cache_stats()["total_permanent_urls"],
         "workers": int(os.environ.get("WEB_CONCURRENCY", min(4, max(1, os.cpu_count() or 1)))),
         "cpu_cores": os.cpu_count(),
         "default_max_wait_seconds": 4.0,
