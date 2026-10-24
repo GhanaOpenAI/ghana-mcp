@@ -48,21 +48,17 @@ def get_singular_plural_variants(word: str) -> Set[str]:
 
 
 def _clean_chunk_tokens(chunk) -> List[Any]:
-    """Clean a noun chunk by stripping articles, adverbs, pronouns, possessives, and loose adjectives."""
+    """Clean a noun chunk by only stripping determiners, articles, pronouns, and punctuation,
+    while retaining critical adjectives (e.g. former, current, renewable, chief), nouns, and proper nouns.
+    """
     cleaned = []
     for t in chunk:
-        # Strip articles, adverbs, pronouns, possessive 's, coordinating conjunctions, and punctuation
+        # Only strip determiners/articles, adverbs, pronouns, possessive 's, coordinating conjunctions, and punctuation
         if t.pos_ in ("DET", "ADV", "PRON", "PART", "CCONJ", "PUNCT"):
             continue
 
-        # If it's an adjective, only retain it if it's capitalized or a dependency compound (e.g. "Supreme Court", "Solar")
-        if t.pos_ == "ADJ":
-            if not (t.text[0].isupper() or t.dep_ == "compound"):
-                continue
-
-        # Retain NOUN, PROPN, or compound elements
-        if t.pos_ in ("NOUN", "PROPN") or t.dep_ == "compound":
-            cleaned.append(t)
+        # Retain adjectives (e.g. former, current, renewable), nouns, proper nouns, numerals
+        cleaned.append(t)
 
     return cleaned
 
@@ -110,9 +106,9 @@ def extract_search_terms(text: str) -> Dict[str, Any]:
                 all_expanded_variants.update(get_singular_plural_variants(t.text))
                 all_expanded_variants.update(get_singular_plural_variants(t.lemma_))
 
-        # 2. Also capture any standalone nouns/proper nouns not captured in chunks
+        # 2. Also capture any standalone nouns, proper nouns, or key adjectives
         for t in doc:
-            if t.pos_ in ("NOUN", "PROPN") and not t.is_stop and len(t.text.strip()) > 1:
+            if t.pos_ in ("NOUN", "PROPN", "ADJ") and not t.is_stop and len(t.text.strip()) > 1:
                 nouns.append(t.text.strip())
                 all_expanded_variants.update(get_singular_plural_variants(t.text))
                 all_expanded_variants.update(get_singular_plural_variants(t.lemma_))
@@ -125,7 +121,7 @@ def extract_search_terms(text: str) -> Dict[str, Any]:
             "you", "tell", "about", "the", "and", "for", "with", "from",
             "this", "that", "these", "those", "have", "has", "had", "are",
             "was", "were", "been", "being", "find", "give", "show", "get",
-            "current", "recent", "official", "very", "latest", "new"
+            "very", "too", "so", "a", "an"
         }
         filtered = [w for w in words if w.lower() not in stopwords]
         clean_chunks = [" ".join(filtered)] if filtered else []

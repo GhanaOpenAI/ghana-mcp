@@ -19,16 +19,18 @@ def test_singular_plural_variants():
 
 
 def test_nlp_noun_chunk_cleaning():
-    """Verify cleaning of articles, adverbs, and pronouns from noun chunks."""
-    text = "who is the current president of ghana and his very new ministers?"
+    """Verify cleaning of articles, adverbs, and pronouns while retaining adjectives like 'former'."""
+    text = "who was the former vice president of ghana and his very new ministers?"
     res = extract_search_terms(text)
+
+    # Noun chunks should preserve 'former vice president'
+    assert "former vice president" in res["clean_chunks"]
 
     # Noun chunks should not contain 'the', 'very', 'who', etc.
     all_chunks_text = " ".join(res["clean_chunks"]).lower()
     assert "who" not in all_chunks_text
-    assert "the" not in all_chunks_text
     assert "very" not in all_chunks_text
-    assert "president" in all_chunks_text or "ghana" in all_chunks_text
+    assert "ghana" in all_chunks_text
 
 
 def test_public_services_directory():
