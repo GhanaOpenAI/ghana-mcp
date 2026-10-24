@@ -1,13 +1,13 @@
-"""100% CPU Terminology Density & Recency Reranking Engine for Ghana Search.
-Zero GPU or VRAM required.
-Ranks candidates based on:
-  1. Exact noun chunk and key terminology frequency in title and body.
-  2. Noun chunk coverage across the document.
-  3. Publication recency and freshness weighting.
+"""Title-First & Recent-First Reranking Engine for Ghana Search.
+100% CPU-based: Zero GPU or VRAM required.
+Ranking Hierarchy:
+  1. Title match (Heavily dominant: exact noun chunks, sub-phrases, and key tokens in the title).
+  2. Publication recency (Fresher and more current articles get a substantial recency boost).
+  3. Body/Snippet matches (Secondary signals for context depth).
 """
 import re
 from datetime import datetime, timezone, timedelta
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from ghana_mcp.providers.base import SearchResult
 
@@ -40,7 +40,7 @@ def parse_date_timestamp(date_str: Optional[str]) -> float:
             delta = timedelta(days=1)
         return (datetime.now(timezone.utc) - delta).timestamp()
 
-    # 2. ISO format
+    # 2. ISO format: "2026-10-23T10:50:47.712Z" or "2026-10-22"
     try:
         clean_iso = ds.replace("Z", "+00:00")
         return datetime.fromisoformat(clean_iso).timestamp()
@@ -74,10 +74,41 @@ def parse_date_timestamp(date_str: Optional[str]) -> float:
     return 0.0
 
 
-class TerminologyRecencyReranker:
-    """100% CPU-based terminology density and recency reranker.
+def compute_recency_bonus(date_epoch: float, now_epoch: float) -> float:
+    """Calculate a recency bonus: newer/fresher articles receive a substantial boost."""
+    if not date_epoch or date_epoch <= 0:
+        return 0.0
+
+    age_days = max(0.0, (now_epoch - date_epoch) / 86400.0)
+
+    # Current week (0 to 7 days old): up to +40.0 pts
+    if age_days <= 7:
+        return round(40.0 - (age_days * 1.5), 2)
+    # Current month (7 to 30 days old): +25.0 to +30.0 pts
+    elif age_days <= 30:
+        return round(30.0 - ((age_days - 7) * 0.2), 2)
+    # Current year (30 to 365 days old): +15.0 to +25.0 pts
+    elif age_days <= 365:
+        return round(25.0 - ((age_days - 30) * 0.03), 2)
+    # Within 3 years: +5.0 to +15.0 pts
+    elif age_days <= 1095:
+        return round(max(5.0, 15.0 - ((age_days - 365) * 0.01)), 2)
+
+    return 0.0
+
+
+class TitleFirstReranker:
+    """Title-first and recent-first ranking engine:
+    Prioritizes title matches heavily, boosting recent publications so fresh
+    matching records appear first.
     Zero GPU or VRAM required.
     """
+
+    STOPWORDS = {
+        "who", "was", "is", "are", "were", "the", "a", "an", "of", "and",
+        "in", "on", "at", "to", "for", "with", "about", "from", "by", "how",
+        "what", "when", "where", "why", "can", "you", "tell", "me"
+    }
 
     def rerank(
         self,
@@ -89,10 +120,24 @@ class TerminologyRecencyReranker:
         if not candidates:
             return []
 
-        # Extract normalized query chunks and tokens
         query_lower = query.lower()
+
+        # Extract meaningful query tokens
+        raw_tokens = re.findall(r"\b[a-zA-Z0-9_\-]{2,}\b", query_lower)
+        query_tokens = [t for t in raw_tokens if t not in self.STOPWORDS]
+        if not query_tokens:
+            query_tokens = raw_tokens
+
+        # Extract full noun chunks and 2-word sub-phrases (e.g. "vice president" from "former vice president")
         chunks = [k.lower().strip() for k in keywords if len(k.strip()) > 1]
-        all_terms = set(re.findall(r"\b[a-zA-Z0-9_\-]{2,}\b", query_lower))
+        sub_phrases: Set[str] = set()
+        for c in chunks:
+            words = c.split()
+            if len(words) >= 2:
+                sub_phrases.add(c)
+                # Add adjacent bi-grams
+                for i in range(len(words) - 1):
+                    sub_phrases.add(f"{words[i]} {words[i+1]}")
 
         now_ts = datetime.now(timezone.utc).timestamp()
         scored_candidates = []
@@ -100,48 +145,47 @@ class TerminologyRecencyReranker:
         for item in candidates:
             title_lower = (item.title or "").lower()
             snippet_lower = (item.snippet or "").lower()
-            combined_text = f"{title_lower} {snippet_lower} {(item.source or '').lower()}"
+            content_lower = (item.content or "").lower()[:2000]
+            body_text = f"{snippet_lower} {content_lower}"
 
-            # 1. Exact noun chunk occurrences (highest signal)
-            chunk_title_matches = sum(1 for c in chunks if c in title_lower)
-            chunk_body_matches = sum(1 for c in chunks if c in snippet_lower)
-
-            # 2. Noun chunk coverage ratio (how many distinct chunks appear in the document)
-            chunks_covered = sum(1 for c in chunks if c in combined_text)
-            coverage_ratio = (chunks_covered / len(chunks)) if chunks else 0.0
-
-            # 3. Individual term matches
-            term_matches = sum(1 for t in all_terms if t in combined_text)
-
-            # Terminology subscore
-            term_score = (
-                (chunk_title_matches * 14.0)
-                + (chunk_body_matches * 6.0)
-                + (coverage_ratio * 10.0)
-                + (term_matches * 1.2)
+            # --- 1. TITLE MATCHES (HEAVILY DOMINANT) ---
+            title_phrase_matches = sum(1 for p in sub_phrases if p in title_lower)
+            title_token_matches = sum(1 for t in query_tokens if t in title_lower)
+            title_coverage = (
+                sum(1 for t in query_tokens if t in title_lower) / len(query_tokens)
+                if query_tokens
+                else 0.0
             )
 
-            # 4. Recency boost (fresher publications get a clean boost)
-            ts = parse_date_timestamp(item.published_date)
-            freshness_boost = 0.0
-            if ts > 0:
-                age_days = max(0.0, (now_ts - ts) / 86400.0)
-                # Documents published within the past 2 years (730 days) receive scaled freshness
-                freshness_boost = max(0.0, 1.0 - (age_days / 730.0)) * 6.0
+            title_score = (
+                (title_phrase_matches * 60.0)
+                + (title_token_matches * 25.0)
+                + (title_coverage * 40.0)
+            )
 
-            composite_score = round(term_score + freshness_boost, 2)
+            # --- 2. BODY / CONTENT MATCHES (SECONDARY REFINEMENT) ---
+            body_phrase_matches = sum(1 for p in sub_phrases if p in body_text)
+            body_token_matches = sum(1 for t in query_tokens if t in body_text)
+
+            body_score = (body_phrase_matches * 5.0) + (body_token_matches * 1.5)
+
+            # --- 3. RECENCY FRESHNESS (SUBSTANTIAL RECENT-FIRST BOOST) ---
+            ts = parse_date_timestamp(item.published_date)
+            r_bonus = compute_recency_bonus(ts, now_ts)
+
+            composite_score = round(title_score + body_score + r_bonus, 2)
 
             item.score = composite_score
-            item.metadata["ranking_engine"] = "cpu_terminology_recency"
-            item.metadata["term_matches"] = term_matches
-            item.metadata["chunks_covered"] = chunks_covered
+            item.metadata["ranking_engine"] = "cpu_title_recent_first"
+            item.metadata["title_score"] = round(title_score, 1)
+            item.metadata["recency_bonus"] = round(r_bonus, 1)
 
             scored_candidates.append((composite_score, item))
 
-        # Rank strictly by descending composite score
+        # Sort strictly by descending composite score (title match + recent first)
         scored_candidates.sort(key=lambda x: x[0], reverse=True)
         return [item for _, item in scored_candidates[:top_k]]
 
 
-# Global 100% CPU Reranker (Zero GPU requirement)
-reranker = TerminologyRecencyReranker()
+# Global Title-First & Recent-First Reranker
+reranker = TitleFirstReranker()

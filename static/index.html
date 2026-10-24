@@ -605,7 +605,7 @@
     <div id="results-nav" class="results-nav">
       <div>
         <span id="summary-counter" class="summary-metric">0 records</span>
-        <span id="summary-badge" class="ranking-pill" style="margin-left: 8px;">Ranked by Terminology & Recency</span>
+        <span id="summary-badge" class="ranking-pill" style="margin-left: 8px;">Title Match & Recent First</span>
       </div>
       <button class="btn-new-search" onclick="resetToHome(event)" title="Clear and start a fresh search">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -748,7 +748,7 @@ curl -X POST https://search.ghanaopenai.org/api/search \
       const pageRecords = allRecords.slice(startIdx, endIdx);
 
       if (totalItems > 0) {
-        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (Ranked by terminology match & recency)`;
+        document.getElementById('summary-counter').innerText = `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ranked records (Title match & recent first)`;
         document.getElementById('summary-badge').innerText = `Total: ${totalItems} Records`;
       } else {
         document.getElementById('summary-counter').innerText = '0 records found';
