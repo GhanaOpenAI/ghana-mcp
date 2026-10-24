@@ -74,7 +74,7 @@ class QueryCache:
     def _make_key(self, text: str, categories: Optional[List[str]], top_k: int) -> str:
         norm_tokens = sorted(list(set(text.lower().strip().split())))
         cats = sorted(categories) if categories else ["all"]
-        key_raw = f"{' '.join(norm_tokens)}|{','.join(cats)}|{top_k}"
+        key_raw = f"v2|{' '.join(norm_tokens)}|{','.join(cats)}|{top_k}"
         return hashlib.sha256(key_raw.encode("utf-8")).hexdigest()
 
     def get(

@@ -1,15 +1,61 @@
-"""Title-First & Recent-First Reranking Engine for Ghana Search.
+"""Title-Only & Recent-First Ranking Engine for Ghana Search.
 100% CPU-based: Zero GPU or VRAM required.
-Ranking Hierarchy:
-  1. Title match (Heavily dominant: exact noun chunks, sub-phrases, and key tokens in the title).
-  2. Publication recency (Fresher and more current articles get a substantial recency boost).
-  3. Body/Snippet matches (Secondary signals for context depth).
+Strict Ranking Policy:
+  1. Title match ONLY (Mandatory): Candidates MUST match query keywords or phrases in their title.
+     Any document with zero title match is discarded (no content/body searching).
+  2. Foreign nation filter: Articles about other countries (e.g. Kenya, Nigeria) without Ghana in the title are rejected.
+  3. Publication recency: Fresher and more current matching articles receive a substantial recency boost.
 """
 import re
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Set
 
 from ghana_mcp.providers.base import SearchResult
+
+FOREIGN_COUNTRIES = {
+    "kenya", "nigeria", "uganda", "tanzania", "south africa", "zimbabwe",
+    "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
+    "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
+    "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
+    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo"
+}
+
+
+def is_foreign_title(title: str) -> bool:
+    """Return True if title refers to a foreign country and lacks Ghana/Ghanaian context."""
+    tl = title.lower()
+    if "ghana" in tl or "ghanaian" in tl:
+        return False
+    for c in FOREIGN_COUNTRIES:
+        if c in tl:
+            return True
+    return False
+
+
+def token_matches_title(token: str, title_lower: str) -> bool:
+    """Match token in title considering singular/plural and morphological derivations."""
+    t = token.lower().strip()
+    if not t or len(t) < 2:
+        return False
+    if t in title_lower:
+        return True
+    # Singular / plural matching
+    if t.endswith("s") and len(t) > 3 and t[:-1] in title_lower:
+        return True
+    if (t + "s") in title_lower:
+        return True
+    if t.endswith("es") and len(t) > 4 and t[:-2] in title_lower:
+        return True
+    # Adjective/noun derivations (e.g. parliamentary -> parliament, ghanaian -> ghana)
+    if t.endswith("ary") and len(t) > 6 and t[:-3] in title_lower:
+        return True
+    if (t + "ary") in title_lower:
+        return True
+    if t.endswith("ian") and len(t) > 5 and t[:-3] in title_lower:
+        return True
+    if (t + "ian") in title_lower:
+        return True
+    return False
 
 
 def parse_date_timestamp(date_str: Optional[str]) -> float:
@@ -143,16 +189,23 @@ class TitleFirstReranker:
         scored_candidates = []
 
         for item in candidates:
-            title_lower = (item.title or "").lower()
-            snippet_lower = (item.snippet or "").lower()
-            content_lower = (item.content or "").lower()[:2000]
-            body_text = f"{snippet_lower} {content_lower}"
+            title = item.title or ""
+            title_lower = title.lower()
 
-            # --- 1. TITLE MATCHES (HEAVILY DOMINANT) ---
+            # 1. Filter out articles referencing foreign nations without Ghana context
+            if is_foreign_title(title):
+                continue
+
+            # 2. Strict Title Matching (No content/body searching)
             title_phrase_matches = sum(1 for p in sub_phrases if p in title_lower)
-            title_token_matches = sum(1 for t in query_tokens if t in title_lower)
+            title_token_matches = sum(1 for t in query_tokens if token_matches_title(t, title_lower))
+
+            # Mandatory title match: Discard any document with zero title overlap
+            if title_phrase_matches == 0 and title_token_matches == 0:
+                continue
+
             title_coverage = (
-                sum(1 for t in query_tokens if t in title_lower) / len(query_tokens)
+                title_token_matches / len(query_tokens)
                 if query_tokens
                 else 0.0
             )
@@ -163,20 +216,15 @@ class TitleFirstReranker:
                 + (title_coverage * 40.0)
             )
 
-            # --- 2. BODY / CONTENT MATCHES (SECONDARY REFINEMENT) ---
-            body_phrase_matches = sum(1 for p in sub_phrases if p in body_text)
-            body_token_matches = sum(1 for t in query_tokens if t in body_text)
-
-            body_score = (body_phrase_matches * 5.0) + (body_token_matches * 1.5)
-
-            # --- 3. RECENCY FRESHNESS (SUBSTANTIAL RECENT-FIRST BOOST) ---
+            # 3. Recency bonus (matching items published recently rank higher)
             ts = parse_date_timestamp(item.published_date)
             r_bonus = compute_recency_bonus(ts, now_ts)
 
-            composite_score = round(title_score + body_score + r_bonus, 2)
+            # Strictly title-score + recency bonus (Zero points for body/snippet text)
+            composite_score = round(title_score + r_bonus, 2)
 
             item.score = composite_score
-            item.metadata["ranking_engine"] = "cpu_title_recent_first"
+            item.metadata["ranking_engine"] = "cpu_title_only_recent_first"
             item.metadata["title_score"] = round(title_score, 1)
             item.metadata["recency_bonus"] = round(r_bonus, 1)
 

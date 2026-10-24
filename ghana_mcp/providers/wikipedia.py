@@ -11,6 +11,32 @@ from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 WIKI_REST_SUMMARY = "https://en.wikipedia.org/api/rest_v1/page/summary"
 
+FOREIGN_COUNTRIES = {
+    "kenya", "nigeria", "uganda", "tanzania", "south africa", "zimbabwe",
+    "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
+    "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
+    "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
+    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo"
+}
+
+
+def is_ghana_wiki_article(title: str, extract: str) -> bool:
+    """Validate that Wikipedia article strictly pertains to Ghana and not another nation."""
+    tl = title.lower()
+    el = (extract or "").lower()
+
+    # Reject if another country is in the title unless Ghana is also explicitly in the title
+    for country in FOREIGN_COUNTRIES:
+        if country in tl and "ghana" not in tl:
+            return False
+
+    # Reject if summary explicitly focuses on another country's government/institutions without Ghana
+    for country in FOREIGN_COUNTRIES:
+        if (f"government of {country}" in el or f"president of {country}" in el or f"in {country}" in el) and "ghana" not in el:
+            return False
+
+    return True
+
 
 class WikipediaGhanaProvider(BaseProvider):
     name = "wikipedia_ghana"
@@ -31,14 +57,14 @@ class WikipediaGhanaProvider(BaseProvider):
             return {}
 
     def _cirrus_search(self, query: str, limit: int) -> List[SearchResult]:
-        """Perform CirrusSearch with Ghana context."""
-        # Ensure 'Ghana' is part of the query context if not already present
-        search_term = query if "ghana" in query.lower() else f"{query} Ghana"
+        """Perform CirrusSearch strictly scoped to Category:Ghana and subcategories."""
+        # Use deepcat:"Ghana" to strictly confine Wikipedia results to the Ghanaian category tree
+        search_term = f'{query} deepcat:"Ghana"'
         params = {
             "action": "query",
             "list": "search",
             "srsearch": search_term,
-            "srlimit": limit,
+            "srlimit": min(limit * 2, 20),
             "format": "json",
             "utf8": 1,
         }
@@ -49,8 +75,8 @@ class WikipediaGhanaProvider(BaseProvider):
             items = data.get("query", {}).get("search", [])
 
         results = []
-        # Fetch summary extracts for the top matches in parallel
-        titles = [item["title"] for item in items[:limit]]
+        # Fetch summary extracts for matches in parallel
+        titles = [item["title"] for item in items[:limit * 2]]
         summaries = {}
         with ThreadPoolExecutor(max_workers=min(len(titles), 5) or 1) as executor:
             future_to_title = {executor.submit(self._fetch_page_summary, t): t for t in titles}
@@ -61,13 +87,17 @@ class WikipediaGhanaProvider(BaseProvider):
                 except Exception:
                     summaries[t] = {}
 
-        for item in items[:limit]:
+        for item in items:
             title = item["title"]
             sum_data = summaries.get(title, {})
             extract = sum_data.get("extract")
             if not extract:
                 raw_snippet = item.get("snippet", "")
                 extract = raw_snippet.replace('<span class="searchmatch">', "").replace("</span>", "")
+
+            # Strict Ghana validation: exclude non-Ghana articles
+            if not is_ghana_wiki_article(title, extract):
+                continue
 
             desktop_url = sum_data.get("content_urls", {}).get("desktop", {}).get("page")
             if not desktop_url:
@@ -84,6 +114,8 @@ class WikipediaGhanaProvider(BaseProvider):
                     metadata={"pageid": item.get("pageid")},
                 )
             )
+            if len(results) >= limit:
+                break
         return results
 
     def _geosearch_ghana(self, limit: int = 3) -> List[SearchResult]:
