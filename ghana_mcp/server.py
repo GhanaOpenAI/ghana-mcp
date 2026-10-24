@@ -50,7 +50,7 @@ def _execute_search(
     categories: Optional[List[str]] = None,
     top_k: int = 50,
     rerank: bool = True,
-    max_wait_seconds: float = 3.0,
+    max_wait_seconds: float = 5.0,
     client_type: str = "mcp_tool",
     user_agent: str = "",
 ) -> List[SearchResult]:
@@ -204,7 +204,7 @@ def ghana_search(
     top_k: int = 50,
     categories: Optional[List[str]] = None,
     rerank: bool = True,
-    max_wait_seconds: float = 3.0,
+    max_wait_seconds: float = 5.0,
 ) -> str:
     """Search Ghanaian local news, university thesis archives, government agencies, and Ghana Wikipedia.
     Takes free-form text input, extracts nouns using spaCy, queries local APIs, and ranks results by relevance.
@@ -214,7 +214,7 @@ def ghana_search(
         top_k: Number of most relevant results to return (default: 50, maximum: total retrieved candidates)
         categories: Optional list of data sources to query: ["news", "wikipedia", "academic", "public_services"]
         rerank: Whether to rerank candidates by terminology and recency (default: True)
-        max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 3.0s)
+        max_wait_seconds: Maximum seconds to wait for external providers before returning results (default: 5.0s)
     """
     results = _execute_search(text, categories, top_k, rerank, max_wait_seconds=max_wait_seconds)
     return json.dumps([r.to_dict() for r in results], indent=2)
@@ -326,14 +326,15 @@ class SearchRequest(BaseModel):
     )
     top_k: int = Field(default=50, ge=1, le=500, description="Number of results to return (default: 50)")
     rerank: bool = Field(default=True, description="Enable hybrid semantic reranking")
-    max_wait_seconds: float = Field(default=3.0, ge=0.5, le=30.0, description="Maximum seconds to wait for external providers (default: 3.0s)")
+    max_wait_seconds: float = Field(default=5.0, ge=0.5, le=30.0, description="Maximum seconds to wait for external providers (default: 5.0s)")
 
 
 @app.post("/api/search")
 async def api_search_post(req: SearchRequest = Body(...)):
-    """REST API endpoint taking raw text input."""
+    """REST API endpoint taking raw text input (non-blocking concurrent execution)."""
     nlp_data = extract_search_terms(req.text)
-    results = _execute_search(
+    results = await asyncio.to_thread(
+        _execute_search,
         text=req.text,
         categories=req.categories,
         top_k=req.top_k,
@@ -362,12 +363,13 @@ async def api_search_get(
     categories: Optional[str] = Query(None, description="Comma-separated categories"),
     top_k: int = Query(50, ge=1, le=500),
     rerank: bool = Query(True),
-    max_wait_seconds: float = Query(3.0, ge=0.5, le=30.0),
+    max_wait_seconds: float = Query(5.0, ge=0.5, le=30.0),
 ):
-    """GET REST endpoint for quick URL queries."""
+    """GET REST endpoint for quick URL queries (non-blocking concurrent execution)."""
     input_str = text or query or ""
     cat_list = [c.strip() for c in categories.split(",")] if categories else None
-    results = _execute_search(
+    results = await asyncio.to_thread(
+        _execute_search,
         text=input_str,
         categories=cat_list,
         top_k=top_k,
