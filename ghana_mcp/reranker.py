@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Set
 
 from ghana_mcp.providers.base import SearchResult
-from ghana_mcp.nlp import token_matches_title, is_foreign_title, FOREIGN_COUNTRIES
+from ghana_mcp.nlp import token_matches_title, is_foreign_title, FOREIGN_COUNTRIES, GHANA_CITIES
 
 
 def parse_date_timestamp(date_str: Optional[str]) -> float:
@@ -141,6 +141,7 @@ class TitleFirstReranker:
                 for i in range(len(words) - 1):
                     sub_phrases.add(f"{words[i]} {words[i+1]}")
 
+        non_city_tokens = [t for t in query_tokens if t.lower() not in GHANA_CITIES]
         now_ts = datetime.now(timezone.utc).timestamp()
         scored_candidates = []
 
@@ -152,11 +153,21 @@ class TitleFirstReranker:
             if is_foreign_title(title):
                 continue
 
-            # 2. Strict Title Matching (No content/body searching)
-            title_phrase_matches = sum(1 for p in sub_phrases if p in title_lower)
-            title_token_matches = sum(1 for t in query_tokens if token_matches_title(t, title_lower))
+            cat_desc = (item.metadata.get("business_category") or "").lower()
+            search_target = f"{title_lower} {cat_desc}" if item.category == "business" else title_lower
 
-            # Mandatory title match: Discard any document with zero title overlap
+            # 2. Strict Core Subject Matching: If query has core non-city tokens,
+            # document MUST match the core product/subject, never only the city modifier!
+            if non_city_tokens:
+                matches_core = any(token_matches_title(t, search_target) for t in non_city_tokens)
+                if not matches_core:
+                    continue
+
+            # 3. Title Matching (No body/content searching)
+            title_phrase_matches = sum(1 for p in sub_phrases if p in title_lower)
+            title_token_matches = sum(1 for t in query_tokens if token_matches_title(t, search_target))
+
+            # Mandatory match: Discard any document with zero overlap
             if title_phrase_matches == 0 and title_token_matches == 0:
                 continue
 
@@ -172,7 +183,7 @@ class TitleFirstReranker:
                 + (title_coverage * 40.0)
             )
 
-            # 3. Recency bonus (matching items published recently rank higher)
+            # 4. Recency bonus (matching items published recently rank higher)
             ts = parse_date_timestamp(item.published_date)
             r_bonus = compute_recency_bonus(ts, now_ts)
 

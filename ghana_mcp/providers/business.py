@@ -3,11 +3,13 @@ import re
 import urllib.request
 import urllib.parse
 import ssl
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Set
+from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 
 from ghana_mcp.providers.base import BaseProvider, SearchResult
 from ghana_mcp.config import USER_AGENT, DEFAULT_TIMEOUT
+from ghana_mcp.nlp import GHANA_CITIES, token_matches_title
 
 SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
@@ -18,11 +20,6 @@ GENERIC_COMMERCIAL_TERMS = {
     "enterprises", "service", "services", "shop", "shops", "store",
     "stores", "dealer", "dealers", "supplier", "suppliers", "ltd", "limited",
     "in", "at", "for", "the", "and", "of", "to"
-}
-
-GHANA_CITIES = {
-    "accra", "kumasi", "tamale", "takoradi", "tema", "cape coast",
-    "sunyani", "koforidua", "ho", "wa", "bolgatanga", "techiman", "adum", "lapaz"
 }
 
 
@@ -36,6 +33,26 @@ def normalize_business_token(w: str) -> str:
     return lower
 
 
+def is_relevant_business(name: str, cat_desc: str, core_tokens: List[str]) -> bool:
+    """Ensure business is strictly relevant to the product/service searched.
+    Matches either the business name or the official business category description.
+    Prevents unrelated businesses (e.g. golf clubs, car parts shops) from matching
+    a query just because they share a city name.
+    """
+    if not core_tokens:
+        return True
+
+    target_text = f"{name} {cat_desc}".lower()
+    for t in core_tokens:
+        if token_matches_title(t, target_text):
+            return True
+        norm_t = normalize_business_token(t)
+        if norm_t in target_text:
+            return True
+
+    return False
+
+
 class BusinessDirectoryProvider(BaseProvider):
     name = "ghana_business"
     category = "business"
@@ -47,8 +64,8 @@ class BusinessDirectoryProvider(BaseProvider):
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         }
 
-    def _parse_query_params(self, raw_query: str) -> Tuple[str, Optional[str]]:
-        """Extract core search term and optional city/location."""
+    def _parse_query_params(self, raw_query: str) -> Tuple[List[str], str, Optional[str]]:
+        """Extract core search tokens, clean query string, and optional city/location."""
         q_lower = raw_query.lower()
         found_city = None
         for city in GHANA_CITIES:
@@ -56,54 +73,51 @@ class BusinessDirectoryProvider(BaseProvider):
                 found_city = city
                 break
 
-        tokens = [
+        core_tokens = [
             normalize_business_token(t)
             for t in re.findall(r"\b[a-zA-Z0-9_\-]{2,}\b", raw_query)
             if t.lower() not in GENERIC_COMMERCIAL_TERMS and t.lower() != found_city
         ]
-        q_str = " ".join(tokens) if tokens else raw_query
-        return q_str, found_city
+        q_str = " ".join(core_tokens) if core_tokens else raw_query
+        return core_tokens, q_str, found_city
 
-    def search(self, keywords: List[str], limit: int = 5) -> List[SearchResult]:
-        raw_query = " ".join(keywords).strip()
-        if not raw_query:
-            return []
-
-        q_term, city = self._parse_query_params(raw_query)
-        params = {"q": q_term}
+    def _fetch_listings(
+        self,
+        query_str: str,
+        city: Optional[str],
+        core_tokens: List[str],
+        limit: int,
+    ) -> List[SearchResult]:
+        params = {"q": query_str}
         if city:
             params["where"] = city
 
         url = f"https://www.ghanabusinessweb.com/search?{urllib.parse.urlencode(params)}"
         req = urllib.request.Request(url, headers=self.headers)
         results: List[SearchResult] = []
+        seen_urls: Set[str] = set()
 
         try:
             with urllib.request.urlopen(req, timeout=self.timeout, context=SSL_CTX) as resp:
                 html = resp.read().decode("utf-8", errors="ignore")
 
             soup = BeautifulSoup(html, "html.parser")
-            seen_urls = set()
 
             for art in soup.find_all("article"):
                 h = art.find(["h2", "h3", "h4"])
-                if not h:
-                    continue
-                a = h.find("a")
-                if not a:
+                if not h or not h.find("a"):
                     continue
 
-                name = a.get_text(strip=True)
-                link = a.get("href", "")
+                name = h.get_text(strip=True)
+                link = h.find("a").get("href", "")
                 if not name or link in seen_urls:
                     continue
-                seen_urls.add(link)
 
-                # Extract text lines inside article card
+                # Extract text lines inside article card (skip single-letter avatar initials)
                 texts = [
                     t.strip()
                     for t in art.stripped_strings
-                    if t.strip() and t.strip() not in (name, "S", "V", "G", "A", "D", "P", "C", "M", "L", "H", "B", "R", "W")
+                    if len(t.strip()) > 1 and t.strip() != name
                 ]
 
                 # Phone number extraction
@@ -114,6 +128,14 @@ class BusinessDirectoryProvider(BaseProvider):
                 phone = phone_match.group(0).strip() if phone_match else None
 
                 cat_desc = texts[0] if texts else "Commercial Services"
+
+                # STRICT RELEVANCE: Business name or category MUST match the core product/service tokens!
+                # Discards unrelated businesses (e.g. Golf Club, Printing Press for a Pharmacy query)
+                if not is_relevant_business(name, cat_desc, core_tokens):
+                    continue
+
+                seen_urls.add(link)
+
                 loc = city.title() if city else "Ghana"
                 for t in texts[1:]:
                     if t != phone and "open" not in t.lower() and "closed" not in t.lower():
@@ -155,3 +177,38 @@ class BusinessDirectoryProvider(BaseProvider):
             pass
 
         return results
+
+    def search(self, keywords: List[str], limit: int = 5) -> List[SearchResult]:
+        raw_query = " ".join(keywords).strip()
+        if not raw_query:
+            return []
+
+        core_tokens, q_term, city = self._parse_query_params(raw_query)
+
+        # If a specific city was requested, search concurrently:
+        # 1. Targeted city search
+        # 2. National core product/service search (to provide verified alternatives if city results are sparse)
+        if city:
+            with ThreadPoolExecutor(max_workers=2) as ex:
+                f_city = ex.submit(self._fetch_listings, q_term, city, core_tokens, limit)
+                f_nat = ex.submit(self._fetch_listings, q_term, None, core_tokens, limit)
+                res_city = f_city.result()
+                res_nat = f_nat.result()
+
+            seen: Set[str] = set()
+            combined: List[SearchResult] = []
+            for r in res_city:
+                if r.url not in seen:
+                    seen.add(r.url)
+                    combined.append(r)
+
+            for r in res_nat:
+                if len(combined) >= limit:
+                    break
+                if r.url not in seen:
+                    seen.add(r.url)
+                    combined.append(r)
+
+            return combined[:limit]
+        else:
+            return self._fetch_listings(q_term, None, core_tokens, limit)

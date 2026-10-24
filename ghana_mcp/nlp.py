@@ -29,6 +29,12 @@ FOREIGN_COUNTRIES = {
     "japan", "germany", "france", "britain"
 }
 
+GHANA_CITIES = {
+    "accra", "kumasi", "tamale", "takoradi", "tema", "cape coast",
+    "sunyani", "koforidua", "ho", "wa", "bolgatanga", "techiman",
+    "sekondi", "adum", "lapaz", "madina", "spintex"
+}
+
 
 def is_foreign_title(title: str) -> bool:
     """Return True if title refers to a foreign country and lacks Ghana/Ghanaian context."""
@@ -138,6 +144,16 @@ def _clean_chunk_tokens(chunk) -> List[Any]:
     return cleaned
 
 
+AUX_VERBS = {
+    "be", "is", "was", "are", "were", "been", "being",
+    "have", "has", "had", "having",
+    "do", "does", "did", "doing",
+    "can", "could", "will", "would", "shall", "should", "may", "might", "must",
+    "get", "got", "getting", "tell", "show", "find", "give", "know", "see",
+    "come", "go", "make", "say", "take"
+}
+
+
 def extract_search_terms(text: str) -> Dict[str, Any]:
     """Extract clean noun chunks, individual nouns, and plural/singular expanded queries."""
     if not text or not text.strip():
@@ -181,11 +197,15 @@ def extract_search_terms(text: str) -> Dict[str, Any]:
                 all_expanded_variants.update(get_singular_plural_variants(t.text))
                 all_expanded_variants.update(get_singular_plural_variants(t.lemma_))
 
-        # 2. Also capture any standalone nouns, proper nouns, or key adjectives
+        # 2. Also capture any standalone nouns, proper nouns, adjectives, or content verbs/gerunds
         for t in doc:
-            if t.pos_ in ("NOUN", "PROPN", "ADJ") and not t.is_stop and len(t.text.strip()) > 1:
-                nouns.append(t.text.strip())
-                all_expanded_variants.update(get_singular_plural_variants(t.text))
+            txt = t.text.strip()
+            lemma = t.lemma_.lower().strip()
+            if t.is_stop or len(txt) <= 1:
+                continue
+            if t.pos_ in ("NOUN", "PROPN", "ADJ") or (t.pos_ == "VERB" and lemma not in AUX_VERBS):
+                nouns.append(txt)
+                all_expanded_variants.update(get_singular_plural_variants(txt))
                 all_expanded_variants.update(get_singular_plural_variants(t.lemma_))
 
     else:
@@ -207,6 +227,12 @@ def extract_search_terms(text: str) -> Dict[str, Any]:
     # Deduplicate nouns preserving order
     seen = set()
     uniq_nouns = [n for n in nouns if not (n.lower() in seen or seen.add(n.lower()))]
+
+    # If noun chunks missed key terms captured in uniq_nouns, build a comprehensive clean_chunk
+    if len(clean_chunks) < len(uniq_nouns) and len(uniq_nouns) > 1:
+        combined_phrase = " ".join(uniq_nouns)
+        if combined_phrase.lower() not in [c.lower() for c in clean_chunks]:
+            clean_chunks.insert(0, combined_phrase)
 
     # Primary query prioritizes clean noun chunks
     if clean_chunks:
