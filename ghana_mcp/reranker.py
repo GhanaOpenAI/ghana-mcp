@@ -17,7 +17,10 @@ FOREIGN_COUNTRIES = {
     "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
     "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
     "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
-    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo"
+    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo",
+    "greece", "russia", "ukraine", "israel", "gaza", "palestine",
+    "iran", "iraq", "afghanistan", "pakistan", "india", "china",
+    "japan", "germany", "france", "britain"
 }
 
 
@@ -27,7 +30,7 @@ def is_foreign_title(title: str) -> bool:
     if "ghana" in tl or "ghanaian" in tl:
         return False
     for c in FOREIGN_COUNTRIES:
-        if c in tl:
+        if re.search(rf"\b{re.escape(c)}\b", tl):
             return True
     return False
 

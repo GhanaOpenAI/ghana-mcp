@@ -1,4 +1,5 @@
 """Wikipedia search provider tailored for Ghana-focused knowledge and geotagged places."""
+import re
 import json
 import urllib.request
 import urllib.parse
@@ -16,7 +17,10 @@ FOREIGN_COUNTRIES = {
     "zambia", "rwanda", "cameroon", "liberia", "sierra leone", "senegal",
     "ivory coast", "côte d'ivoire", "togo", "benin", "mali", "niger",
     "burkina faso", "ethiopia", "somalia", "sudan", "egypt", "angola",
-    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo"
+    "mozambique", "botswana", "namibia", "malawi", "gambia", "congo",
+    "greece", "russia", "ukraine", "israel", "gaza", "palestine",
+    "iran", "iraq", "afghanistan", "pakistan", "india", "china",
+    "japan", "germany", "france", "britain"
 }
 
 
@@ -27,12 +31,12 @@ def is_ghana_wiki_article(title: str, extract: str) -> bool:
 
     # Reject if another country is in the title unless Ghana is also explicitly in the title
     for country in FOREIGN_COUNTRIES:
-        if country in tl and "ghana" not in tl:
+        if re.search(rf"\b{re.escape(country)}\b", tl) and "ghana" not in tl and "ghanaian" not in tl:
             return False
 
     # Reject if summary explicitly focuses on another country's government/institutions without Ghana
     for country in FOREIGN_COUNTRIES:
-        if (f"government of {country}" in el or f"president of {country}" in el or f"in {country}" in el) and "ghana" not in el:
+        if (f"government of {country}" in el or f"president of {country}" in el or f"in {country}" in el) and "ghana" not in el and "ghanaian" not in el:
             return False
 
     return True
