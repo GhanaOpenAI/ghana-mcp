@@ -76,6 +76,7 @@ for item in response.json().get("results", []):
 | `text` | string | Required | Your question or search topic |
 | `top_k` | integer | `50` | Number of ranked results to return (max 500) |
 | `categories` | list | `all` | Optional filter: `["news", "academic", "public_services", "wikipedia"]` |
+| `max_wait_seconds` | float | `3.0` | Maximum seconds to wait for providers before returning gathered results (supports up to 30.0s) |
 
 ---
 

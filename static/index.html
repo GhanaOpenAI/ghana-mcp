@@ -850,7 +850,8 @@ curl -X POST https://search.ghanaopenai.org/api/search \
           body: JSON.stringify({
             text: q,
             top_k: 250,
-            rerank: true
+            rerank: true,
+            max_wait_seconds: 3.0
           })
         });
 
